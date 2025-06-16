@@ -11,7 +11,7 @@ export default function Dashboard() {
     const router = useRouter();
 
     useEffect(() => {
-        document.title = "ภาพรวม | ระบบจองห้องประชุม ICT";
+        document.title = "จัดการห้องประชุม | ระบบจองห้องประชุม ICT";
     }, []);
 
     return (
@@ -32,6 +32,7 @@ export default function Dashboard() {
                 }}
             >
                 <Typography variant="h5" gutterBottom>
+                    จัดการห้องประชุม
                 </Typography>
             </Box>
         </Box>

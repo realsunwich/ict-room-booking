@@ -1,18 +1,14 @@
 "use client";
 
 import { AppBar, Toolbar, Typography, IconButton, Box, } from "@mui/material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Sidebar from "./sidebar";
 
 const Header = () => {
     const { data: session } = useSession();
     const router = useRouter();
-
-    const handleLogout = () => {
-        signOut({ callbackUrl: "/login" });
-    };
 
     return (
         <AppBar position="fixed" sx={{ bgcolor: "white", color: "primary.main" }}>
@@ -25,7 +21,7 @@ const Header = () => {
                         height={40}
                     />
                     <Typography variant="h6" noWrap sx={{ ml: 2 }}>
-                        ระบบจองห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร
+                        ระบบจองห้องประชุมภายในคณะ ICT
                     </Typography>
                 </Box>
 
@@ -34,9 +30,7 @@ const Header = () => {
                         <Typography variant="body1">
                             👤 sandwich
                         </Typography>
-                        <IconButton color="inherit" onClick={handleLogout}>
-                            <LogoutIcon />
-                        </IconButton>
+                        <Sidebar />
                     </Box>
                 }
             </Toolbar>
