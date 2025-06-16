@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Button, CircularProgress, IconButton, Stack, Dialog, DialogTitle, DialogContent, DialogActions, TextField, } from "@mui/material";
+import { Box, Typography, Card, CardContent, Button, CircularProgress, IconButton, Stack, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Snackbar, Alert, } from "@mui/material";
 import Header from "@/components/header";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -136,13 +136,13 @@ export default function RoomsManage() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Typography variant="h5" color="primary">จัดการห้องประชุม</Typography>
                     <Button variant="contained" startIcon={<AddIcon />} onClick={openAddModal}
-                    sx={{
-                        backgroundColor: "primary.main",
-                        color: "white",
-                        "&:hover": {
-                            backgroundColor: "primary.light",
-                        },
-                    }}
+                        sx={{
+                            backgroundColor: "primary.main",
+                            color: "white",
+                            "&:hover": {
+                                backgroundColor: "primary.light",
+                            },
+                        }}
                     >
                         เพิ่มห้องใหม่
                     </Button>
@@ -213,18 +213,21 @@ export default function RoomsManage() {
                         size="small"
                         value={currentRoom.RoomName || ""}
                         onChange={(e) => setCurrentRoom({ ...currentRoom, RoomName: e.target.value })}
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, marginTop: 1 }}
                     />
                     <TextField
                         label="สถานที่"
                         size="small"
                         value={currentRoom.RoomLocation || ""}
                         onChange={(e) => setCurrentRoom({ ...currentRoom, RoomLocation: e.target.value })}
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                     />
                     <TextField
                         label="ความจุ"
                         size="small"
                         value={currentRoom.RoomCapacity || ""}
                         onChange={(e) => setCurrentRoom({ ...currentRoom, RoomCapacity: +e.target.value })}
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -248,6 +251,16 @@ export default function RoomsManage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={() => setOpenSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarConfig.severity}>
+                    {snackbarConfig.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }
