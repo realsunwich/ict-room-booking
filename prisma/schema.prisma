@@ -8,17 +8,17 @@ datasource db {
 }
 
 model ICTRoom {
-  RoomID       String        @id
-  name         String?       @db.VarChar(255)
-  location     String?       @db.VarChar(255)
-  capacity     Int?
+  RoomID       Int           @id @default(autoincrement())
+  RoomName     String?       @db.VarChar(255)
+  RoomLocation String?       @db.VarChar(255)
+  RoomCapacity Int?
   RoomStatus   String?       @db.VarChar(255)
   RecordStatus String?       @db.VarChar(1)
   bookings     BookingInfo[]
 }
 
 model BookingInfo {
-  RoomID       String   @id @default(cuid())
+  RoomID       Int      @id @default(autoincrement())
   title        String?  @db.VarChar(255)
   room         ICTRoom  @relation(fields: [RoomID], references: [RoomID])
   startTime    DateTime
@@ -39,3 +39,5 @@ model roles {
   updatedAt    DateTime @default(now())
   RecordStatus String?  @db.VarChar(1)
 }
+
+// npx prisma migrate dev --name new-migration
