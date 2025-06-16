@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import React from 'react';
 import ThemeProviderComponent from '@/components/ThemeProvider';
-import LoginPageWithSnackbar from './login/page';
+import LoginPage from './login/page';
+import { Box } from '@mui/material';
 
 export const metadata: Metadata = {
   title: "ICT Room Booking System",
@@ -22,9 +23,9 @@ export const metadata: Metadata = {
 export default function App() {
   return (
     <ThemeProviderComponent>
-      <div>
-        <LoginPageWithSnackbar/>
-      </div>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <LoginPage />
+      </Box>
     </ThemeProviderComponent>
   );
 }
