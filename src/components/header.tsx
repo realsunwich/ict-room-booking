@@ -27,9 +27,6 @@ const Header = () => {
 
                 {
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2, color: "primary.main" }}>
-                        <Typography variant="body1">
-                            👤 sandwich
-                        </Typography>
                         <Sidebar />
                     </Box>
                 }

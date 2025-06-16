@@ -2,9 +2,11 @@
 
 import { Box, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip, useTheme, useMediaQuery } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import BadgeIcon from '@mui/icons-material/Badge';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import RoomPreferencesIcon from '@mui/icons-material/RoomPreferences';
+import GroupsIcon from '@mui/icons-material/Groups';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
@@ -20,9 +22,11 @@ export default function Sidebar() {
     };
 
     const menuItems = [
+        { label: "sandwich", path: "/about", icon: <BadgeIcon /> },
         { label: "จองห้องประชุม", path: "/booking", icon: <BookOnlineIcon /> },
         { label: "การจองของฉัน", path: "/my-booking", icon: <FolderCopyIcon /> },
         { label: "จัดการห้องประชุม", path: "/rooms", icon: <RoomPreferencesIcon /> },
+        { label: "จัดการบทบาท", path: "/roles", icon: <GroupsIcon /> },
     ];
 
     const handleLogout = () => {
@@ -55,7 +59,6 @@ export default function Sidebar() {
                     }}
                     role="presentation"
                 >
-                    {/* เมนูด้านบน */}
                     <List>
                         {menuItems.map((item) => (
                             <ListItem
