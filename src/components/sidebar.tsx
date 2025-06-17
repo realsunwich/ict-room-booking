@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssessmentModal from "@/components/AssessmentModal";
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 
 export default function Sidebar() {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,8 +25,9 @@ export default function Sidebar() {
     };
 
     const menuItems = [
+        { label: "ตัวอย่างห้องประชุม", path: "/roomInfo", icon: <MeetingRoomIcon /> },
         { label: "จองห้องประชุม", path: "/booking", icon: <BookOnlineIcon /> },
-        { label: "ประวัติการจอง", path: "/booking", icon: <FolderCopyIcon /> },
+        { label: "ประวัติการจอง", path: "/bookinghistory", icon: <FolderCopyIcon /> },
         { label: "จัดการบทบาท", path: "/roles", icon: <GroupsIcon /> },
     ];
 

@@ -28,13 +28,13 @@ const Header = () => {
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2, color: "primary.main" }}>
                     <Typography variant="body1" noWrap
-                        sx={{ fontWeight: "bold", color: "primary.main" }}
+                        sx={{ fontWeight: "bold", color: "primary.main" ,marginRight: 2 }}
                     >
                         สวัสดี, sunwich
                     </Typography>
+                    <Sidebar />
                 </Box>
             </Toolbar>
-            <Sidebar />
         </AppBar>
     );
 };
