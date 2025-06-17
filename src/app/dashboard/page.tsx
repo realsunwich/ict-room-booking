@@ -75,8 +75,8 @@ export default function Dashboard() {
                         onClick={() => setShowContact((prev) => !prev)}
                         sx={{
                             minWidth: 0,
-                            width: 48,
-                            height: 48,
+                            width: 30,
+                            height: 30,
                             borderRadius: "50%",
                             bgcolor: "primary.main",
                             color: "white",
