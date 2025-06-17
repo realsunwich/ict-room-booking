@@ -1,17 +1,20 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, Card, CardContent, Button, Stack } from "@mui/material";
 import { useRouter } from "next/navigation";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const [showContact, setShowContact] = useState(true);
 
     useEffect(() => {
-        document.title = "ภาพรวม | ระบบจองห้องประชุม ICT";
+        document.title = "ระบบจองห้องประชุม ICT";
     }, []);
 
     return (
@@ -32,25 +35,56 @@ export default function Dashboard() {
                 }}
             >
                 <Box>
-                    ส่วนของปฏิทินการจองห้องประชุมจะถูกแสดงที่นี่
+                    ตัวอย่างห้องประชุม
                 </Box>
+
                 <Box
                     sx={{
-                        position: "absolute",
-                        bottom: 24, right: 24,
-                        bgcolor: "background.paper",
-                        p: 2, borderRadius: 2, boxShadow: 2, minWidth: 250,
+                        position: "fixed",
+                        bottom: 24,
+                        right: 24,
+                        zIndex: 1000,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        gap: 1,
                     }}
                 >
-                    <Typography variant="body2" gutterBottom>
-                        ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                        ตำแหน่ง : นักวิชาการโสตทัศนศึกษา
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                        เบอร์โทรติดต่อ : 098-9562398
-                    </Typography>
+                    {showContact && (
+                        <Box
+                            sx={{
+                                bgcolor: "background.paper",
+                                p: 2,
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                minWidth: 250,
+                            }}
+                        >
+                            <Typography variant="body2" gutterBottom>
+                                ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
+                            </Typography>
+                            <Typography variant="body2" gutterBottom>
+                                ตำแหน่ง : นักวิชาการโสตทัศนศึกษา
+                            </Typography>
+                            <Typography variant="body2" gutterBottom>
+                                เบอร์โทรติดต่อ : 098-9562398
+                            </Typography>
+                        </Box>
+                    )}
+                    <Button
+                        onClick={() => setShowContact((prev) => !prev)}
+                        sx={{
+                            minWidth: 0,
+                            width: 48,
+                            height: 48,
+                            borderRadius: "50%",
+                            bgcolor: "primary.main",
+                            color: "white",
+                            "&:hover": { bgcolor: "primary.dark" },
+                        }}
+                    >
+                        {showContact ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </Button>
                 </Box>
             </Box>
         </Box>

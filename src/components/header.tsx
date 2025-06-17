@@ -1,7 +1,7 @@
 "use client";
 
 import { AppBar, Toolbar, Typography, Box, Button, } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import BadgeIcon from '@mui/icons-material/Badge';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
@@ -9,12 +9,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssessmentModal from "@/components/AssessmentModal";
-
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const Header = () => {
     const { data: session } = useSession();
     const router = useRouter();
     const [open, setOpen] = useState(false);
+
+    const handleLogout = () => {
+        signOut({ callbackUrl: "/login" });
+    };
 
     return (
         <AppBar position="fixed" sx={{ bgcolor: "white", color: "primary.main", boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)" }}>
@@ -92,12 +96,20 @@ const Header = () => {
                     </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", alignItems: "center", color: "primary.main" }}>
+                <Box sx={{ display: "flex", alignItems: "center", color: "primary.main", flexDirection: "column" }}>
                     <Typography variant="h6" noWrap
-                        sx={{ fontWeight: "bold", color: "primary.main", marginRight: 2 }}
+                        sx={{ fontWeight: "bold", color: "primary.main" }}
                     >
                         สวัสดี !, คุณ sunwich real
                     </Typography>
+                    <Button
+                        color="primary"
+                        onClick={handleLogout}
+                        sx={{ fontSize: "1rem", fontWeight: 600, textTransform: "none" }}
+                        startIcon={<LogoutIcon />}
+                    >
+                        ออกจากระบบ
+                    </Button>
                 </Box>
             </Toolbar>
             <Box sx={{
