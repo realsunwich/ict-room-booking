@@ -15,7 +15,7 @@ export default function BookingRoom() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 2, sm: 10 } }}>
+        <Box sx={{ marginTop: { xs: 21, sm: 17 } }}>
             <Header />
             <Box
                 sx={{
@@ -27,7 +27,7 @@ export default function BookingRoom() {
                     pt: { xs: 2, sm: 4 },
                     pb: 4,
                     mt: 10,
-                    borderRadius: 2,
+                    borderRadius: 7,
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
