@@ -31,8 +31,27 @@ export default function Dashboard() {
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                <Typography variant="h5" gutterBottom>
-                </Typography>
+                <Box>
+                    ส่วนของปฏิทินการจองห้องประชุมจะถูกแสดงที่นี่
+                </Box>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        bottom: 24, right: 24,
+                        bgcolor: "background.paper",
+                        p: 2, borderRadius: 2, boxShadow: 2, minWidth: 250,
+                    }}
+                >
+                    <Typography variant="body2" gutterBottom>
+                        ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                        ตำแหน่ง : นักวิชาการโสตทัศนศึกษา
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                        เบอร์โทรติดต่อ : 098-9562398
+                    </Typography>
+                </Box>
             </Box>
         </Box>
     );
