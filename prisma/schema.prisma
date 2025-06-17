@@ -7,27 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ICTRoom {
-  RoomID       Int           @id @default(autoincrement())
-  RoomName     String?       @db.VarChar(255)
-  RoomLocation String?       @db.VarChar(255)
-  RoomCapacity Int?
-  RoomStatus   String?       @db.VarChar(255)
-  RecordStatus String?       @db.VarChar(1)
-  bookings     BookingInfo[]
-}
-
 model BookingInfo {
-  RoomID       Int      @id @default(autoincrement())
-  title        String?  @db.VarChar(255)
-  room         ICTRoom  @relation(fields: [RoomID], references: [RoomID])
-  startTime    DateTime
-  endTime      DateTime
-  purpose      String?  @db.VarChar(255)
+  bookingID  Int      @id @default(autoincrement())
+  RoomName   String?  @db.VarChar(255)
+  sendDate   DateTime @default(now())
+  sender     String?  @db.VarChar(255)
+  jobName    String?  @db.VarChar(255)
+  phoneIn    String?  @db.VarChar(255)
+  phoneOut   String?  @db.VarChar(255)
+  department String?  @db.VarChar(255)
+  purpose    String?  @db.VarChar(255)
+  startDate  DateTime @default(now())
+  endDate    DateTime @default(now())
+  capacity   Int?
+  cfSender   String?  @db.VarChar(255)
+  cfPhone    String?  @db.VarChar(255)
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
-  creator      String?  @db.VarChar(255)
-  editor       String?  @db.VarChar(255)
   RecordStatus String?  @db.VarChar(1)
 }
 

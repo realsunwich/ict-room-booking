@@ -5,16 +5,18 @@ import MenuIcon from "@mui/icons-material/Menu";
 import BadgeIcon from '@mui/icons-material/Badge';
 import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 import BookOnlineIcon from '@mui/icons-material/BookOnline';
-import RoomPreferencesIcon from '@mui/icons-material/RoomPreferences';
 import GroupsIcon from '@mui/icons-material/Groups';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import AssessmentModal from "@/components/AssessmentModal";
 
 export default function Sidebar() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const router = useRouter();
+    const [openAssessmentModal, setOpenAssessmentModal] = useState(false);
 
     const handleNavigate = (path: string) => {
         router.push(path);
@@ -22,10 +24,8 @@ export default function Sidebar() {
     };
 
     const menuItems = [
-        { label: "sandwich", path: "/about", icon: <BadgeIcon /> },
         { label: "จองห้องประชุม", path: "/booking", icon: <BookOnlineIcon /> },
-        { label: "การจองของฉัน", path: "/my-booking", icon: <FolderCopyIcon /> },
-        { label: "จัดการห้องประชุม", path: "/rooms", icon: <RoomPreferencesIcon /> },
+        { label: "ประวัติการจอง", path: "/booking", icon: <FolderCopyIcon /> },
         { label: "จัดการบทบาท", path: "/roles", icon: <GroupsIcon /> },
     ];
 
@@ -80,6 +80,63 @@ export default function Sidebar() {
                                 </ListItemButton>
                             </ListItem>
                         ))}
+                        <ListItem
+                            disablePadding
+                            sx={{
+                                "&:hover": {
+                                    backgroundColor: "primary.main",
+                                    color: "white",
+                                    "& .MuiListItemIcon-root": {
+                                        color: "white",
+                                    },
+                                },
+                            }}
+                        >
+                            <label htmlFor="upload-signature" style={{ width: "100%" }}>
+                                <input
+                                    id="upload-signature"
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            alert(`อัปโหลดไฟล์: ${file.name}`);
+                                        }
+                                    }}
+                                />
+                                <ListItemButton component="span">
+                                    <ListItemIcon>
+                                        <BadgeIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="อัปโหลดลายเซ็น" />
+                                </ListItemButton>
+                            </label>
+
+                        </ListItem>
+                        <ListItem
+                            disablePadding
+                            sx={{
+                                "&:hover": {
+                                    backgroundColor: "primary.main",
+                                    color: "white",
+                                    "& .MuiListItemIcon-root": {
+                                        color: "white",
+                                    },
+                                },
+                            }}
+                        >
+                            <ListItemButton onClick={() => setOpenAssessmentModal(true)}>
+                                <ListItemIcon>
+                                    <AssessmentIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="แบบประเมินโครงการ" />
+                                <AssessmentModal
+                                    open={openAssessmentModal}
+                                    onClose={() => setOpenAssessmentModal(false)}
+                                />
+                            </ListItemButton>
+                        </ListItem>
                     </List>
 
                     {/* ปุ่มออกจากระบบด้านล่าง */}
@@ -106,6 +163,10 @@ export default function Sidebar() {
                     </List>
                 </Box>
             </Drawer>
+            <AssessmentModal
+                open={openAssessmentModal}
+                onClose={() => setOpenAssessmentModal(false)}
+            />
         </>
     );
 }

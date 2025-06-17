@@ -20,17 +20,21 @@ const Header = () => {
                         width={40}
                         height={40}
                     />
-                    <Typography variant="h6" noWrap sx={{ ml: 2 }}>
-                        ระบบจองห้องประชุมภายในคณะ ICT
+                    <Typography variant="h6">
+                        ระบบขอจองใช้บริการห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
 
-                {
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, color: "primary.main" }}>
-                        <Sidebar />
-                    </Box>
-                }
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, color: "primary.main" }}>
+                    <Typography variant="body1" noWrap
+                        sx={{ fontWeight: "bold", color: "primary.main" }}
+                    >
+                        สวัสดี, sunwich
+                    </Typography>
+                </Box>
             </Toolbar>
+            <Sidebar />
         </AppBar>
     );
 };
