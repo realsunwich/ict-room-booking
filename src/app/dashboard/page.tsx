@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Button, Stack } from "@mui/material";
+import { Box, Typography, Card, CardContent, Button, Stack, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -34,8 +34,19 @@ export default function Dashboard() {
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                <Box>
-                    ตัวอย่างห้องประชุม
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        textAlign: "center",
+                        mb: 4,
+                    }}
+                >
+                    <Typography variant="h5" sx={{fontWeight: 600}}>
+                        ตัวอย่างห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                    </Typography>
                 </Box>
 
                 <Box
@@ -71,20 +82,22 @@ export default function Dashboard() {
                             </Typography>
                         </Box>
                     )}
-                    <Button
-                        onClick={() => setShowContact((prev) => !prev)}
-                        sx={{
-                            minWidth: 0,
-                            width: 30,
-                            height: 30,
-                            borderRadius: "50%",
-                            bgcolor: "primary.main",
-                            color: "white",
-                            "&:hover": { bgcolor: "primary.dark" },
-                        }}
-                    >
-                        {showContact ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                    </Button>
+                    <Tooltip title={showContact ? "ซ่อนข้อมูลติดต่อ" : "แสดงข้อมูลติดต่อ"}>
+                        <Button
+                            onClick={() => setShowContact((prev) => !prev)}
+                            sx={{
+                                minWidth: 0,
+                                width: 30,
+                                height: 30,
+                                borderRadius: "50%",
+                                bgcolor: "primary.main",
+                                color: "white",
+                                "&:hover": { bgcolor: "primary.dark" },
+                            }}
+                        >
+                            {showContact ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                        </Button>
+                    </Tooltip>
                 </Box>
             </Box>
         </Box>
