@@ -8,25 +8,33 @@ datasource db {
 }
 
 model BookingInfo {
-  bookingID  Int      @id @default(autoincrement())
-  RoomName   String?  @db.VarChar(255)
-  sendDate   DateTime @default(now())
-  sender     String?  @db.VarChar(255)
-  jobName    String?  @db.VarChar(255)
-  phoneIn    String?  @db.VarChar(255)
-  phoneOut   String?  @db.VarChar(255)
-  department String?  @db.VarChar(255)
-  purpose    String?  @db.VarChar(255)
-  startDate  DateTime @default(now())
-  endDate    DateTime @default(now())
-  capacity   Int?
-  cfSender   String?  @db.VarChar(255)
-  cfPhone    String?  @db.VarChar(255)
-  SendStatus String?  @db.VarChar(255)
+  bookingID      Int       @id @default(autoincrement())
+  RoomName       String?   @db.VarChar(255)
+  sendDate       DateTime? @default(now())
+  sender         String?   @db.VarChar(255)
+  phoneIn        String?   @db.VarChar(255)
+  phoneOut       String?   @db.VarChar(255)
+  officeLocation String?   @db.VarChar(255)
+  purpose        String?   @db.VarChar(255)
+  startDate      DateTime? @default(now())
+  endDate        DateTime? @default(now())
+  capacity       Int?
+  cfSender       String?   @db.VarChar(255)
+  cfPhone        String?   @db.VarChar(255)
+  SendStatus     String?   @db.VarChar(255)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  RecordStatus String?  @db.VarChar(1)
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  RecordStatus String?   @db.VarChar(1)
+}
+
+model users {
+  userID         Int       @id @default(autoincrement())
+  userEmail      String?   @unique @db.VarChar(255)
+  officeLocation String?   @db.VarChar(255)
+  createDate     DateTime? @default(now())
+  lastEdit       DateTime? @updatedAt
+  RecordStatus   String?   @db.VarChar(1)
 }
 
 // npx prisma migrate dev --name new-migration

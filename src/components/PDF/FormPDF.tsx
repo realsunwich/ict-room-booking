@@ -73,7 +73,7 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
                 <Text style={styles.title}>แบบฟอร์มขอใช้ห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา</Text>
 
                 <View style={styles.section}>
-                    <Text style={styles.label}>(ส่วนที่ ๑) ข้อมูลผู้ใช้งาน</Text>
+                    <Text style={styles.label}>ข้อมูลผู้ใช้งาน</Text>
                     <Text style={styles.text}>ด้วยข้าพเจ้า {booking.sender}</Text>
                 </View>
 
