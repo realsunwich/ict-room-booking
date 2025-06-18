@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { registerTHNiramitFont } from '@/utils/registerFonts';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 interface BookingInfo {
     RoomName: string;
@@ -30,13 +30,13 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
         page: {
             fontFamily: 'Th Niramit',
             backgroundColor: '#f4f4f4',
-            paddingTop: cm(2.54),
+            paddingTop: cm(0.54),
             paddingBottom: cm(2.54),
-            paddingLeft: cm(3.18),
+            paddingLeft: cm(2.54),
             paddingRight: cm(2.54),
         },
         title: {
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: 'bold',
             marginBottom: 10,
             textAlign: 'center',
@@ -45,11 +45,11 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
             marginBottom: 10,
         },
         label: {
-            fontSize: 12,
+            fontSize: 10,
             fontWeight: 'bold',
         },
         text: {
-            fontSize: 12,
+            fontSize: 10,
         },
     });
 
@@ -66,6 +66,10 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
+                <Image
+                    src="http://localhost:3000/images/brand.png"
+                    style={{ width: 50, height: 60, alignSelf: 'center' }}
+                />
                 <Text style={styles.title}>แบบฟอร์มขอใช้ห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา</Text>
 
                 <View style={styles.section}>
