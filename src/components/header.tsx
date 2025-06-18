@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssessmentModal from "@/components/AssessmentModal";
 import LogoutIcon from "@mui/icons-material/Logout";
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 
 const Header = () => {
     const { data: session } = useSession();
@@ -56,6 +57,14 @@ const Header = () => {
                             top: 0,
                         }}
                     >
+                        <Button
+                            startIcon={<MeetingRoomIcon />}
+                            onClick={() => router.push("/dashboard")}
+                            sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                        >
+                            ตัวอย่างห้องประชุม
+                        </Button>
+
                         <Button
                             startIcon={<FolderCopyIcon />}
                             onClick={() => router.push("/bookinghistory")}
@@ -126,6 +135,14 @@ const Header = () => {
                         top: 0,
                     }}
                 >
+                    <Button
+                        startIcon={<MeetingRoomIcon />}
+                        onClick={() => router.push("/dashboard")}
+                        sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                    >
+                        ตัวอย่างห้องประชุม
+                    </Button>
+
                     <Button
                         startIcon={<FolderCopyIcon />}
                         onClick={() => router.push("/bookinghistory")}

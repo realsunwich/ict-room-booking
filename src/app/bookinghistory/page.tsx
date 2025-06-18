@@ -32,8 +32,8 @@ export default function BookingHistory() {
                 console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
                 setSnackbarMessage("โหลดข้อมูลล้มเหลว");
                 setSnackbarSeverity("error");
-            } finally {
                 setSnackbarOpen(true);
+            } finally {
                 setLoading(false);
             }
         };
@@ -42,7 +42,7 @@ export default function BookingHistory() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 21, sm: 17 } }}>
+        <Box sx={{ marginTop: { xs: 25, sm: 17 } }}>
             <Header />
             <Box
                 sx={{
@@ -129,7 +129,6 @@ export default function BookingHistory() {
                         </Table>
                     </TableContainer>
                 )}
-
                 <Box
                     sx={{
                         position: "fixed",

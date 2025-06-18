@@ -21,7 +21,7 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 21, sm: 17 } }}>
+        <Box sx={{ marginTop: { xs: 25, sm: 17 } }}>
             <Header />
             <Box
                 sx={{
