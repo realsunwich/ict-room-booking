@@ -28,11 +28,15 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
 
     const styles = StyleSheet.create({
         page: {
-            fontFamily: 'Sarabun',
-            padding: cm(2),
+            fontFamily: 'Th Niramit',
+            backgroundColor: '#f4f4f4',
+            paddingTop: cm(2.54),
+            paddingBottom: cm(2.54),
+            paddingLeft: cm(3.18),
+            paddingRight: cm(2.54),
         },
         title: {
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: 'bold',
             marginBottom: 10,
             textAlign: 'center',
