@@ -22,16 +22,8 @@ model BookingInfo {
   capacity   Int?
   cfSender   String?  @db.VarChar(255)
   cfPhone    String?  @db.VarChar(255)
+  SendStatus String?  @db.VarChar(255)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  RecordStatus String?  @db.VarChar(1)
-}
-
-model roles {
-  roleID       Int      @id @default(autoincrement())
-  roleName     String?  @db.VarChar(255)
-  roleDesc     String?  @db.VarChar(255)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
   RecordStatus String?  @db.VarChar(1)

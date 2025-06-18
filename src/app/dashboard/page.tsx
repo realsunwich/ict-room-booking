@@ -7,11 +7,14 @@ import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
+import BookingModal from "@/components/RoomModal/roomBooking";
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const [showContact, setShowContact] = useState(true);
+    const [open, setOpen] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState<string>("");
 
     useEffect(() => {
         document.title = "ระบบจองห้องประชุม ICT";
@@ -44,9 +47,103 @@ export default function Dashboard() {
                         mb: 4,
                     }}
                 >
-                    <Typography variant="h5" sx={{fontWeight: 600}}>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         ตัวอย่างห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
+                </Box>
+
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        gap: 3,
+                        mb: 4,
+                    }}
+                >
+                    {[
+                        {
+                            name: "ห้องประชุมคณะ ICT",
+                            image: "/images/test.jpg",
+                            detail: "ความจุ 20 คน",
+                        },
+                        {
+                            name: "ห้องประชุมแม่กา",
+                            image: "/images/test.jpg",
+                            detail: "ความจุ 30 คน",
+                        },
+                        {
+                            name: "ห้องบัณฑิตศึกษา ICT1318",
+                            image: "/images/test.jpg",
+                            detail: "ความจุ 98 คน",
+                        },
+                        {
+                            name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
+                            image: "/images/test.jpg",
+                            detail: "ความจุ 300 คน",
+                        },
+                    ].map((room, index) => (
+                        <Box
+                            key={index}
+                            sx={{
+                                width: 320,
+                                borderRadius: 3,
+                                boxShadow: 2,
+                                bgcolor: "background.paper",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <Box
+                                component="img"
+                                src={room.image}
+                                alt={room.name}
+                                sx={{ width: "100%", height: 180, objectFit: "cover" }}
+                            />
+                            <Box sx={{ p: 2 }}>
+                                <Typography variant="h6" fontWeight={700}>
+                                    {room.name}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {room.detail}
+                                </Typography>
+                                <Box sx={{ gap: 1 }}>
+                                    <Button
+                                        variant="outlined"
+                                        fullWidth
+                                        sx={{ mb: 1 }}
+                                    >
+                                        รายละเอียดห้องประชุม
+                                    </Button>
+                                    
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        color="primary"
+                                        sx={{ mb: 1 }}
+                                        onClick={() => {
+                                            setSelectedRoom(room.name);
+                                            setOpen(true);
+                                        }}
+                                    >
+                                        จองห้องประชุม
+                                    </Button>
+                                    <BookingModal
+                                        open={open}
+                                        onClose={() => setOpen(false)}
+                                        roomName={selectedRoom}
+                                    />
+
+                                    <Button
+                                        variant="outlined"
+                                        fullWidth
+                                        color="primary"
+                                    >
+                                        ปฏิทินห้องประชุม
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Box>
+                    ))}
                 </Box>
 
                 <Box
