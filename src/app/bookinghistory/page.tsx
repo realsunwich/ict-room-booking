@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
+import FormPDFButton from "@/components/PDFbutton";
 
 export default function BookingHistory() {
     const { data: session, status } = useSession();
@@ -121,7 +122,7 @@ export default function BookingHistory() {
                                         <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
                                         <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                         <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
-                                        <TableCell align="center" sx={{ width: 40 }}></TableCell>
+                                        <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking}/></TableCell>
                                         <TableCell align="center" sx={{ width: 40 }}></TableCell>
                                     </TableRow>
                                 ))}
