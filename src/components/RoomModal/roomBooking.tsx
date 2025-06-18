@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 
 interface BookingModalProps {
@@ -100,7 +100,20 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                 <DialogContent>
                     <Stack spacing={2} mt={1}>
                         <TextField label="ชื่อผู้ขอใช้" name="sender" value={formData.sender} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="ตำแหน่ง" name="jobName" value={formData.jobName} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
+                        <FormControl size="small" sx={{ width: "300px" }} required>
+                            <InputLabel id="jobName-label">ตำแหน่ง</InputLabel>
+                            <Select
+                                labelId="jobName-label"
+                                id="jobName"
+                                name="jobName"
+                                value={formData.jobName}
+                                onChange={(e) => setFormData({ ...formData, jobName: e.target.value })}
+                                label="ตำแหน่ง"
+                            >
+                                <MenuItem value="อาจารย์">อาจารย์</MenuItem>
+                                <MenuItem value="เจ้าหน้าที่">เจ้าหน้าที่</MenuItem>
+                            </Select>
+                        </FormControl>
                         <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
                         <TextField label="เบอร์โทรศัพท์ภายใน" name="phoneIn" value={formData.phoneIn} onChange={handleChange} size="small" sx={{ width: "300px" }} />
                         <TextField label="สังกัดหน่วยงาน" name="department" value={formData.department} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
