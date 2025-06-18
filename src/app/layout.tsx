@@ -8,6 +8,8 @@ import theme from '@/components/theme';
 import { Kanit } from 'next/font/google';
 import { Container, Box } from '@mui/material';
 import { SessionProvider } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/lib/next-auth";
 
 const kanit = Kanit({
   subsets: ['thai', 'latin'],
@@ -20,11 +22,12 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: Props) {
+export default async function RootLayout({ children }: Props) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="th" className={kanit.className}>
       <body>
-        <SessionProvider>
+        <SessionProvider session={session}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <Container maxWidth={false} sx={{ px: { xs: 1, sm: 2 } }}>
