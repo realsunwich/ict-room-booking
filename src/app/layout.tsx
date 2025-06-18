@@ -5,11 +5,8 @@ import './globals.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/components/theme';
-import { Kanit } from 'next/font/google';
-import { Container, Box } from '@mui/material';
 import { SessionProvider } from "next-auth/react";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/lib/next-auth";
+import { Kanit } from 'next/font/google';
 
 const kanit = Kanit({
   subsets: ['thai', 'latin'],
@@ -22,25 +19,20 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default async function RootLayout({ children }: Props) {
-  const session = await getServerSession(authOptions);
+export default function RootLayout({ children }: Props) {
   return (
     <html lang="th" className={kanit.className}>
       <body>
-        <SessionProvider session={session}>
+        <SessionProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Container maxWidth={false} sx={{ px: { xs: 1, sm: 2 } }}>
-              <Box sx={{ maxWidth: "100%", px: { xs: 1, sm: 2 }, mx: "auto" }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-                  <Box sx={{ display: 'flex', flex: 1 }}>
-                    <main style={{ flex: 1, padding: '0 1%' }}>
-                      {children}
-                    </main>
-                  </Box>
-                </Box>
-              </Box>
-            </Container>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <main style={{ flex: '100%', padding: '0% 1%' }}>
+                  {children}
+                </main>
+              </div>
+            </div>
           </ThemeProvider>
         </SessionProvider>
       </body>

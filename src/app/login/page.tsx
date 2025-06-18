@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Typography, Box } from "@mui/material";
-import { LoginButton } from "@/components/365buttonlogin";
+import LoginButton from "@/components/365buttonlogin";
 import Image from "next/image";
 
 const LoginPage = () => {
