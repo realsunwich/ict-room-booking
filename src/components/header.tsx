@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AppBar, Toolbar, Typography, Box, Button, } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -13,13 +14,19 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 
 const Header = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const router = useRouter();
     const [open, setOpen] = useState(false);
 
     const handleLogout = () => {
         signOut({ callbackUrl: "/login" });
     };
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.replace("/login");
+        }
+    }, [status, router]);
 
     return (
         <AppBar position="fixed" sx={{ bgcolor: "white", color: "primary.main", boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)" }}>
@@ -185,7 +192,7 @@ const Header = () => {
 
             <AssessmentModal
                 open={open}
-                onClose={() => setOpen(false)}
+                onClose={() => setOpen(false)} roomId={""}
             />
         </AppBar>
     );

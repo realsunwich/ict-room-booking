@@ -22,6 +22,7 @@ model BookingInfo {
   cfSender       String?   @db.VarChar(255)
   cfPhone        String?   @db.VarChar(255)
   SendStatus     String?   @db.VarChar(255)
+  Role           String?   @db.VarChar(255)
 
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
@@ -37,4 +38,16 @@ model users {
   RecordStatus   String?   @db.VarChar(1)
 }
 
+model Assessment {
+  id          Int      @id @default(autoincrement())
+  meetingRoom String?  @db.VarChar(255)
+  gender      String?  @db.VarChar(255)
+  role        String?  @db.VarChar(255)
+  responses   Json
+  comment     String?
+  createdAt   DateTime @default(now())
+}
+
 // npx prisma migrate dev --name new-migration
+// npx prisma db push
+// npx prisma migrate reset
