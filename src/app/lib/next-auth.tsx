@@ -1,7 +1,8 @@
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { NextAuthOptions } from "next-auth";
 
-console.log(process.env.NEXTAUTH_SECRET);
+console.log("NEXTAUTH_SECRET :",process.env.NEXTAUTH_SECRET);
+console.log("AZURE_AD_CLIENT_SECRET",process.env.AZURE_AD_CLIENT_SECRET)
 
 export const authOptions: NextAuthOptions = {
     session: {
