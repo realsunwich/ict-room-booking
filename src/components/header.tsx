@@ -28,6 +28,38 @@ const Header = () => {
         }
     }, [status, router]);
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            console.log("ไม่มีไฟล์ถูกเลือก");
+            return;
+        }
+
+        console.log("กำลังส่งไฟล์: ", file.name);
+
+        const formData = new FormData();
+        formData.append("signature", file);
+        formData.append("userId", session?.user?.userID?.toString() || "unknown");
+        console.log("userId:", session?.user?.userID);
+
+        try {
+            const res = await fetch("/api/uploadSignature", {
+                method: "POST",
+                body: formData,
+            });
+
+            console.log("Response status:", res.status);
+            const data = await res.json();
+            console.log("Response data:", data);
+
+            if (res.ok) alert("อัปโหลดลายเซ็นสำเร็จ: " + data.message);
+            else alert("เกิดข้อผิดพลาดในการอัปโหลด: " + data.message);
+        } catch (error) {
+            console.error("Fetch error:", error);
+            alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+        }
+    };
+
     return (
         <AppBar position="fixed" sx={{ bgcolor: "white", color: "primary.main", boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -93,12 +125,7 @@ const Header = () => {
                             type="file"
                             accept="image/*"
                             style={{ display: "none" }}
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    alert(`อัปโหลดไฟล์: ${file.name}`);
-                                }
-                            }}
+                            onChange={handleFileChange}
                         />
                         <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
                             <Button
@@ -113,11 +140,13 @@ const Header = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", color: "primary.main", flexDirection: "column" }}>
-                    <Typography variant="h6" noWrap
-                        sx={{ fontWeight: "bold", color: "primary.main" }}
-                    >
-                        สวัสดี !, คุณ sunwich real
-                    </Typography>
+                    {session?.user?.name && (
+                        <Typography variant="h6" noWrap
+                            sx={{ fontWeight: "bold", color: "primary.main" }}
+                        >
+                            สวัสดี !, คุณ {session.user.name}
+                        </Typography>
+                    )}
                     <Button
                         color="primary"
                         onClick={handleLogout}
