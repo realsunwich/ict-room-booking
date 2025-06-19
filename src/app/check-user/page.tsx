@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Box } from "@mui/material";
 
 const CheckUserPage = () => {
     const { data: session, status } = useSession();
@@ -24,7 +25,7 @@ const CheckUserPage = () => {
         }
     }, [session, status, router]);
 
-    return <div>กำลังตรวจสอบสิทธิ์ผู้ใช้งาน...</div>;
+    return <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={2}>กำลังตรวจสอบสิทธิ์ผู้ใช้งาน...</Box>;
 };
 
 export default CheckUserPage;
