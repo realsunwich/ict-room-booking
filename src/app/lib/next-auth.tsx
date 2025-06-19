@@ -2,7 +2,6 @@ import AzureADProvider from "next-auth/providers/azure-ad";
 import { NextAuthOptions } from "next-auth";
 
 console.log("NEXTAUTH_SECRET :",process.env.NEXTAUTH_SECRET);
-console.log("AZURE_AD_CLIENT_SECRET",process.env.AZURE_AD_CLIENT_SECRET)
 
 export const authOptions: NextAuthOptions = {
     session: {
@@ -23,7 +22,6 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         session: ({ session, token }) => {
-            console.log("Session : ", session);
             return {
                 ...session,
                 user: {
@@ -34,7 +32,6 @@ export const authOptions: NextAuthOptions = {
             };
         },
         jwt: async ({ token, account }) => {
-            console.log("Account : ", account);
             if (account) {
                 token.accessToken = account.access_token;
 
