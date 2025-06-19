@@ -66,7 +66,7 @@ export default function BookingHistory() {
                         alignItems: "center",
                         justifyContent: "center",
                         textAlign: "center",
-                        mb: 4,
+                        mb: 1,
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -95,37 +95,45 @@ export default function BookingHistory() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {bookings.map((booking, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell sx={{ width: 40 }}>{index + 1}</TableCell>
-                                        <TableCell sx={{ width: 180 }} align="center">
-                                            {new Date(booking.startDate).toLocaleString("th-TH", {
-                                                weekday: "long",
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit"
-                                            })}
+                                {bookings.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={9} align="center" sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}>
+                                            ไม่มีข้อมูลการจองในระบบ
                                         </TableCell>
-                                        <TableCell sx={{ width: 180 }} align="center">
-                                            {new Date(booking.endDate).toLocaleString("th-TH", {
-                                                weekday: "long",
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit"
-                                            })}
-                                        </TableCell>
-                                        <TableCell sx={{ width: 120 }} align="center">{booking.RoomName}</TableCell>
-                                        <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
-                                        <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
-                                        <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
-                                        <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking}/></TableCell>
-                                        <TableCell align="center" sx={{ width: 40 }}></TableCell>
                                     </TableRow>
-                                ))}
+                                ) : (
+                                    bookings.map((booking, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell sx={{ width: 40 }}>{index + 1}</TableCell>
+                                            <TableCell sx={{ width: 180 }} align="center">
+                                                {new Date(booking.startDate).toLocaleString("th-TH", {
+                                                    weekday: "long",
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </TableCell>
+                                            <TableCell sx={{ width: 180 }} align="center">
+                                                {new Date(booking.endDate).toLocaleString("th-TH", {
+                                                    weekday: "long",
+                                                    year: "numeric",
+                                                    month: "long",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit"
+                                                })}
+                                            </TableCell>
+                                            <TableCell sx={{ width: 120 }} align="center">{booking.RoomName}</TableCell>
+                                            <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
+                                            <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}></TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>
