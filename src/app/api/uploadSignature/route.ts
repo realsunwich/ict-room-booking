@@ -47,15 +47,12 @@ class FakeReq extends Readable {
 export async function POST(request: Request) {
     const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-    // สร้างโฟลเดอร์ uploads หากยังไม่มี
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    // อ่านข้อมูล request body เป็น buffer
     const buf = Buffer.from(await request.arrayBuffer());
 
-    // เตรียม headers สำหรับ fakeReq
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {
         headers[key.toLowerCase()] = value;
@@ -65,7 +62,6 @@ export async function POST(request: Request) {
     const form = new IncomingForm();
 
     try {
-        // แปลงข้อมูล form-data ด้วย formidable
         const { fields, files } = await new Promise<{ fields: Fields; files: Files }>(
             (resolve, reject) => {
                 form.parse(fakeReq as any, (err, fields, files) => {
@@ -75,29 +71,24 @@ export async function POST(request: Request) {
             }
         );
 
-        // ดึง userId จาก fields
         const userId = Array.isArray(fields.userId) ? fields.userId[0] : fields.userId;
         if (!userId) {
             return NextResponse.json({ message: "Missing userId" }, { status: 400 });
         }
 
-        // ดึงไฟล์ลายเซ็น
         const signatureFile = Array.isArray(files.signature) ? files.signature[0] : files.signature;
         if (!signatureFile) {
             return NextResponse.json({ message: "No file uploaded" }, { status: 400 });
         }
 
-        // สร้างโฟลเดอร์ user หากยังไม่มี
         const userDir = path.join(uploadDir, userId);
         if (!fs.existsSync(userDir)) {
             fs.mkdirSync(userDir, { recursive: true });
         }
 
-        // ตั้งชื่อไฟล์และที่เก็บ
         const fileName = `signature${path.extname(signatureFile.originalFilename || "")}`;
         const filePath = path.join(userDir, fileName);
 
-        // ย้ายไฟล์จาก temp ไปยังที่เก็บจริง
         await moveFile(signatureFile.filepath, filePath);
 
         return NextResponse.json({ message: "File uploaded successfully" });
