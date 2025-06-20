@@ -229,67 +229,69 @@ const Header = () => {
                 </Toolbar>
 
                 {/* สำหรับมือถือ */}
-                <Box
-                    sx={{
-                        fontWeight: "bold",
-                        color: "primary.main",
-                        textAlign: "center",
-                        display: { xs: "block", sm: "none" },
-                    }}
-                >
+                {session?.user?.role === "User" && (
                     <Box
                         sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "row",
-                            width: "100%",
-                            flexWrap: "wrap",
-                            top: 0,
+                            fontWeight: "bold",
+                            color: "primary.main",
+                            textAlign: "center",
+                            display: { xs: "block", sm: "none" },
                         }}
                     >
-                        <Button
-                            startIcon={<MeetingRoomIcon />}
-                            onClick={() => router.push("/dashboard")}
-                            sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexDirection: "row",
+                                width: "100%",
+                                flexWrap: "wrap",
+                                top: 0,
+                            }}
                         >
-                            ตัวอย่างห้องประชุม
-                        </Button>
-
-                        <Button
-                            startIcon={<FolderCopyIcon />}
-                            onClick={() => router.push("/bookinghistory")}
-                            sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                        >
-                            ประวัติการจอง
-                        </Button>
-
-                        <Button
-                            startIcon={<AssessmentIcon />}
-                            onClick={() => setOpenModal(true)}
-                            sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                        >
-                            แบบประเมินห้องประชุม
-                        </Button>
-
-                        <input
-                            id="upload-signature"
-                            type="file"
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            onChange={handleFileChange}
-                        />
-                        <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
                             <Button
-                                startIcon={<BadgeIcon />}
-                                component="span"
+                                startIcon={<MeetingRoomIcon />}
+                                onClick={() => router.push("/dashboard")}
                                 sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                             >
-                                อัปโหลดลายเซ็น
+                                ตัวอย่างห้องประชุม
                             </Button>
-                        </label>
+
+                            <Button
+                                startIcon={<FolderCopyIcon />}
+                                onClick={() => router.push("/bookinghistory")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                ประวัติการจอง
+                            </Button>
+
+                            <Button
+                                startIcon={<AssessmentIcon />}
+                                onClick={() => setOpenModal(true)}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                แบบประเมินห้องประชุม
+                            </Button>
+
+                            <input
+                                id="upload-signature"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleFileChange}
+                            />
+                            <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
+                                <Button
+                                    startIcon={<BadgeIcon />}
+                                    component="span"
+                                    sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    อัปโหลดลายเซ็น
+                                </Button>
+                            </label>
+                        </Box>
                     </Box>
-                </Box>
+                )}
 
                 <AssessmentModal open={openModal} onClose={() => setOpenModal(false)} roomId={""} />
             </AppBar>
