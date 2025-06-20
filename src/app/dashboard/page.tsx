@@ -2,12 +2,19 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip } from "@mui/material";
+import { Box, Typography, Button, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, } from "@mui/material";
 import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
+
+interface Room {
+    name: string;
+    image: string;
+    detailImage_1: string;
+    detailImage_2: string;
+}
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -15,6 +22,37 @@ export default function Dashboard() {
     const [showContact, setShowContact] = useState(true);
     const [open, setOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
+    const [roomDetailOpen, setRoomDetailOpen] = useState(false);
+    const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
+    const rooms: Room[] = [
+        {
+            name: "ห้องประชุมคณะ ICT",
+            image: "/images/test.jpg",
+            detailImage_1: "/images/ห้องประชุม ICT.jpg",
+            detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
+        },
+        {
+            name: "ห้องประชุมแม่กา",
+            image: "/images/test.jpg",
+            detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
+            detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
+        },
+        {
+            name: "ห้องบัณฑิตศึกษา ICT1318",
+            image: "/images/test.jpg",
+            detailImage_1: "/images/detail_ict.jpg",
+            detailImage_2: "/images/detail_ict.jpg",
+        },
+        {
+            name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
+            image: "/images/test.jpg",
+            detailImage_1: "/images/detail_ict.jpg",
+            detailImage_2: "/images/detail_ict.jpg",
+        },
+    ];
 
     useEffect(() => {
         document.title = "ระบบจองห้องประชุม ICT";
@@ -25,26 +63,19 @@ export default function Dashboard() {
             <Header />
             <Box
                 sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    minHeight: "auto",
-                    bgcolor: "white",
+                    display: "flex", flexDirection: "column",
+                    minHeight: "auto", bgcolor: "white",
                     px: { xs: 2, sm: 4 },
                     pt: { xs: 2, sm: 4 },
-                    pb: 4,
-                    mt: 10,
-                    borderRadius: 7,
+                    pb: 4, mt: 10, borderRadius: 7,
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
                 <Box
                     sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        textAlign: "center",
-                        mb: 4,
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center",
+                        textAlign: "center", mb: 4,
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -54,72 +85,40 @@ export default function Dashboard() {
 
                 <Box
                     sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: 3,
-                        mb: 4,
+                        display: "flex", flexWrap: "wrap",
+                        justifyContent: "center", gap: 3, mb: 4,
                     }}
                 >
-                    {[
-                        {
-                            name: "ห้องประชุมคณะ ICT",
-                            image: "/images/test.jpg",
-                            detail: "ความจุ 20 คน",
-                        },
-                        {
-                            name: "ห้องประชุมแม่กา",
-                            image: "/images/test.jpg",
-                            detail: "ความจุ 30 คน",
-                        },
-                        {
-                            name: "ห้องบัณฑิตศึกษา ICT1318",
-                            image: "/images/test.jpg",
-                            detail: "ความจุ 98 คน",
-                        },
-                        {
-                            name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
-                            image: "/images/test.jpg",
-                            detail: "ความจุ 300 คน",
-                        },
-                    ].map((room, index) => (
+                    {rooms.map((room, index) => (
                         <Box
                             key={index}
                             sx={{
-                                width: 320,
-                                borderRadius: 3,
-                                boxShadow: 2,
-                                bgcolor: "background.paper",
-                                overflow: "hidden",
+                                width: 320, borderRadius: 3, boxShadow: 2,
+                                bgcolor: "background.paper", overflow: "hidden",
                             }}
                         >
                             <Box
-                                component="img"
-                                src={room.image}
-                                alt={room.name}
+                                component="img" src={room.image} alt={room.name}
                                 sx={{ width: "100%", height: 180, objectFit: "cover" }}
                             />
                             <Box sx={{ p: 2 }}>
                                 <Typography variant="h6" fontWeight={700}>
                                     {room.name}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {room.detail}
-                                </Typography>
                                 <Box sx={{ gap: 1 }}>
                                     <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        sx={{ mb: 1 }}
+                                        variant="outlined" fullWidth sx={{ mb: 1 }}
+                                        onClick={() => {
+                                            setSelectedRoomDetail(room);
+                                            setRoomDetailOpen(true);
+                                        }}
                                     >
                                         รายละเอียดห้องประชุม
                                     </Button>
 
                                     <Button
-                                        variant="contained"
-                                        fullWidth
-                                        color="primary"
-                                        sx={{ mb: 1 }}
+                                        variant="contained" fullWidth
+                                        color="primary" sx={{ mb: 1 }}
                                         onClick={() => {
                                             setSelectedRoom(room.name);
                                             setOpen(true);
@@ -134,9 +133,7 @@ export default function Dashboard() {
                                     />
 
                                     <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        color="primary"
+                                        variant="outlined" fullWidth color="primary"
                                     >
                                         ปฏิทินห้องประชุม
                                     </Button>
@@ -146,26 +143,56 @@ export default function Dashboard() {
                     ))}
                 </Box>
 
+                <Dialog open={roomDetailOpen} onClose={() => setRoomDetailOpen(false)} maxWidth="sm" fullWidth>
+                    <DialogTitle align="center">{selectedRoomDetail?.name}</DialogTitle>
+                    <DialogContent dividers>
+                        <Box sx={{ display: "flex", gap: 2, mb: 2, justifyContent: "center" }}>
+                            {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2].map((img, idx) => (
+                                <Box
+                                    key={idx}
+                                    component="img"
+                                    src={img}
+                                    sx={{
+                                        width: "52%", borderRadius: 2, cursor: "pointer", objectFit: "cover",
+                                        boxShadow: 1, transition: "transform 0.2s", "&:hover": { transform: "scale(1.05)" }
+                                    }}
+                                    alt={`room-detail-${idx + 1}`}
+                                    onClick={() => {
+                                        if (img) {
+                                            setSelectedImage(img);
+                                            setImageDialogOpen(true);
+                                        }
+                                    }}
+                                />
+                            ))}
+
+                            {/* Dialog สำหรับแสดงรูปใหญ่ */}
+                            <Dialog open={imageDialogOpen} onClose={() => setImageDialogOpen(false)} maxWidth="md">
+                                <DialogContent sx={{ p: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#000" }}>
+                                    {selectedImage && (
+                                        <Box
+                                            component="img" src={selectedImage}
+                                            alt="room-large" sx={{ maxWidth: "110vw", maxHeight: "90vh", objectFit: "contain" }}
+                                        />
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setRoomDetailOpen(false)}>ปิด</Button>
+                    </DialogActions>
+                </Dialog>
+
                 <Box
                     sx={{
-                        position: "fixed",
-                        bottom: 24,
-                        right: 24,
-                        zIndex: 1000,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-end",
-                        gap: 1,
+                        position: "fixed", bottom: 24, right: 24, zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1,
                     }}
                 >
                     {showContact && (
                         <Box
                             sx={{
-                                bgcolor: "background.paper",
-                                p: 2,
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                minWidth: 250,
+                                bgcolor: "background.paper", p: 2, borderRadius: 2, boxShadow: 2, minWidth: 250,
                             }}
                         >
                             <Typography variant="body2" gutterBottom>
@@ -183,12 +210,8 @@ export default function Dashboard() {
                         <Button
                             onClick={() => setShowContact((prev) => !prev)}
                             sx={{
-                                minWidth: 0,
-                                width: 30,
-                                height: 30,
-                                borderRadius: "50%",
-                                bgcolor: "primary.main",
-                                color: "white",
+                                minWidth: 0, width: 30, height: 30, borderRadius: "50%",
+                                bgcolor: "primary.main", color: "white",
                                 "&:hover": { bgcolor: "primary.dark" },
                             }}
                         >
