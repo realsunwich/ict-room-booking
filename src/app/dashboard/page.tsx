@@ -3,9 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, } from "@mui/material";
-import { useRouter } from "next/navigation";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Zoom from "react-medium-image-zoom";
+import "react-medium-image-zoom/dist/styles.css";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
 
@@ -16,47 +17,65 @@ interface Room {
     detailImage_2: string;
 }
 
+const rooms: Room[] = [
+    {
+        name: "ห้องประชุมคณะ ICT",
+        image: "/images/test.jpg",
+        detailImage_1: "/images/ห้องประชุม ICT.jpg",
+        detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
+    },
+    {
+        name: "ห้องประชุมแม่กา",
+        image: "/images/test.jpg",
+        detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
+        detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
+    },
+    {
+        name: "ห้องบัณฑิตศึกษา ICT1318",
+        image: "/images/test.jpg",
+        detailImage_1: "/images/detail_ict.jpg",
+        detailImage_2: "/images/detail_ict.jpg",
+    },
+    {
+        name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
+        image: "/images/test.jpg",
+        detailImage_1: "/images/detail_ict.jpg",
+        detailImage_2: "/images/detail_ict.jpg",
+    },
+];
+
 export default function Dashboard() {
-    const { data: session, status } = useSession();
-    const router = useRouter();
+    useSession(); // Only for session check, not used directly
     const [showContact, setShowContact] = useState(true);
-    const [open, setOpen] = useState(false);
+    const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
     const [roomDetailOpen, setRoomDetailOpen] = useState(false);
-    const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
+    const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(
+        null
+    );
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
-
-    const rooms: Room[] = [
-        {
-            name: "ห้องประชุมคณะ ICT",
-            image: "/images/test.jpg",
-            detailImage_1: "/images/ห้องประชุม ICT.jpg",
-            detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
-        },
-        {
-            name: "ห้องประชุมแม่กา",
-            image: "/images/test.jpg",
-            detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
-            detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
-        },
-        {
-            name: "ห้องบัณฑิตศึกษา ICT1318",
-            image: "/images/test.jpg",
-            detailImage_1: "/images/detail_ict.jpg",
-            detailImage_2: "/images/detail_ict.jpg",
-        },
-        {
-            name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
-            image: "/images/test.jpg",
-            detailImage_1: "/images/detail_ict.jpg",
-            detailImage_2: "/images/detail_ict.jpg",
-        },
-    ];
 
     useEffect(() => {
         document.title = "ระบบจองห้องประชุม ICT";
     }, []);
+
+    const handleOpenRoomDetail = (room: Room) => {
+        setSelectedRoomDetail(room);
+        setRoomDetailOpen(true);
+    };
+
+    const handleOpenBooking = (roomName: string) => {
+        setSelectedRoom(roomName);
+        setOpenBooking(true);
+    };
+
+    const handleImageClick = (img?: string) => {
+        if (img) {
+            setSelectedImage(img);
+            setImageDialogOpen(true);
+        }
+    };
 
     return (
         <Box sx={{ marginTop: { xs: 25, sm: 17 } }}>
@@ -72,9 +91,8 @@ export default function Dashboard() {
             >
                 <Box
                     sx={{
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center",
-                        textAlign: "center", mb: 4,
+                        display: "flex", flexDirection: "column", alignItems: "center",
+                        justifyContent: "center", textAlign: "center", mb: 4,
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -84,21 +102,18 @@ export default function Dashboard() {
 
                 <Box
                     sx={{
-                        display: "flex", flexWrap: "wrap",
-                        justifyContent: "center", gap: 3, mb: 4,
+                        display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 3, mb: 4,
                     }}
                 >
-                    {rooms.map((room, index) => (
+                    {rooms.map((room) => (
                         <Box
-                            key={index}
+                            key={room.name}
                             sx={{
-                                width: 320, borderRadius: 3, boxShadow: 2,
-                                bgcolor: "background.paper", overflow: "hidden",
+                                width: 320, borderRadius: 3, boxShadow: 2, bgcolor: "background.paper", overflow: "hidden",
                             }}
                         >
                             <Box
-                                component="img" src={room.image} alt={room.name}
-                                sx={{ width: "100%", height: 180, objectFit: "cover" }}
+                                component="img" src={room.image} alt={room.name} sx={{ width: "100%", height: 180, objectFit: "cover" }}
                             />
                             <Box sx={{ p: 2 }}>
                                 <Typography variant="h6" fontWeight={700}>
@@ -106,34 +121,16 @@ export default function Dashboard() {
                                 </Typography>
                                 <Box sx={{ gap: 1 }}>
                                     <Button
-                                        variant="outlined" fullWidth sx={{ mb: 1 }}
-                                        onClick={() => {
-                                            setSelectedRoomDetail(room);
-                                            setRoomDetailOpen(true);
-                                        }}
+                                        variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}
                                     >
                                         รายละเอียดห้องประชุม
                                     </Button>
-
                                     <Button
-                                        variant="contained" fullWidth
-                                        color="primary" sx={{ mb: 1 }}
-                                        onClick={() => {
-                                            setSelectedRoom(room.name);
-                                            setOpen(true);
-                                        }}
+                                        variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}
                                     >
                                         จองห้องประชุม
                                     </Button>
-                                    <BookingModal
-                                        open={open}
-                                        onClose={() => setOpen(false)}
-                                        roomName={selectedRoom}
-                                    />
-
-                                    <Button
-                                        variant="outlined" fullWidth color="primary"
-                                    >
+                                    <Button variant="outlined" fullWidth color="primary">
                                         ปฏิทินห้องประชุม
                                     </Button>
                                 </Box>
@@ -142,36 +139,63 @@ export default function Dashboard() {
                     ))}
                 </Box>
 
-                <Dialog open={roomDetailOpen} onClose={() => setRoomDetailOpen(false)} maxWidth="sm" fullWidth>
+                <BookingModal
+                    open={openBooking}
+                    onClose={() => setOpenBooking(false)}
+                    roomName={selectedRoom}
+                />
+
+                <Dialog
+                    open={roomDetailOpen}
+                    onClose={() => setRoomDetailOpen(false)}
+                    maxWidth="sm"
+                    fullWidth
+                >
                     <DialogTitle align="center">{selectedRoomDetail?.name}</DialogTitle>
                     <DialogContent dividers>
-                        <Box sx={{ display: "flex", gap: 2, mb: 2, justifyContent: "center" }}>
-                            {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2].map((img, idx) => (
-                                <Box
-                                    key={idx}
-                                    component="img"
-                                    src={img}
-                                    sx={{
-                                        width: "50%", borderRadius: 2, cursor: "pointer", objectFit: "cover",
-                                        boxShadow: 1, transition: "transform 0.2s", "&:hover": { transform: "scale(1.05)" }
-                                    }}
-                                    alt={`room-detail-${idx + 1}`}
-                                    onClick={() => {
-                                        if (img) {
-                                            setSelectedImage(img);
-                                            setImageDialogOpen(true);
-                                        }
-                                    }}
-                                />
-                            ))}
-
-                            <Dialog open={imageDialogOpen} onClose={() => setImageDialogOpen(false)} maxWidth="md">
-                                <DialogContent sx={{ p: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#000" }}>
+                        <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                            {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2].map(
+                                (img, idx) => (
+                                    <Box
+                                        key={idx} component="img" src={img}
+                                        sx={{
+                                            width: "50%", borderRadius: 3, cursor: "pointer",
+                                            objectFit: "cover", boxShadow: 1, transition: "transform 0.2s",
+                                            "&:hover": { transform: "scale(1.05)" },
+                                        }}
+                                        alt={`room-detail-${idx + 1}`}
+                                        onClick={() => handleImageClick(img)}
+                                    />
+                                )
+                            )}
+                            <Dialog
+                                open={imageDialogOpen}
+                                onClose={() => setImageDialogOpen(false)}
+                                maxWidth="md"
+                                fullWidth
+                            >
+                                <DialogContent>
                                     {selectedImage && (
-                                        <Box
-                                            component="img" src={selectedImage}
-                                            alt="room-large" sx={{ maxWidth: "110vw", maxHeight: "90vh", objectFit: "contain" }}
-                                        />
+                                        <Zoom>
+                                            <img
+                                                src={selectedImage}
+                                                alt="room-large"
+                                                style={{
+                                                    width: "100%", height: "auto", maxWidth: "90vw",
+                                                    maxHeight: "60vh", objectFit: "contain", borderRadius: 8, display: "block",
+                                                }}
+                                                className="responsive-room-image"
+                                            />
+                                            <style jsx global>{`
+                                                @media (max-width: 600px) {
+                                                    .responsive-room-image {
+                                                        max-width: 98vw !important;
+                                                        max-height: 40vh !important;
+                                                        border-radius: 6px !important;
+                                                    }
+                                                }
+                                            `}</style>
+                                        </Zoom>
                                     )}
                                 </DialogContent>
                             </Dialog>
@@ -184,13 +208,24 @@ export default function Dashboard() {
 
                 <Box
                     sx={{
-                        position: "fixed", bottom: 24, right: 24, zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1,
+                        position: "fixed",
+                        bottom: 24,
+                        right: 24,
+                        zIndex: 1000,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                        gap: 1,
                     }}
                 >
                     {showContact && (
                         <Box
                             sx={{
-                                bgcolor: "background.paper", p: 2, borderRadius: 2, boxShadow: 2, minWidth: 250,
+                                bgcolor: "background.paper",
+                                p: 2,
+                                borderRadius: 2,
+                                boxShadow: 2,
+                                minWidth: 250,
                             }}
                         >
                             <Typography variant="body2" gutterBottom>
@@ -208,8 +243,12 @@ export default function Dashboard() {
                         <Button
                             onClick={() => setShowContact((prev) => !prev)}
                             sx={{
-                                minWidth: 0, width: 30, height: 30, borderRadius: "50%",
-                                bgcolor: "primary.main", color: "white",
+                                minWidth: 0,
+                                width: 30,
+                                height: 30,
+                                borderRadius: "50%",
+                                bgcolor: "primary.main",
+                                color: "white",
                                 "&:hover": { bgcolor: "primary.dark" },
                             }}
                         >
