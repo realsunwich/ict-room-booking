@@ -45,7 +45,7 @@ const rooms: Room[] = [
 ];
 
 export default function Dashboard() {
-    useSession(); // Only for session check, not used directly
+    useSession();
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");

@@ -15,7 +15,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         jobName: "",
         phoneIn: "",
         phoneOut: "",
-        department: "",
+        officeLocation: "",
         purpose: "",
         RoomName: "",
         startDate: "",
@@ -45,7 +45,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
             jobName: "",
             phoneIn: "",
             phoneOut: "",
-            department: "",
+            officeLocation: "",
             purpose: "",
             RoomName: roomName,
             startDate: "",
@@ -116,7 +116,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                         </FormControl>
                         <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
                         <TextField label="เบอร์โทรศัพท์ภายใน" name="phoneIn" value={formData.phoneIn} onChange={handleChange} size="small" sx={{ width: "300px" }} />
-                        <TextField label="สังกัดหน่วยงาน" name="department" value={formData.department} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
+                        <TextField label="สังกัดหน่วยงาน" name="officeLocation" value={formData.officeLocation} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
                         <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
                         <TextField label="ห้องประชุม" name="RoomName" value={roomName} size="small" sx={{ width: "300px" }} disabled required />
                         <TextField type="datetime-local" label="เริ่มวันที่" name="startDate" value={formData.startDate} onChange={handleChange} size="small" sx={{ width: "300px" }} InputLabelProps={{ shrink: true }} required />
