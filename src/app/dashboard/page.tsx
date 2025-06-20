@@ -65,8 +65,7 @@ export default function Dashboard() {
                 sx={{
                     display: "flex", flexDirection: "column",
                     minHeight: "auto", bgcolor: "white",
-                    px: { xs: 2, sm: 4 },
-                    pt: { xs: 2, sm: 4 },
+                    px: { xs: 2, sm: 4 }, pt: { xs: 2, sm: 4 },
                     pb: 4, mt: 10, borderRadius: 7,
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
@@ -153,7 +152,7 @@ export default function Dashboard() {
                                     component="img"
                                     src={img}
                                     sx={{
-                                        width: "52%", borderRadius: 2, cursor: "pointer", objectFit: "cover",
+                                        width: "50%", borderRadius: 2, cursor: "pointer", objectFit: "cover",
                                         boxShadow: 1, transition: "transform 0.2s", "&:hover": { transform: "scale(1.05)" }
                                     }}
                                     alt={`room-detail-${idx + 1}`}
@@ -166,7 +165,6 @@ export default function Dashboard() {
                                 />
                             ))}
 
-                            {/* Dialog สำหรับแสดงรูปใหญ่ */}
                             <Dialog open={imageDialogOpen} onClose={() => setImageDialogOpen(false)} maxWidth="md">
                                 <DialogContent sx={{ p: 0, display: "flex", justifyContent: "center", alignItems: "center", bgcolor: "#000" }}>
                                     {selectedImage && (
