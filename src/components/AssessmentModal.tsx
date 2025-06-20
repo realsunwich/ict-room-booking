@@ -1,27 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    RadioGroup,
-    Radio,
-    FormControlLabel,
-    FormLabel,
-    FormControl,
-    TextField,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-    Paper,
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, RadioGroup, Radio, FormControlLabel, FormLabel, FormControl, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, } from '@mui/material';
 
 interface AssessmentItem {
     id: string;
@@ -34,27 +14,45 @@ interface AssessmentModalProps {
     roomId: string;
 }
 
-// แบบประเมินแต่ละหน้า
 const formSteps: { title: string; items: AssessmentItem[] }[] = [
     {
         title: '1. ด้านมาตรฐานของการปฏิบัติงาน',
         items: [
-            { id: '1.1', label: 'ความพร้อมของอุปกรณ์' },
-            { id: '1.2', label: 'การติดตั้งระบบงานของผู้ใช้บริการ' },
-            { id: '1.3', label: 'ความพร้อมของเจ้าหน้าที่และการปฏิบัติงาน' },
-            { id: '1.4', label: 'การส่งมอบข้อมูลให้ผู้ใช้งานและมีครบถ้วน' },
-            {
-                id: '1.5',
-                label: 'ความชัดเจนของมาตรฐานในการตอบสนองการแจ้งซ่อมและจัดการเหตุการณ์',
-            },
+            { id: '1.1', label: '1.1 ความพร้อมของอุปกรณ์' },
+            { id: '1.2', label: '1.2 การติดต่อประสานงานขอใช้บริการ' },
+            { id: '1.3', label: '1.3 ความพร้อมของเจ้าหน้าที่และการปฏิบัติงาน' },
+            { id: '1.4', label: '1.4 การส่งข้อมูลไฟล์ภาพและเสียงครบถ้วน' },
+            { id: '1.5', label: '1.5 ความเป็นมาตรฐานในการออกแบบหน้าจอระบบสารสนเทศเพื่อการแจ้งซ่อมและติดตามงานอาคารสถานที่', },
         ],
     },
     {
-        title: '2. ด้านการให้บริการ',
+        title: '2. ด้านความเต็มใจในการให้บริการ',
         items: [
-            { id: '2.1', label: 'การให้คำแนะนำหรือการสื่อสารจากเจ้าหน้าที่' },
-            { id: '2.2', label: 'การตอบสนองต่อปัญหาได้รวดเร็ว' },
-            { id: '2.3', label: 'ความประทับใจในการใช้บริการโดยรวม' },
+            { id: '2.1', label: '2.1 ให้บริการด้วยความสุภาาพ อ่อนโยน' },
+            { id: '2.2', label: '2.2 ให้บริการด้วยความเต็มใจ' },
+            { id: '2.3', label: '2.3 ให้บริการด้วยอัธยาศัยอันดีทั้งในและนอกเวลา' },
+            { id: '2.4', label: '2.4 ให้บริการโดยเท่าเทียมกัน' },
+        ],
+    },
+    {
+        title: '3. ด้านคุณภาพการให้บริการ',
+        items: [
+            { id: '3.1', label: '3.1 ความสามารถในการติดตั้งอุปกรณ์ให้ใช้งานได้อย่างมีประสิทธิภาพ' },
+            { id: '3.2', label: '3.2 ความสะดวก รวดเร็วในการให้บริการ' },
+            { id: '3.3', label: '3.3 การติดต่อประสานงานการขอใช้บริการเป็นไปด้วยความรวดเร็ว' },
+            { id: '3.4', label: '3.4 ความสามารถของผู้ให้บริการในการจัดเตรียมสถานที่ห้องประชุมและการจัดเตรียมให้บริการ' },
+        ],
+    },
+    {
+        title: '4. ด้านความเต็มใจในการให้บริการ',
+        items: [
+            { id: '4.1', label: '4.1 การปรับปรุงให้บริการ และอำนวยความสะดวกด้านต่าง ๆ' },
+        ],
+    },
+    {
+        title: '5. ด้านความเต็มใจในการให้บริการ',
+        items: [
+            { id: '5.1', label: '5.1 ความพึงพอใจโดยรวมในทุกด้าน' },
         ],
     },
 ];
@@ -69,7 +67,19 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
         meetingRoom: '',
     });
 
-    const totalSteps = 1 + formSteps.length; // Step 0 = user info, Steps 1-N = assessments
+    const groupedResponses: Record<string, Record<string, number>> = {};
+
+    formSteps.forEach(step => {
+        groupedResponses[step.title] = {};
+        step.items.forEach(item => {
+            if (responses[item.id] !== undefined) {
+                groupedResponses[step.title][item.id] = responses[item.id];
+            }
+        });
+    });
+
+
+    const totalSteps = 1 + formSteps.length + 1;
 
     const handleRadioChange = (itemId: string, value: number) => {
         setResponses((prev) => ({ ...prev, [itemId]: value }));
@@ -83,10 +93,13 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
     const validateCurrentStep = () => {
         if (step === 0) {
             return userInfo.gender && userInfo.role && userInfo.meetingRoom;
-        } else {
+        } else if (step > 0 && step <= formSteps.length) {
             const currentItems = formSteps[step - 1].items;
             return currentItems.every((item) => responses[item.id] !== undefined);
+        } else if (step === totalSteps - 1) {
+            return true;
         }
+        return false;
     };
 
     const handleNext = () => {
@@ -94,18 +107,18 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
             alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนดำเนินการต่อ');
             return;
         }
-        setStep((prev) => prev + 1);
+        setStep((prev) => Math.min(prev + 1, totalSteps - 1));
     };
 
     const handleSubmit = async () => {
         try {
-            const res = await fetch('/api/assessments', {
+            const res = await fetch('/api/assessment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId,
                     userInfo,
-                    responses,
+                    responses: groupedResponses,
                     comment,
                 }),
             });
@@ -148,7 +161,15 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                         </FormControl>
                         <FormControl fullWidth margin="normal">
                             <FormLabel>สถานะภาพ</FormLabel>
-                            <RadioGroup name="role" value={userInfo.role} onChange={handleUserInfoChange}>
+                            <RadioGroup
+                                name="role"
+                                value={userInfo.role}
+                                onChange={handleUserInfoChange}
+                                row
+                                sx={{
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                }}
+                            >
                                 <FormControlLabel value="ผู้บริหาร" control={<Radio />} label="ผู้บริหาร" />
                                 <FormControlLabel value="อาจารย์" control={<Radio />} label="อาจารย์" />
                                 <FormControlLabel
@@ -164,6 +185,10 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                                 name="meetingRoom"
                                 value={userInfo.meetingRoom}
                                 onChange={handleUserInfoChange}
+                                row
+                                sx={{
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                }}
                             >
                                 <FormControlLabel value="ห้องประชุมคณะ ICT" control={<Radio />} label="ห้องประชุมคณะ ICT" />
                                 <FormControlLabel value="ห้องประชุมแม่กา" control={<Radio />} label="ห้องประชุมแม่กา" />
@@ -172,19 +197,22 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                             </RadioGroup>
                         </FormControl>
                     </>
-                ) : step < totalSteps - 1 ? (
+                ) : step > 0 && step <= formSteps.length ? (
                     <>
+                        <Typography variant="subtitle1" sx={{ mb: 2, textAlign: 'right' }}>
+                            หน้า {step} / {formSteps.length}
+                        </Typography>
                         <Typography variant="h6" gutterBottom>{formSteps[step - 1].title}</Typography>
                         <TableContainer component={Paper}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ width: '40%' }}>หัวข้อการประเมิน</TableCell>
-                                        {[5, 4, 3, 2, 1].map((score) => (
-                                            <TableCell key={score} align="center">
-                                                {score}
-                                            </TableCell>
-                                        ))}
+                                        <TableCell sx={{ width: '48.4943%' }}>หัวข้อการประเมิน</TableCell>
+                                        <TableCell align="center">5<br />(มากที่สุด)</TableCell>
+                                        <TableCell align="center">4<br />(มาก)</TableCell>
+                                        <TableCell align="center">3<br />(ปานกลาง)</TableCell>
+                                        <TableCell align="center">2<br />(น้อย)</TableCell>
+                                        <TableCell align="center">1<br />(น้อยที่สุด)</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -211,7 +239,7 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                             </Table>
                         </TableContainer>
                     </>
-                ) : (
+                ) : step === totalSteps - 1 ? (
                     <>
                         <Typography variant="h6" gutterBottom>ข้อเสนอแนะเพิ่มเติม/ปัญหา เพื่อปรับปรุงคุณภาพการให้บริการ</Typography>
                         <TextField
@@ -223,11 +251,11 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                             onChange={(e) => setComment(e.target.value)}
                         />
                     </>
-                )}
+                ) : null}
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={() => setStep((prev) => prev - 1)} disabled={step === 0}>
+                <Button onClick={() => setStep((prev) => Math.max(prev - 1, 0))} disabled={step === 0}>
                     ย้อนกลับ
                 </Button>
                 {step < totalSteps - 1 ? (
