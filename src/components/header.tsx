@@ -28,6 +28,10 @@ const Header = () => {
     };
 
     useEffect(() => {
+        console.log("Role:", session?.user?.role);
+    }, [session]);
+
+    useEffect(() => {
         if (status === "unauthenticated") {
             router.replace("/login");
         }
@@ -126,58 +130,58 @@ const Header = () => {
                         >
                             ระบบขอจองใช้บริการห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                         </Typography>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                flexDirection: "row",
-                                width: "100%",
-                                flexWrap: "wrap",
-                                top: 0,
-                            }}
-                        >
-                            <Button
-                                startIcon={<MeetingRoomIcon />}
-                                onClick={() => router.push("/dashboard")}
-                                sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                            >
-                                ตัวอย่างห้องประชุม
-                            </Button>
 
-                            <Button
-                                startIcon={<FolderCopyIcon />}
-                                onClick={() => router.push("/bookinghistory")}
-                                sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                        {session?.user?.role === "User" && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    width: "100%",
+                                    flexWrap: "wrap",
+                                    top: 0,
+                                }}
                             >
-                                ประวัติการจอง
-                            </Button>
-
-                            <Button
-                                startIcon={<AssessmentIcon />}
-                                onClick={() => setOpenModal(true)}
-                                sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                            >
-                                แบบประเมินห้องประชุม
-                            </Button>
-
-                            <input
-                                id="upload-signature"
-                                type="file"
-                                accept="image/*"
-                                style={{ display: "none" }}
-                                onChange={handleFileChange}
-                            />
-                            <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
                                 <Button
-                                    startIcon={<BadgeIcon />}
-                                    component="span"
+                                    startIcon={<MeetingRoomIcon />}
+                                    onClick={() => router.push("/dashboard")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    อัปโหลดลายเซ็น
+                                    ตัวอย่างห้องประชุม
                                 </Button>
-                            </label>
-                        </Box>
+                                <Button
+                                    startIcon={<FolderCopyIcon />}
+                                    onClick={() => router.push("/bookinghistory")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    ประวัติการจอง
+                                </Button>
+                                <Button
+                                    startIcon={<AssessmentIcon />}
+                                    onClick={() => setOpenModal(true)}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    แบบประเมินห้องประชุม
+                                </Button>
+                                <input
+                                    id="upload-signature"
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    onChange={handleFileChange}
+                                />
+                                <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
+                                    <Button
+                                        startIcon={<BadgeIcon />}
+                                        component="span"
+                                        sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    >
+                                        อัปโหลดลายเซ็น
+                                    </Button>
+                                </label>
+                            </Box>
+                        )}
                     </Box>
 
                     <Box

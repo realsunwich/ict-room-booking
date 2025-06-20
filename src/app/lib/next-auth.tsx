@@ -1,7 +1,10 @@
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { NextAuthOptions } from "next-auth";
+import { PrismaClient } from "@prisma/client";
 
-console.log("NEXTAUTH_SECRET :",process.env.NEXTAUTH_SECRET);
+const prisma = new PrismaClient();
+
+console.log("NEXTAUTH_SECRET :", process.env.NEXTAUTH_SECRET);
 
 export const authOptions: NextAuthOptions = {
     session: {
@@ -21,32 +24,58 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        session: ({ session, token }) => {
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    name: token.name,
-                    email: token.email,
-                },
-            };
-        },
         jwt: async ({ token, account }) => {
-            if (account) {
-                token.accessToken = account.access_token;
+            try {
+                console.log("⚙️ jwt callback called, account:", account);
 
-                const response = await fetch('https://graph.microsoft.com/v1.0/me', {
-                    headers: {
-                        Authorization: `Bearer ${account.access_token}`,
-                    },
-                });
+                if (account) {
+                    token.accessToken = account.access_token;
 
-                const user = await response.json();
+                    const response = await fetch("https://graph.microsoft.com/v1.0/me", {
+                        headers: { Authorization: `Bearer ${account.access_token}` },
+                    });
+                    const user = await response.json();
 
-                token.name = user.displayName;
-                token.email = user.mail;
+                    token.name = user.displayName;
+                    token.email = user.mail ?? user.userPrincipalName;
+                    token.officeLocation = user.officeLocation;
+
+                    if (token.email) {
+                        let dbUser = await prisma.users.findUnique({
+                            where: { userEmail: token.email },
+                        });
+
+                        if (!dbUser) {
+                            dbUser = await prisma.users.create({
+                                data: {
+                                    userEmail: token.email,
+                                    officeLocation: typeof token.officeLocation === "string" ? token.officeLocation : null,
+                                    role: "User",
+                                },
+                            });
+                        }
+
+                        token.role = dbUser?.role ?? "User";
+                    }
+                } else {
+                    if (token.email && !token.role) {
+                        const dbUser = await prisma.users.findUnique({
+                            where: { userEmail: token.email },
+                        });
+                        token.role = dbUser?.role ?? token.role;
+                    }
+                }
+            } catch (error) {
             }
             return token;
+        },
+        async session({ session, token }) {
+            session.user.name = token.name;
+            session.user.email = token.email;
+            session.user.officeLocation = typeof token.officeLocation === "string" ? token.officeLocation : null;
+            (session.user as any).role = token.role;
+
+            return session;
         },
     },
 };

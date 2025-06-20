@@ -33,7 +33,7 @@ model users {
   userID         Int       @id @default(autoincrement())
   userEmail      String?   @unique @db.VarChar(255)
   officeLocation String?   @db.VarChar(255)
-  Role           String?   @db.VarChar(255)
+  role           String?   @db.VarChar(255)
   createDate     DateTime? @default(now())
   lastEdit       DateTime? @updatedAt
   RecordStatus   String?   @db.VarChar(1)

@@ -8,6 +8,7 @@ declare module "next-auth" {
             userID?: number;
             userEmail?: string | null;
             officeLocation?: string | null;
+            role: string | null;
         };
     }
 
@@ -15,5 +16,6 @@ declare module "next-auth" {
         userID?: number;
         userEmail?: string | null;
         officeLocation?: string | null;
+        role: string | null;
     }
 }
