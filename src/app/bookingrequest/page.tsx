@@ -91,7 +91,6 @@ export default function BookingHistory() {
                                     <TableCell align="center">จำนวนคน</TableCell>
                                     <TableCell align="center">สถานะ</TableCell>
                                     <TableCell align="center">ดู</TableCell>
-                                    <TableCell align="center">แก้ไข</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -130,7 +129,6 @@ export default function BookingHistory() {
                                             <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                             <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}></TableCell>
                                         </TableRow>
                                     ))
                                 )}

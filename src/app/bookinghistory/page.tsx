@@ -1,16 +1,13 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, } from "@mui/material";
 import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
-import FormPDFButton from "@/components/PDFbutton";
 
 export default function BookingHistory() {
-    const { data: session, status } = useSession();
     const router = useRouter();
     const [showContact, setShowContact] = useState(true);
     const [bookings, setBookings] = useState<any[]>([]);
@@ -90,7 +87,6 @@ export default function BookingHistory() {
                                     <TableCell align="center">วัตถุประสงค์</TableCell>
                                     <TableCell align="center">จำนวนคน</TableCell>
                                     <TableCell align="center">สถานะ</TableCell>
-                                    <TableCell align="center">ดู</TableCell>
                                     <TableCell align="center">แก้ไข</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -129,7 +125,6 @@ export default function BookingHistory() {
                                             <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                             <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}></TableCell>
                                         </TableRow>
                                     ))
