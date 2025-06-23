@@ -14,7 +14,7 @@ interface Room {
     name: string;
     image: string;
     detailImage_1: string;
-    detailImage_2: string;
+    detailImage_2?: string;
 }
 
 const rooms: Room[] = [
@@ -32,9 +32,9 @@ const rooms: Room[] = [
     },
     {
         name: "ห้องบัณฑิตศึกษา ICT1318",
-        image: "/images/test.jpg",
-        detailImage_1: "/images/detail_ict.jpg",
-        detailImage_2: "/images/detail_ict.jpg",
+        image: "/images/ห้องบัณฑิตศึกษา1.jpg",
+        detailImage_1: "/images/ห้องบัณฑิตศึกษา.jpg",
+        detailImage_2: "/images/ผังห้องบัณฑิตศึกษา.jpg",
     },
     {
         name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
@@ -159,84 +159,101 @@ export default function Dashboard() {
                 <Dialog
                     open={roomDetailOpen}
                     onClose={() => setRoomDetailOpen(false)}
-                    maxWidth="sm"
-                    fullWidth
+                    fullScreen={typeof window !== "undefined" && window.innerWidth < 600}
+                    maxWidth="md" fullWidth scroll="body"
                 >
-                    <DialogTitle align="center">{selectedRoomDetail?.name}</DialogTitle>
-                    <DialogContent dividers>
-                        <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
-                            {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2].map(
-                                (img, idx) => (
+                    <DialogTitle
+                        align="center"
+                        sx={{
+                            fontWeight: 600,
+                            fontSize: { xs: "1.1rem", sm: "1.25rem" }, bgcolor: "#f5f5f5",
+                            px: { xs: 2, sm: 3 }, py: { xs: 1.5, sm: 2 },
+                        }}
+                    >
+                        {selectedRoomDetail?.name}
+                    </DialogTitle>
+
+                    <DialogContent
+                        dividers
+                        sx={{
+                            bgcolor: "#fafafa",
+                            px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 },
+                            maxHeight: "80vh", overflowY: "auto",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex", flexWrap: "wrap",
+                                justifyContent: "center", gap: 2,
+                            }}
+                        >
+                            {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2]
+                                .filter(Boolean)
+                                .map((img, idx) => (
                                     <Box
-                                        key={idx} component="img" src={img}
+                                        key={idx}
                                         sx={{
-                                            width: "50%", borderRadius: 3, cursor: "pointer",
-                                            objectFit: "cover", boxShadow: 1, transition: "transform 0.2s",
-                                            "&:hover": { transform: "scale(1.05)" },
+                                            width: "100%",
+                                            maxWidth: { xs: "100%", sm: 400 },
+                                            borderRadius: 2, boxShadow: 2, bgcolor: "white",
                                         }}
-                                        alt={`room-detail-${idx + 1}`}
-                                        onClick={() => handleImageClick(img)}
-                                    />
-                                )
-                            )}
-                            <Dialog
-                                open={imageDialogOpen}
-                                onClose={() => setImageDialogOpen(false)}
-                                maxWidth="md"
-                                fullWidth
-                            >
-                                <DialogContent>
-                                    {selectedImage && (
+                                    >
                                         <Zoom>
-                                            <img
-                                                src={selectedImage}
-                                                alt="room-large"
-                                                style={{
-                                                    width: "100%", height: "auto", maxWidth: "90vw",
-                                                    maxHeight: "60vh", objectFit: "contain", borderRadius: 8, display: "block",
+                                            <Box
+                                                component="img"
+                                                src={img}
+                                                alt={`room-detail-${idx + 1}`}
+                                                sx={{
+                                                    width: "100%", height: "auto", objectFit: "cover", cursor: "zoom-in", display: "block",
                                                 }}
-                                                className="responsive-room-image"
                                             />
-                                            <style jsx global>{`
-                                                @media (max-width: 600px) {
-                                                    .responsive-room-image {
-                                                        max-width: 98vw !important;
-                                                        max-height: 40vh !important;
-                                                        border-radius: 6px !important;
-                                                    }
-                                                }
-                                            `}</style>
                                         </Zoom>
-                                    )}
-                                </DialogContent>
-                            </Dialog>
+                                        <Box sx={{ py: 1 }}>
+                                            <Typography
+                                                variant="body2" align="center"
+                                                sx={{ fontSize: { xs: "0.85rem", sm: "0.95rem" } }}
+                                                color="text.primary"
+                                            >
+                                                {idx === 0 ? "ภาพภายในห้อง" : "ผังห้องประชุม"}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                ))}
                         </Box>
                     </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setRoomDetailOpen(false)}>ปิด</Button>
+
+                    <DialogActions
+                        sx={{
+                            justifyContent: "center", py: { xs: 1.5, sm: 2 },
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            onClick={() => setRoomDetailOpen(false)}
+                            sx={{
+                                minWidth: 100,
+                                fontSize: { xs: "0.9rem", sm: "1rem" },
+                                ":hover": {
+                                    bgcolor: "primary.main", color: "white", borderColor: "primary.main",
+                                },
+                            }}
+                        >
+                            ปิด
+                        </Button>
                     </DialogActions>
                 </Dialog>
 
                 <Box
                     sx={{
-                        position: "fixed",
-                        bottom: 24,
-                        right: 24,
-                        zIndex: 1000,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-end",
-                        gap: 1,
+                        position: "fixed", bottom: 24, right: 24, zIndex: 1000, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1,
                     }}
                 >
                     {showContact && (
                         <Box
                             sx={{
                                 bgcolor: "background.paper",
-                                p: 2,
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                minWidth: 250,
+                                p: 2, borderRadius: 2,
+                                boxShadow: 2, minWidth: 250,
                             }}
                         >
                             <Typography variant="body2" gutterBottom>
@@ -254,12 +271,8 @@ export default function Dashboard() {
                         <Button
                             onClick={() => setShowContact((prev) => !prev)}
                             sx={{
-                                minWidth: 0,
-                                width: 30,
-                                height: 30,
-                                borderRadius: "50%",
-                                bgcolor: "primary.main",
-                                color: "white",
+                                minWidth: 0, width: 30, height: 30, borderRadius: "50%",
+                                bgcolor: "primary.main", color: "white",
                                 "&:hover": { bgcolor: "primary.dark" },
                             }}
                         >
