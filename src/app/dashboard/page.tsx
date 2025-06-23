@@ -31,7 +31,7 @@ const rooms: Room[] = [
         image: "/images/ห้องประชุมแม่กา1.jpg",
         detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
         detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
-        description: "รองรับได้ 30 ที่นั่ง"
+        description: "รองรับได้ 38 ที่นั่ง"
     },
     {
         name: "ห้องบัณฑิตศึกษา ICT1318",
