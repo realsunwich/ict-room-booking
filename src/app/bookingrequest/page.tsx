@@ -8,6 +8,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
+import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
 
 export default function BookingHistory() {
     const { data: session, status } = useSession();
@@ -15,9 +16,54 @@ export default function BookingHistory() {
     const [showContact, setShowContact] = useState(true);
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [manageDialogOpen, setManageDialogOpen] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/booking/history");
+            const data = await res.json();
+            setBookings(data);
+        } catch (err) {
+            setSnackbarMessage("โหลดข้อมูลล้มเหลว");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const handleStatusChange = async (status: string, reason?: string) => {
+        const res = await fetch("/api/booking/updateStatus", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                bookingId: selectedBooking.bookingID,
+                status,
+                reason,
+            }),
+        });
+
+        if (res.ok) {
+            const updated = await res.json();
+            fetchBookings();
+            setManageDialogOpen(false);
+            setSnackbarMessage("บันทึกข้อมูลสำเร็จแล้ว");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
+        } else {
+            const err = await res.json();
+            setSnackbarMessage(err?.error || "เกิดข้อผิดพลาดในการบันทึกสถานะ");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        }
+    };
+
 
     useEffect(() => {
         document.title = "คำขอใช้บริหาร | ระบบจองห้องประชุม ICT";
@@ -91,6 +137,7 @@ export default function BookingHistory() {
                                     <TableCell align="center">จำนวนคน</TableCell>
                                     <TableCell align="center">สถานะ</TableCell>
                                     <TableCell align="center">ดู</TableCell>
+                                    <TableCell align="center">จัดการ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -129,6 +176,20 @@ export default function BookingHistory() {
                                             <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                             <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}>
+                                                <Button
+                                                    size="small" variant="outlined"
+                                                    onClick={() => { setSelectedBooking(booking); setManageDialogOpen(true); }}
+                                                >
+                                                    จัดการ
+                                                </Button>
+                                                <ManageBookingDialog
+                                                    open={manageDialogOpen}
+                                                    onClose={() => setManageDialogOpen(false)}
+                                                    booking={selectedBooking}
+                                                    onStatusChange={handleStatusChange}
+                                                />
+                                            </TableCell>
                                         </TableRow>
                                     ))
                                 )}
