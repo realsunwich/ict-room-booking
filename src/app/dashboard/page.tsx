@@ -45,7 +45,7 @@ const rooms: Room[] = [
 ];
 
 export default function Dashboard() {
-    useSession();
+    const { data: session, status } = useSession();
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
@@ -95,9 +95,16 @@ export default function Dashboard() {
                         justifyContent: "center", textAlign: "center", mb: 4,
                     }}
                 >
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        ตัวอย่างห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
-                    </Typography>
+                    {session?.user?.role === "User" && (
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                            ตัวอย่างห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                        </Typography>
+                    )}
+                    {session?.user?.role === "Admin" && (
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                            ปฏิทินห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                        </Typography>
+                    )}
                 </Box>
 
                 <Box
@@ -120,16 +127,20 @@ export default function Dashboard() {
                                     {room.name}
                                 </Typography>
                                 <Box sx={{ gap: 1 }}>
-                                    <Button
-                                        variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}
-                                    >
-                                        รายละเอียดห้องประชุม
-                                    </Button>
-                                    <Button
-                                        variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}
-                                    >
-                                        จองห้องประชุม
-                                    </Button>
+                                    {session?.user?.role === "User" && (
+                                        <>
+                                            <Button
+                                                variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}
+                                            >
+                                                รายละเอียดห้องประชุม
+                                            </Button>
+                                            <Button
+                                                variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}
+                                            >
+                                                จองห้องประชุม
+                                            </Button>
+                                        </>
+                                    )}
                                     <Button variant="outlined" fullWidth color="primary">
                                         ปฏิทินห้องประชุม
                                     </Button>

@@ -199,14 +199,14 @@ const Header = () => {
                             >
                                 <Button
                                     startIcon={<FeedbackIcon />}
-                                    onClick={() => router.push("/bookinghistory")}
+                                    onClick={() => router.push("/bookingrequest")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     คำขอใช้บริการ
                                 </Button>
                                 <Button
                                     startIcon={<AssignmentIcon />}
-                                    onClick={() => router.push("/bookinghistory")}
+                                    onClick={() => router.push("/")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     รายงานผลหลังใช้งาน
@@ -220,7 +220,7 @@ const Header = () => {
                                 </Button>
                                 <Button
                                     startIcon={<AssessmentIcon />}
-                                    onClick={() => setOpenModal(true)}
+                                    onClick={() => router.push("/assessmentSum")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     สรุปผลการประเมิน
@@ -334,6 +334,61 @@ const Header = () => {
                                     อัปโหลดลายเซ็น
                                 </Button>
                             </label>
+                        </Box>
+                    </Box>
+                )}
+
+                {session?.user?.role === "Admin" && (
+                    <Box
+                        sx={{
+                            fontWeight: "bold",
+                            color: "primary.main",
+                            textAlign: "center",
+                            display: { xs: "block", sm: "none" },
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexDirection: "row",
+                                width: "100%",
+                                flexWrap: "wrap",
+                                top: 0,
+                            }}
+                        >
+                            <Button
+                                startIcon={<FeedbackIcon />}
+                                onClick={() => router.push("/bookingrequest")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                คำขอใช้บริการ
+                            </Button>
+
+                            <Button
+                                startIcon={<AssignmentIcon />}
+                                onClick={() => router.push("/")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                รายงานผลหลังใช้งาน
+                            </Button>
+
+                            <Button
+                                startIcon={<AssessmentIcon />}
+                                onClick={() => router.push("/bookinghistory")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                ประวัติการจอง
+                            </Button>
+
+                            <Button
+                                startIcon={<AssessmentIcon />}
+                                onClick={() => router.push("/assessmentSum")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                สรุปผลการประเมิน
+                            </Button>
                         </Box>
                     </Box>
                 )}
