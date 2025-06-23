@@ -21,14 +21,14 @@ interface Room {
 const rooms: Room[] = [
     {
         name: "ห้องประชุมคณะ ICT",
-        image: "/images/test.jpg",
+        image: "/images/ห้องประชุม ICT-1.jpg",
         detailImage_1: "/images/ห้องประชุม ICT.jpg",
         detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
         description: "รองรับได้ 98 ที่นั่ง"
     },
     {
         name: "ห้องประชุมแม่กา",
-        image: "/images/test.jpg",
+        image: "/images/ห้องประชุมแม่กา1.jpg",
         detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
         detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
         description: "รองรับได้ 30 ที่นั่ง"
