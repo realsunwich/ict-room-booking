@@ -15,6 +15,7 @@ interface Room {
     image: string;
     detailImage_1: string;
     detailImage_2?: string;
+    description: string;
 }
 
 const rooms: Room[] = [
@@ -23,29 +24,33 @@ const rooms: Room[] = [
         image: "/images/test.jpg",
         detailImage_1: "/images/ห้องประชุม ICT.jpg",
         detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
+        description: "รองรับได้ 98 ที่นั่ง"
     },
     {
         name: "ห้องประชุมแม่กา",
         image: "/images/test.jpg",
         detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
         detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
+        description: "รองรับได้ 30 ที่นั่ง"
     },
     {
         name: "ห้องบัณฑิตศึกษา ICT1318",
         image: "/images/ห้องบัณฑิตศึกษา1.jpg",
         detailImage_1: "/images/ห้องบัณฑิตศึกษา.jpg",
         detailImage_2: "/images/ผังห้องบัณฑิตศึกษา.jpg",
+        description: "รองรับได้ 30 ที่นั่ง"
     },
     {
         name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
         image: "/images/test.jpg",
         detailImage_1: "/images/detail_ict.jpg",
         detailImage_2: "/images/detail_ict.jpg",
+        description: "รองรับได้ 300 ที่นั่ง"
     },
 ];
 
 export default function Dashboard() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
@@ -125,6 +130,16 @@ export default function Dashboard() {
                             <Box sx={{ p: 2 }}>
                                 <Typography variant="h6" fontWeight={700}>
                                     {room.name}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        textAlign: "left",
+                                        fontSize: { xs: "0.9rem", sm: "0.95rem" },
+                                        color: "text.secondary",
+                                    }}
+                                >
+                                    {room.description}
                                 </Typography>
                                 <Box sx={{ gap: 1 }}>
                                     {session?.user?.role === "User" && (
