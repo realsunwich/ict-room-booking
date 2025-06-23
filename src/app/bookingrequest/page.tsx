@@ -2,10 +2,11 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, } from "@mui/material";
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip } from "@mui/material";
 import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import SettingsIcon from "@mui/icons-material/Settings";
 import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
 import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
@@ -177,12 +178,17 @@ export default function BookingHistory() {
                                             <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}>
-                                                <Button
-                                                    size="small" variant="outlined"
-                                                    onClick={() => { setSelectedBooking(booking); setManageDialogOpen(true); }}
-                                                >
-                                                    จัดการ
-                                                </Button>
+                                                <Tooltip title="จัดการคำขอ">
+                                                    <IconButton
+                                                        color="primary"
+                                                        onClick={() => {
+                                                            setSelectedBooking(booking);
+                                                            setManageDialogOpen(true);
+                                                        }}
+                                                    >
+                                                        <SettingsIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                                 <ManageBookingDialog
                                                     open={manageDialogOpen}
                                                     onClose={() => setManageDialogOpen(false)}
