@@ -199,14 +199,14 @@ const Header = () => {
                             >
                                 <Button
                                     startIcon={<FeedbackIcon />}
-                                    onClick={() => router.push("/bookinghistory")}
+                                    onClick={() => router.push("/bookingrequest")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     คำขอใช้บริการ
                                 </Button>
                                 <Button
                                     startIcon={<AssignmentIcon />}
-                                    onClick={() => router.push("/bookinghistory")}
+                                    onClick={() => router.push("/")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     รายงานผลหลังใช้งาน
@@ -220,7 +220,7 @@ const Header = () => {
                                 </Button>
                                 <Button
                                     startIcon={<AssessmentIcon />}
-                                    onClick={() => setOpenModal(true)}
+                                    onClick={() => router.push("/assessmentSum")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     สรุปผลการประเมิน
