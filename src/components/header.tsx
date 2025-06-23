@@ -11,6 +11,8 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import AssessmentModal from "@/components/AssessmentModal";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const Header = () => {
     const { data: session, status } = useSession();
@@ -180,6 +182,49 @@ const Header = () => {
                                         อัปโหลดลายเซ็น
                                     </Button>
                                 </label>
+                            </Box>
+                        )}
+
+                        {session?.user?.role === "Admin" && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    width: "100%",
+                                    flexWrap: "wrap",
+                                    top: 0,
+                                }}
+                            >
+                                <Button
+                                    startIcon={<FeedbackIcon />}
+                                    onClick={() => router.push("/bookinghistory")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    คำขอใช้บริการ
+                                </Button>
+                                <Button
+                                    startIcon={<AssignmentIcon />}
+                                    onClick={() => router.push("/bookinghistory")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    รายงานผลหลังใช้งาน
+                                </Button>
+                                <Button
+                                    startIcon={<FolderCopyIcon />}
+                                    onClick={() => router.push("/bookinghistory")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    ประวัติการจอง
+                                </Button>
+                                <Button
+                                    startIcon={<AssessmentIcon />}
+                                    onClick={() => setOpenModal(true)}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    สรุปผลการประเมิน
+                                </Button>
                             </Box>
                         )}
                     </Box>
