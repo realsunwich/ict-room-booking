@@ -63,7 +63,6 @@ const rooms: Room[] = [
 export default function Dashboard() {
     const { data: session } = useSession();
 
-    // State ควบคุมการแสดงผลต่าง ๆ
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
@@ -79,29 +78,24 @@ export default function Dashboard() {
         severity: "success" as "success" | "error",
     });
 
-    // ตั้งชื่อหน้า
     useEffect(() => {
         document.title = "ระบบจองห้องประชุม ICT";
     }, []);
 
-    // เปิด dialog รายละเอียดห้อง
     const handleOpenRoomDetail = (room: Room) => {
         setSelectedRoomDetail(room);
         setRoomDetailOpen(true);
     };
 
-    // เปิด modal จองห้อง
     const handleOpenBooking = (roomName: string) => {
         setSelectedRoom(roomName);
         setOpenBooking(true);
     };
 
-    // อัปเดตและดึงข้อมูลสถิติพร้อมแสดง dialog
     const updateAndFetchRoomStats = async () => {
         setLoadingStats(true);
 
         try {
-            // อัปเดตสถิติผ่าน API
             const updateRes = await fetch("/api/update-room-stats", { method: "POST" });
             const updateResult = await updateRes.json();
 
@@ -109,7 +103,6 @@ export default function Dashboard() {
                 console.warn("Update stats failed", updateResult.message);
             }
 
-            // ดึงข้อมูลสถิติ
             const res = await fetch("/api/room-usage-stats");
             const stats = await res.json();
 
@@ -120,7 +113,6 @@ export default function Dashboard() {
                 setRoomStats(stats);
             }
 
-            // แสดง dialog สถิติ
             setStatsDialogOpen(true);
         } catch (error) {
             console.error("Fetch error:", error);
@@ -148,7 +140,6 @@ export default function Dashboard() {
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                {/* หัวข้อ */}
                 <Box
                     sx={{
                         display: "flex",
@@ -171,7 +162,6 @@ export default function Dashboard() {
                     )}
                 </Box>
 
-                {/* รายการห้องประชุม */}
                 <Box
                     sx={{
                         display: "flex",
@@ -254,14 +244,12 @@ export default function Dashboard() {
                     ))}
                 </Box>
 
-                {/* Modal จองห้อง */}
                 <BookingModal
                     open={openBooking}
                     onClose={() => setOpenBooking(false)}
                     roomName={selectedRoom}
                 />
 
-                {/* Dialog รายละเอียดห้อง */}
                 <Dialog
                     open={roomDetailOpen}
                     onClose={() => setRoomDetailOpen(false)}
@@ -365,14 +353,12 @@ export default function Dashboard() {
                     </DialogActions>
                 </Dialog>
 
-                {/* Dialog แสดงระหว่างโหลดข้อมูลสถิติ */}
                 <Dialog open={loadingStats}>
                     <DialogContent sx={{ textAlign: "center", py: 4 }}>
                         <Typography variant="body1">กำลังโหลดข้อมูลสถิติ...</Typography>
                     </DialogContent>
                 </Dialog>
 
-                {/* Dialog แสดงผลสถิติ */}
                 <Dialog open={statsDialogOpen} onClose={() => setStatsDialogOpen(false)} maxWidth="sm" fullWidth>
                     <DialogTitle>สถิติการใช้งานห้องประชุม</DialogTitle>
                     <DialogContent dividers>
@@ -401,7 +387,6 @@ export default function Dashboard() {
                 </Dialog>
             </Box>
 
-            {/* ข้อมูลผู้รับผิดชอบและปุ่มแสดง/ซ่อน */}
             <Box
                 sx={{
                     position: "fixed",
@@ -453,7 +438,6 @@ export default function Dashboard() {
                 </Tooltip>
             </Box>
 
-            {/* Snackbar */}
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={4000}
