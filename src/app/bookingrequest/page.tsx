@@ -139,6 +139,7 @@ export default function BookingHistory() {
                                     <TableCell align="center">สถานะ</TableCell>
                                     <TableCell align="center">ดู</TableCell>
                                     <TableCell align="center">จัดการ</TableCell>
+                                    <TableCell align="center">ตรวจเช็ค</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -202,6 +203,7 @@ export default function BookingHistory() {
                                                 booking={selectedBooking}
                                                 onStatusChange={handleStatusChange}
                                             />
+                                            <TableCell align="center" sx={{ width: 40 }}></TableCell>
                                         </TableRow>
                                     ))
                                 )}

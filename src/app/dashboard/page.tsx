@@ -2,13 +2,14 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, } from "@mui/material";
-import Zoom from "react-medium-image-zoom";
-import "react-medium-image-zoom/dist/styles.css";
+import { Box, Typography, Button, Tooltip, Snackbar, Alert, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
+import RoomDetailDialog from "@/components/RoomModal/RoomDetailDialog";
+import StatsDialog from "@/components/RoomModal/StatsDialog";
 
 interface Room {
     name: string;
@@ -59,7 +60,6 @@ export default function Dashboard() {
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
     const [statsDialogOpen, setStatsDialogOpen] = useState(false);
     const [roomStats, setRoomStats] = useState<{ RoomName: string; totalUsage: number }[]>([]);
-    const [loadingStats, setLoadingStats] = useState(false);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -81,7 +81,6 @@ export default function Dashboard() {
     };
 
     const updateAndFetchRoomStats = async () => {
-        setLoadingStats(true);
         try {
             const updateRes = await fetch("/api/update-room-stats", { method: "POST" });
             const updateResult = await updateRes.json();
@@ -96,8 +95,6 @@ export default function Dashboard() {
             console.error("Fetch error:", error);
             setRoomStats([]);
             setStatsDialogOpen(true);
-        } finally {
-            setLoadingStats(false);
         }
     };
 
@@ -173,143 +170,10 @@ export default function Dashboard() {
         </Box>
     );
 
-    const RoomDetailDialog = () => (
-        <Dialog
-            open={roomDetailOpen}
-            onClose={() => setRoomDetailOpen(false)}
-            fullScreen={typeof window !== "undefined" && window.innerWidth < 600}
-            maxWidth="md"
-            fullWidth
-            scroll="body"
-        >
-            <DialogTitle
-                align="center"
-                sx={{
-                    fontWeight: 600,
-                    fontSize: { xs: "1.1rem", sm: "1.25rem" },
-                    bgcolor: "#f5f5f5",
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 1.5, sm: 2 },
-                }}
-            >
-                {selectedRoomDetail?.name}
-            </DialogTitle>
-            <DialogContent
-                dividers
-                sx={{
-                    bgcolor: "#fafafa",
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 2, sm: 3 },
-                    maxHeight: "80vh",
-                    overflowY: "auto",
-                }}
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: 2,
-                    }}
-                >
-                    {[selectedRoomDetail?.detailImage_1, selectedRoomDetail?.detailImage_2]
-                        .filter(Boolean)
-                        .map((img, idx) => (
-                            <Box
-                                key={idx}
-                                sx={{
-                                    width: "100%",
-                                    maxWidth: { xs: "100%", sm: 400 },
-                                    borderRadius: 2,
-                                    boxShadow: 2,
-                                    bgcolor: "white",
-                                }}
-                            >
-                                <Zoom>
-                                    <Box
-                                        component="img"
-                                        src={img}
-                                        alt={`room-detail-${idx + 1}`}
-                                        sx={{
-                                            width: "100%",
-                                            height: "auto",
-                                            objectFit: "cover",
-                                            cursor: "zoom-in",
-                                            display: "block",
-                                        }}
-                                    />
-                                </Zoom>
-                                <Box sx={{ py: 1 }}>
-                                    <Typography
-                                        variant="body2"
-                                        align="center"
-                                        sx={{ fontSize: { xs: "0.85rem", sm: "0.95rem" } }}
-                                        color="text.primary"
-                                    >
-                                        {idx === 0 ? "ภาพภายในห้อง" : "ผังห้องประชุม"}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        ))}
-                </Box>
-            </DialogContent>
-            <DialogActions
-                sx={{
-                    justifyContent: "center",
-                    py: { xs: 1.5, sm: 2 },
-                }}
-            >
-                <Button
-                    variant="outlined"
-                    onClick={() => setRoomDetailOpen(false)}
-                    sx={{
-                        minWidth: 100,
-                        fontSize: { xs: "0.9rem", sm: "1rem" },
-                        ":hover": {
-                            bgcolor: "primary.main",
-                            color: "white",
-                            borderColor: "primary.main",
-                        },
-                    }}
-                >
-                    ปิด
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-
-    const StatsDialog = () => (
-        <Dialog open={statsDialogOpen} onClose={() => setStatsDialogOpen(false)} maxWidth="sm" fullWidth>
-            <DialogTitle>สถิติการใช้งานห้องประชุม</DialogTitle>
-            <DialogContent dividers>
-                {roomStats.length === 0 ? (
-                    <Typography align="center">ไม่มีข้อมูลสถิติการใช้งาน</Typography>
-                ) : (
-                    roomStats.map((stat, index) => (
-                        <Box
-                            key={index}
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                borderBottom: "1px solid #ddd",
-                                py: 1,
-                            }}
-                        >
-                            <Typography>{stat.RoomName}</Typography>
-                            <Typography fontWeight="bold">{stat.totalUsage} ครั้ง</Typography>
-                        </Box>
-                    ))
-                )}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setStatsDialogOpen(false)}>ปิด</Button>
-            </DialogActions>
-        </Dialog>
-    );
-
     return (
         <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>
             <Header />
+
             <Box
                 sx={{
                     display: "flex",
@@ -340,6 +204,7 @@ export default function Dashboard() {
                             : "ปฏิทินห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา"}
                     </Typography>
                 </Box>
+
                 <Box
                     sx={{
                         display: "flex",
@@ -353,19 +218,22 @@ export default function Dashboard() {
                         <RoomCard key={room.name} room={room} />
                     ))}
                 </Box>
-                <BookingModal
-                    open={openBooking}
-                    onClose={() => setOpenBooking(false)}
-                    roomName={selectedRoom}
+
+                <BookingModal open={openBooking} onClose={() => setOpenBooking(false)} roomName={selectedRoom} />
+
+                <RoomDetailDialog
+                    open={roomDetailOpen}
+                    onClose={() => setRoomDetailOpen(false)}
+                    room={selectedRoomDetail}
                 />
-                <RoomDetailDialog />
-                <Dialog open={loadingStats}>
-                    <DialogContent sx={{ textAlign: "center", py: 4 }}>
-                        <Typography variant="body1">กำลังโหลดข้อมูลสถิติ...</Typography>
-                    </DialogContent>
-                </Dialog>
-                <StatsDialog />
+
+                <StatsDialog
+                    open={statsDialogOpen}
+                    onClose={() => setStatsDialogOpen(false)}
+                    stats={roomStats}
+                />
             </Box>
+
             <Box
                 sx={{
                     position: "fixed",
@@ -416,6 +284,7 @@ export default function Dashboard() {
                     </Button>
                 </Tooltip>
             </Box>
+
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={4000}
