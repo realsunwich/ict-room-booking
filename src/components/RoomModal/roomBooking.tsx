@@ -34,12 +34,6 @@ const shouldDisableMinute = (minute: number) => {
 const minBookingHour = 8;
 const maxBookingHour = 17;
 
-const getTime = (hours: number, minutes = 0) => {
-    const d = new Date(0);
-    d.setHours(hours, minutes, 0, 0);
-    return d;
-};
-
 const initialFormData = (roomName: string) => ({
     sender: "",
     jobName: "",

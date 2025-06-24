@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json({ message: 'บันทึกสำเร็จ', id: assessment.id });
-    } catch (error: any) {
+    } catch (error) {
         console.error('[API:POST /api/assessments]', error);
         return NextResponse.json(
             { message: 'เกิดข้อผิดพลาดขณะบันทึกข้อมูล' },

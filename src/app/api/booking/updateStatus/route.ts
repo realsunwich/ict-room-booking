@@ -1,26 +1,27 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface UpdateBookingPayload {
+    bookingId: number;
+    status: string;
+    reason?: string;
+}
+
 export async function POST(req: Request) {
     try {
-        const { bookingId, status, reason } = await req.json();
+        const { bookingId, status, reason }: UpdateBookingPayload = await req.json();
 
         if (!bookingId || !status) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        let updateData: any = {
+        const updateData: Prisma.BookingInfoUpdateInput = {
             SendStatus: status,
             updatedAt: new Date(),
+            reason: status === "ไม่อนุมัติ" ? reason ?? "" : null,
         };
-
-        if (status === "ไม่อนุมัติ") {
-            updateData.reason = reason ?? "";
-        } else if (status === "อนุมัติ") {
-            updateData.reason = null;
-        }
 
         const updated = await prisma.bookingInfo.update({
             where: { bookingID: Number(bookingId) },
