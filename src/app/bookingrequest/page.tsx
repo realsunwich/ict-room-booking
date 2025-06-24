@@ -1,9 +1,7 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip } from "@mui/material";
-import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -12,8 +10,6 @@ import FormPDFButton from "@/components/PDFbutton";
 import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
 
 export default function BookingHistory() {
-    const { data: session, status } = useSession();
-    const router = useRouter();
     const [showContact, setShowContact] = useState(true);
     const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -29,7 +25,8 @@ export default function BookingHistory() {
             const res = await fetch("/api/booking/history");
             const data = await res.json();
             setBookings(data);
-        } catch (err) {
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", error);
             setSnackbarMessage("โหลดข้อมูลล้มเหลว");
             setSnackbarSeverity("error");
             setSnackbarOpen(true);
@@ -51,7 +48,7 @@ export default function BookingHistory() {
         });
 
         if (res.ok) {
-            const updated = await res.json();
+            await res.json();
             fetchBookings();
             setManageDialogOpen(false);
             setSnackbarMessage("บันทึกข้อมูลสำเร็จแล้ว");

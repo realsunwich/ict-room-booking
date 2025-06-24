@@ -2,15 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, } from "@mui/material";
-import { useRouter } from "next/navigation";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Header from "@/components/header";
 
+interface Booking {
+    startDate: string;
+    endDate: string;
+    RoomName: string;
+    purpose: string;
+    capacity: number;
+    SendStatus: string;
+}
+
 export default function BookingHistory() {
-    const router = useRouter();
     const [showContact, setShowContact] = useState(true);
-    const [bookings, setBookings] = useState<any[]>([]);
+    const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');

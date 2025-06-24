@@ -134,7 +134,8 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
                 const error = await res.json();
                 alert('เกิดข้อผิดพลาด: ' + error.message);
             }
-        } catch (err) {
+        } catch (error) {
+            console.error('Error submitting assessment:', error);
             alert('ไม่สามารถส่งข้อมูลได้');
         }
     };

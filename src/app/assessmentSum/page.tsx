@@ -7,13 +7,12 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Header from "@/components/header";
 
-export default function assesmentSum() {
+export default function AssessmentSum() {
     const [showContact, setShowContact] = useState(true);
 
     useEffect(() => {
         document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
     }, []);
-
 
     return (
         <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>

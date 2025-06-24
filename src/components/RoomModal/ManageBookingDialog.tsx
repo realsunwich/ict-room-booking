@@ -3,6 +3,15 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
+interface Booking {
+    startDate: string;
+    endDate: string;
+    RoomName: string;
+    purpose: string;
+    capacity: number;
+    SendStatus: string;
+}
+
 export default function ManageBookingDialog({
     open,
     onClose,
@@ -11,7 +20,7 @@ export default function ManageBookingDialog({
 }: {
     open: boolean;
     onClose: () => void;
-    booking: any;
+    booking: Booking;
     onStatusChange: (status: string, reason?: string) => void;
 }) {
     const [reason, setReason] = useState("");
