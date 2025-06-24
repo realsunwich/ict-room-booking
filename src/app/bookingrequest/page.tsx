@@ -1,25 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip } from "@mui/material";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useCallback, useEffect, useState } from "react";
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip, } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SettingsIcon from "@mui/icons-material/Settings";
+
 import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
 import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
 
+interface Booking {
+    bookingID: string;
+    startDate: string;
+    endDate: string;
+    RoomName: string;
+    purpose: string;
+    capacity: number;
+    SendStatus: string;
+
+    sendDate?: string;
+    sender?: string;
+    jobname?: string;
+    phoneIn?: string;
+    phoneOut?: string;
+    department?: string;
+    cfSender?: string;
+    cfPhone?: string;
+}
+
 export default function BookingHistory() {
     const [showContact, setShowContact] = useState(true);
-    const [bookings, setBookings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [manageDialogOpen, setManageDialogOpen] = useState(false);
-    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+        "success"
+    );
 
-    const fetchBookings = async () => {
+    const fetchBookings = useCallback(async () => {
         setLoading(true);
         try {
             const res = await fetch("/api/booking/history");
@@ -27,16 +49,28 @@ export default function BookingHistory() {
             setBookings(data);
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", error);
-            setSnackbarMessage("โหลดข้อมูลล้มเหลว");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            showSnackbar("โหลดข้อมูลล้มเหลว", "error");
         } finally {
             setLoading(false);
         }
+    }, [setBookings, setLoading]);
+
+    useEffect(() => {
+        fetchBookings();
+    }, [fetchBookings]);
+
+    const showSnackbar = (message: string, severity: "success" | "error") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
     };
 
-
     const handleStatusChange = async (status: string, reason?: string) => {
+        if (!selectedBooking) {
+            showSnackbar("ไม่พบข้อมูลการจองที่เลือก", "error");
+            return;
+        }
+
         const res = await fetch("/api/booking/updateStatus", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -51,39 +85,15 @@ export default function BookingHistory() {
             await res.json();
             fetchBookings();
             setManageDialogOpen(false);
-            setSnackbarMessage("บันทึกข้อมูลสำเร็จแล้ว");
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            showSnackbar("บันทึกข้อมูลสำเร็จแล้ว", "success");
         } else {
             const err = await res.json();
-            setSnackbarMessage(err?.error || "เกิดข้อผิดพลาดในการบันทึกสถานะ");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            showSnackbar(err?.error || "เกิดข้อผิดพลาดในการบันทึกสถานะ", "error");
         }
     };
 
-
     useEffect(() => {
         document.title = "คำขอใช้บริหาร | ระบบจองห้องประชุม ICT";
-    }, []);
-
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const res = await fetch("/api/booking/history");
-                const data = await res.json();
-                setBookings(data);
-            } catch (err) {
-                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
-                setSnackbarMessage("โหลดข้อมูลล้มเหลว");
-                setSnackbarSeverity("error");
-                setSnackbarOpen(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBookings();
     }, []);
 
     return (
@@ -114,7 +124,8 @@ export default function BookingHistory() {
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        คำขอใช้บริหารห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                        คำขอใช้บริหารห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร
+                        มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
 
@@ -126,7 +137,9 @@ export default function BookingHistory() {
                     <TableContainer component={Paper} sx={{ mt: 2 }}>
                         <Table size="small">
                             <TableHead>
-                                <TableRow sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}>
+                                <TableRow
+                                    sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}
+                                >
                                     <TableCell>#</TableCell>
                                     <TableCell align="center">เริ่ม</TableCell>
                                     <TableCell align="center">สิ้นสุด</TableCell>
@@ -142,13 +155,17 @@ export default function BookingHistory() {
                             <TableBody>
                                 {bookings.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={9} align="center" sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}>
+                                        <TableCell
+                                            colSpan={10}
+                                            align="center"
+                                            sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}
+                                        >
                                             ไม่มีข้อมูลการจองในระบบ
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     bookings.map((booking, index) => (
-                                        <TableRow key={index}>
+                                        <TableRow key={booking.bookingID}>
                                             <TableCell sx={{ width: 40 }}>{index + 1}</TableCell>
                                             <TableCell sx={{ width: 180 }} align="center">
                                                 {new Date(booking.startDate).toLocaleString("th-TH", {
@@ -157,7 +174,7 @@ export default function BookingHistory() {
                                                     month: "long",
                                                     day: "numeric",
                                                     hour: "2-digit",
-                                                    minute: "2-digit"
+                                                    minute: "2-digit",
                                                 })}
                                             </TableCell>
                                             <TableCell sx={{ width: 180 }} align="center">
@@ -167,18 +184,42 @@ export default function BookingHistory() {
                                                     month: "long",
                                                     day: "numeric",
                                                     hour: "2-digit",
-                                                    minute: "2-digit"
+                                                    minute: "2-digit",
                                                 })}
                                             </TableCell>
-                                            <TableCell sx={{ width: 120 }} align="center">{booking.RoomName}</TableCell>
+                                            <TableCell sx={{ width: 120 }} align="center">
+                                                {booking.RoomName}
+                                            </TableCell>
                                             <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
-                                            <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}>
+                                                {booking.capacity}
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ width: 100 }}>
+                                                {booking.SendStatus}
+                                            </TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}>
+                                                <FormPDFButton
+                                                    booking={{
+                                                        ...booking,
+                                                        startDate: new Date(booking.startDate),
+                                                        endDate: new Date(booking.endDate),
+                                                        sendDate: new Date(booking.sendDate ?? booking.startDate),
+                                                        sender: booking.sender ?? "",
+                                                        jobname: booking.jobname ?? "",
+                                                        phoneIn: booking.phoneIn ?? "",
+                                                        phoneOut: booking.phoneOut ?? "",
+                                                        department: booking.department ?? "",
+                                                        cfSender: booking.cfSender ?? "",
+                                                        cfPhone: booking.cfPhone ?? "",
+                                                        capacity: String(booking.capacity),
+                                                    }}
+                                                />
+                                            </TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}>
                                                 <Tooltip
                                                     title={
-                                                        booking.SendStatus.trim() === "อนุมัติ" || booking.SendStatus.trim() === "เสร็จสิ้น"
+                                                        booking.SendStatus.trim() === "อนุมัติ" ||
+                                                            booking.SendStatus.trim() === "เสร็จสิ้น"
                                                             ? "ไม่สามารถจัดการคำขอที่ได้รับการอนุมัติหรือเสร็จสิ้นแล้ว"
                                                             : "จัดการคำขอ"
                                                     }
@@ -186,21 +227,29 @@ export default function BookingHistory() {
                                                     <span>
                                                         <IconButton
                                                             color="primary"
-                                                            onClick={() => { setSelectedBooking(booking); setManageDialogOpen(true); }}
-                                                            disabled={booking.SendStatus.trim() === "อนุมัติ" || booking.SendStatus.trim() === "เสร็จสิ้น"}
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setManageDialogOpen(true);
+                                                            }}
+                                                            disabled={
+                                                                booking.SendStatus.trim() === "อนุมัติ" ||
+                                                                booking.SendStatus.trim() === "เสร็จสิ้น"
+                                                            }
                                                         >
                                                             <SettingsIcon />
                                                         </IconButton>
                                                     </span>
                                                 </Tooltip>
                                             </TableCell>
-                                            <ManageBookingDialog
-                                                open={manageDialogOpen}
-                                                onClose={() => setManageDialogOpen(false)}
-                                                booking={selectedBooking}
-                                                onStatusChange={handleStatusChange}
-                                            />
-                                            <TableCell align="center" sx={{ width: 40 }}></TableCell>
+                                            {selectedBooking && (
+                                                <ManageBookingDialog
+                                                    open={manageDialogOpen}
+                                                    onClose={() => setManageDialogOpen(false)}
+                                                    booking={selectedBooking}
+                                                    onStatusChange={handleStatusChange}
+                                                />
+                                            )}
+                                            <TableCell align="center" sx={{ width: 40 }} />
                                         </TableRow>
                                     ))
                                 )}
@@ -208,6 +257,7 @@ export default function BookingHistory() {
                         </Table>
                     </TableContainer>
                 )}
+
                 <Box
                     sx={{
                         position: "fixed",
@@ -259,6 +309,7 @@ export default function BookingHistory() {
                     </Tooltip>
                 </Box>
             </Box>
+
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={4000}
