@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
             session.user.name = token.name;
             session.user.email = token.email;
             session.user.officeLocation = typeof token.officeLocation === "string" ? token.officeLocation : null;
-            (session.user as any).role = token.role;
+            (session.user).role = typeof token.role === "string" ? token.role : null;
 
             return session;
         },

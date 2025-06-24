@@ -56,10 +56,12 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
     return (
         <Document>
             <Page size="A4" style={styles.page}>
+                {/* eslint-disable-next-line jsx-a11y/alt-text */}
                 <Image
                     src="http://localhost:3000/images/brand.png"
                     style={{ width: 50, height: 60, alignSelf: 'center' }}
                 />
+
                 <Text style={styles.title}>แบบฟอร์มขอใช้ห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา</Text>
 
                 <View style={styles.section}>
