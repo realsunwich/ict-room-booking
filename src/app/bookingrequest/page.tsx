@@ -5,6 +5,7 @@ import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, T
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SettingsIcon from "@mui/icons-material/Settings";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
@@ -234,8 +235,7 @@ export default function BookingHistory() {
                                                                 setManageDialogOpen(true);
                                                             }}
                                                             disabled={
-                                                                booking.SendStatus.trim() === "อนุมัติ" ||
-                                                                booking.SendStatus.trim() === "เสร็จสิ้น"
+                                                                booking.SendStatus.trim() !== "กำลังรอ"
                                                             }
                                                         >
                                                             <SettingsIcon />
@@ -252,16 +252,27 @@ export default function BookingHistory() {
                                                 />
                                             )}
                                             <TableCell align="center" sx={{ width: 40 }}>
-                                                <Button
-                                                    variant="outlined"
-                                                    size="small"
-                                                    onClick={() => {
-                                                        setSelectedBooking(booking);
-                                                        setCheckDialogOpen(true);
-                                                    }}
+                                                <Tooltip
+                                                    title={
+                                                        booking.SendStatus.trim() === "อนุมัติ"
+                                                            ? "ดำเนินการตรวจเช็ค"
+                                                            : "สามารถตรวจเช็คได้เมื่อคำขอได้รับการอนุมัติแล้ว"
+                                                    }
                                                 >
-                                                    ตรวจเช็ค
-                                                </Button>
+                                                    <span>
+                                                        <IconButton
+                                                            color="success"
+
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setCheckDialogOpen(true);
+                                                            }}
+                                                            disabled={booking.SendStatus.trim() !== "อนุมัติ"}
+                                                        >
+                                                            <CheckCircleIcon />
+                                                        </IconButton>
+                                                    </span>
+                                                </Tooltip>
                                             </TableCell>
                                             {selectedBooking && (
                                                 <CheckRoomDialog
@@ -269,7 +280,6 @@ export default function BookingHistory() {
                                                     onClose={() => setCheckDialogOpen(false)}
                                                     bookingID={selectedBooking.bookingID}
                                                     onCheckComplete={() => {
-                                                        // อาจจะรีเฟรชข้อมูล หรือแสดง snackbar
                                                         fetchBookings();
                                                         setSnackbarMessage("บันทึกการตรวจเช็คเรียบร้อย");
                                                         setSnackbarSeverity("success");

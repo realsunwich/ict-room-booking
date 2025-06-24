@@ -16,30 +16,23 @@ const CheckRoomDialog: React.FC<CheckRoomDialogProps> = ({
     bookingID,
     onCheckComplete,
 }) => {
-    const [cleanStatus, setCleanStatus] = useState<string>("");
-    const [equipmentStatus, setEquipmentStatus] = useState<string>("");
+    const [clearStatus, setclearStatus] = useState<string>("");
+    const [damageAction, setDamageAction] = useState<string>("");
+
     const [remark, setRemark] = useState<string>("");
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const handleSubmit = async () => {
-        if (!cleanStatus || !equipmentStatus) {
-            setError("กรุณาเลือกสถานะให้ครบถ้วน");
-            return;
-        }
-
-        setLoading(true);
-        setError("");
-
         try {
-            const res = await fetch("/api/booking/checkRoom", {
+            const res = await fetch("/api/booking/roomcheck", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     bookingID,
-                    cleanStatus,
-                    equipmentStatus,
+                    clearStatus,
+                    damageAction,
                     remark,
                 }),
             });
@@ -60,8 +53,8 @@ const CheckRoomDialog: React.FC<CheckRoomDialogProps> = ({
 
     const handleClose = () => {
         if (!loading) {
-            setCleanStatus("");
-            setEquipmentStatus("");
+            setclearStatus("");
+            setDamageAction("");
             setRemark("");
             setError("");
             onClose();
@@ -70,49 +63,69 @@ const CheckRoomDialog: React.FC<CheckRoomDialogProps> = ({
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-            <DialogTitle>ตรวจเช็คความเรียบร้อยหลังใช้งาน</DialogTitle>
+            <DialogTitle>ตรวจเช็คหลังการใช้บริการห้องประชุม</DialogTitle>
             <DialogContent>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
                 <FormControl component="fieldset" fullWidth sx={{ mb: 2 }}>
-                    <FormLabel component="legend">สถานะความสะอาด</FormLabel>
                     <RadioGroup
-                        value={cleanStatus}
-                        onChange={(e) => setCleanStatus(e.target.value)}
+                        value={clearStatus}
+                        onChange={(e) => setclearStatus(e.target.value)}
                         row
                     >
-                        <FormControlLabel value="clean" control={<Radio />} label="สะอาด" />
-                        <FormControlLabel value="not_clean" control={<Radio />} label="ไม่สะอาด" />
+                        <FormControlLabel value="clear" control={<Radio />} label="เรียบร้อยดี" />
+                        <FormControlLabel value="not_clear" control={<Radio />} label="ไม่เรียบร้อย" />
                     </RadioGroup>
                 </FormControl>
 
-                <FormControl component="fieldset" fullWidth sx={{ mb: 2 }}>
-                    <FormLabel component="legend">สถานะอุปกรณ์</FormLabel>
-                    <RadioGroup
-                        value={equipmentStatus}
-                        onChange={(e) => setEquipmentStatus(e.target.value)}
-                        row
-                    >
-                        <FormControlLabel value="complete" control={<Radio />} label="ครบถ้วน" />
-                        <FormControlLabel value="incomplete" control={<Radio />} label="ขาด" />
-                    </RadioGroup>
-                </FormControl>
+                {clearStatus === "not_clear" && (
+                    <>
+                        <TextField
+                            label="เพราะมีรายการความเสียหายหลังการใช้งาน ดังนี้"
+                            multiline
+                            rows={3}
+                            fullWidth
+                            value={remark}
+                            onChange={(e) => setRemark(e.target.value)}
+                            disabled={loading}
+                            required
+                            error={remark.trim() === ""}
+                            helperText={remark.trim() === "" ? "กรุณากรอกหมายเหตุ" : ""}
+                        />
 
-                <TextField
-                    label="หมายเหตุ (ถ้ามี)"
-                    multiline
-                    rows={3}
-                    fullWidth
-                    value={remark}
-                    onChange={(e) => setRemark(e.target.value)}
-                    disabled={loading}
-                />
+                        <FormControl component="fieldset" fullWidth>
+                            <RadioGroup
+                                value={damageAction}
+                                onChange={(e) => setDamageAction(e.target.value)}
+                                row
+                            >
+                                <FormControlLabel
+                                    value="notify_user"
+                                    control={<Radio />}
+                                    label="ดำเนินการแจ้งกลับไปยังผู้ใช้งานทราบหลังตรวจพบความเสียหายแล้ว"
+                                />
+                                <FormControlLabel
+                                    value="self_fixed"
+                                    control={<Radio />}
+                                    label="ดำเนินการแก้ไขด้วยตัวเองแล้วเรียบร้อย"
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                    </>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} disabled={loading}>
                     ยกเลิก
                 </Button>
-                <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+                <Button
+                    onClick={handleSubmit}
+                    variant="contained"
+                    disabled={
+                        loading ||
+                        (clearStatus === "not_clear" && remark.trim() === "")
+                    }
+                >
                     {loading ? <CircularProgress size={24} /> : "บันทึก"}
                 </Button>
             </DialogActions>
