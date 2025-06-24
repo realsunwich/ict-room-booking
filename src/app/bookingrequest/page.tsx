@@ -9,6 +9,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
 import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
+import CheckRoomDialog from "@/components/RoomModal/CheckRoomDialog";
 
 interface Booking {
     bookingID: string;
@@ -33,6 +34,7 @@ export default function BookingHistory() {
     const [showContact, setShowContact] = useState(true);
     const [loading, setLoading] = useState(true);
     const [manageDialogOpen, setManageDialogOpen] = useState(false);
+    const [checkDialogOpen, setCheckDialogOpen] = useState(false);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -249,7 +251,32 @@ export default function BookingHistory() {
                                                     onStatusChange={handleStatusChange}
                                                 />
                                             )}
-                                            <TableCell align="center" sx={{ width: 40 }} />
+                                            <TableCell align="center" sx={{ width: 40 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    onClick={() => {
+                                                        setSelectedBooking(booking);
+                                                        setCheckDialogOpen(true);
+                                                    }}
+                                                >
+                                                    ตรวจเช็ค
+                                                </Button>
+                                            </TableCell>
+                                            {selectedBooking && (
+                                                <CheckRoomDialog
+                                                    open={checkDialogOpen}
+                                                    onClose={() => setCheckDialogOpen(false)}
+                                                    bookingID={selectedBooking.bookingID}
+                                                    onCheckComplete={() => {
+                                                        // อาจจะรีเฟรชข้อมูล หรือแสดง snackbar
+                                                        fetchBookings();
+                                                        setSnackbarMessage("บันทึกการตรวจเช็คเรียบร้อย");
+                                                        setSnackbarSeverity("success");
+                                                        setSnackbarOpen(true);
+                                                    }}
+                                                />
+                                            )}
                                         </TableRow>
                                     ))
                                 )}

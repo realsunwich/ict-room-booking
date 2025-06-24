@@ -26,9 +26,11 @@ function FormPDFButton({ booking }: { booking: BookingInfo }) {
             const blob = await pdf(<FormPDF booking={booking} />).toBlob();
             const url = URL.createObjectURL(blob);
 
+            window.open(url, "_blank");
+
             setTimeout(() => {
                 URL.revokeObjectURL(url);
-            }, 1000);
+            }, 10000);
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการสร้าง PDF", error);
         }
