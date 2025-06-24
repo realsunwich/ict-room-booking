@@ -4,12 +4,12 @@ import fs from "fs";
 import path from "path";
 import { Readable } from "stream";
 import { promises as fsPromises, createReadStream, createWriteStream } from "fs";
+import { IncomingMessage } from "http";
 
 export const config = {
     api: { bodyParser: false },
 };
 
-// ฟังก์ชันช่วยย้ายไฟล์ (copy + ลบต้นทาง)
 async function moveFile(source: string, dest: string) {
     return new Promise<void>((resolve, reject) => {
         const readStream = createReadStream(source);
@@ -31,7 +31,6 @@ async function moveFile(source: string, dest: string) {
     });
 }
 
-// สร้างคลาสจำลอง Request เพื่อให้ formidable ทำงานกับ buffer ได้
 class FakeReq extends Readable {
     headers: Record<string, string>;
 
@@ -64,7 +63,7 @@ export async function POST(request: Request) {
     try {
         const { fields, files } = await new Promise<{ fields: Fields; files: Files }>(
             (resolve, reject) => {
-                form.parse(fakeReq as any, (err, fields, files) => {
+                form.parse(fakeReq as unknown as IncomingMessage, (err, fields, files) => {
                     if (err) reject(err);
                     else resolve({ fields, files });
                 });

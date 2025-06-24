@@ -66,6 +66,8 @@ export const authOptions: NextAuthOptions = {
                     }
                 }
             } catch (error) {
+                console.error("Error in jwt callback:", error);
+                throw new Error("Failed to process authentication");
             }
             return token;
         },

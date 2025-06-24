@@ -25,7 +25,6 @@ function FormPDFButton({ booking }: { booking: BookingInfo }) {
         try {
             const blob = await pdf(<FormPDF booking={booking} />).toBlob();
             const url = URL.createObjectURL(blob);
-            const newWindow = window.open(url);
 
             setTimeout(() => {
                 URL.revokeObjectURL(url);

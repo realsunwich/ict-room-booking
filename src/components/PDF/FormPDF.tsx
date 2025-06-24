@@ -53,16 +53,6 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
         },
     });
 
-    const formatDate = (date: Date) =>
-        new Date(date).toLocaleString('th-TH', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-
     return (
         <Document>
             <Page size="A4" style={styles.page}>
