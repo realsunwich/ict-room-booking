@@ -178,25 +178,30 @@ export default function BookingHistory() {
                                             <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}><FormPDFButton booking={booking} /></TableCell>
                                             <TableCell align="center" sx={{ width: 40 }}>
-                                                <Tooltip title={
-                                                    booking.SendStatus === "อนุมัติ" || booking.SendStatus === "เสร็จสิ้น"
-                                                        ? "ไม่สามารถจัดการคำขอที่ได้รับการอนุมัติหรือเสร็จสิ้นแล้ว"
-                                                        : "จัดการคำขอ"
-                                                }>
+                                                <Tooltip
+                                                    title={
+                                                        booking.SendStatus.trim() === "อนุมัติ" || booking.SendStatus.trim() === "เสร็จสิ้น"
+                                                            ? "ไม่สามารถจัดการคำขอที่ได้รับการอนุมัติหรือเสร็จสิ้นแล้ว"
+                                                            : "จัดการคำขอ"
+                                                    }
+                                                >
                                                     <span>
                                                         <IconButton
                                                             color="primary"
-                                                            onClick={() => {
-                                                                setSelectedBooking(booking);
-                                                                setManageDialogOpen(true);
-                                                            }}
-                                                            disabled={booking.SendStatus === "อนุมัติ" || booking.SendStatus === "เสร็จสิ้น"}
+                                                            onClick={() => { setSelectedBooking(booking); setManageDialogOpen(true); }}
+                                                            disabled={booking.SendStatus.trim() === "อนุมัติ" || booking.SendStatus.trim() === "เสร็จสิ้น"}
                                                         >
                                                             <SettingsIcon />
                                                         </IconButton>
                                                     </span>
                                                 </Tooltip>
                                             </TableCell>
+                                            <ManageBookingDialog
+                                                open={manageDialogOpen}
+                                                onClose={() => setManageDialogOpen(false)}
+                                                booking={selectedBooking}
+                                                onStatusChange={handleStatusChange}
+                                            />
                                         </TableRow>
                                     ))
                                 )}
