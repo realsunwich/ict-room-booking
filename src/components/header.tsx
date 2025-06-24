@@ -389,6 +389,14 @@ const Header = () => {
                             >
                                 สรุปผลการประเมิน
                             </Button>
+
+                            <Button
+                                startIcon={<AssessmentIcon />}
+                                onClick={() => router.push("/ServiceSum")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                รายงานผลการให้บริการ
+                            </Button>
                         </Box>
                     </Box>
                 )}

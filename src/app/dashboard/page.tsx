@@ -83,7 +83,7 @@ export default function Dashboard() {
     };
 
     return (
-        <Box sx={{ marginTop: { xs: 25, sm: 17 } }}>
+        <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>
             <Header />
             <Box
                 sx={{
@@ -156,9 +156,14 @@ export default function Dashboard() {
                                             </Button>
                                         </>
                                     )}
-                                    <Button variant="outlined" fullWidth color="primary">
+                                    <Button variant="outlined" fullWidth color="primary" sx={{ mb: 1 }}>
                                         ปฏิทินห้องประชุม
                                     </Button>
+                                    {session?.user?.role === "Admin" && (
+                                        <Button variant="contained" fullWidth color="primary" sx={{ mb: 1 }}>
+                                            สถิติการใช้งาน
+                                        </Button>
+                                    )}
                                 </Box>
                             </Box>
                         </Box>

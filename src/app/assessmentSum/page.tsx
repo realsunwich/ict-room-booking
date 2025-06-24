@@ -16,7 +16,7 @@ export default function assesmentSum() {
 
 
     return (
-        <Box sx={{ marginTop: { xs: 25, sm: 17 } }}>
+        <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>
             <Header />
             <Box
                 sx={{
