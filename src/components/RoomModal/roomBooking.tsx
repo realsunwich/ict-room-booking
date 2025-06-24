@@ -1,7 +1,25 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+    Stack,
+    Snackbar,
+    Alert,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+} from "@mui/material";
 import { useEffect, useState } from "react";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { th as thLocale } from "date-fns/locale";
 
 interface BookingModalProps {
     open: boolean;
@@ -9,25 +27,51 @@ interface BookingModalProps {
     roomName: string;
 }
 
-export default function BookingDialog({ open, onClose, roomName }: BookingModalProps) {
-    const [formData, setFormData] = useState({
-        sender: "",
-        jobName: "",
-        phoneIn: "",
-        phoneOut: "",
-        officeLocation: "",
-        purpose: "",
-        RoomName: "",
-        startDate: "",
-        endDate: "",
-        capacity: "",
-        cfSender: "",
-        cfPhone: "",
-    });
+function toLocalISOString(date: Date) {
+    const pad = (n: number) => (n < 10 ? "0" + n : n);
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hour = pad(date.getHours());
+    const minute = pad(date.getMinutes());
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+}
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("error");
+const minBookingHour = 8;
+const maxBookingHour = 17;
+
+const getTime = (hours: number, minutes = 0) => {
+    const d = new Date(0);
+    d.setHours(hours, minutes, 0, 0);
+    return d;
+};
+
+const initialFormData = (roomName: string) => ({
+    sender: "",
+    jobName: "",
+    phoneIn: "",
+    phoneOut: "",
+    officeLocation: "",
+    purpose: "",
+    RoomName: roomName,
+    startDate: "",
+    endDate: "",
+    capacity: "",
+    cfSender: "",
+    cfPhone: "",
+});
+
+export default function BookingDialog({
+    open,
+    onClose,
+    roomName,
+}: BookingModalProps) {
+    const [formData, setFormData] = useState(initialFormData(roomName));
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "error" as "success" | "error",
+    });
 
     useEffect(() => {
         if (open) {
@@ -39,58 +83,53 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const resetForm = () => {
-        setFormData({
-            sender: "",
-            jobName: "",
-            phoneIn: "",
-            phoneOut: "",
-            officeLocation: "",
-            purpose: "",
-            RoomName: roomName,
-            startDate: "",
-            endDate: "",
-            capacity: "",
-            cfSender: "",
-            cfPhone: "",
-        });
+    const isWithinBookingHours = (date: Date | null) => {
+        if (!date) return false;
+        const hour = date.getHours();
+        return hour >= minBookingHour && hour < maxBookingHour;
+    };
+
+    const handleDateChange = (name: "startDate" | "endDate", value: Date | null) => {
+        if (value && isWithinBookingHours(value)) {
+            setFormData({ ...formData, [name]: toLocalISOString(value) });
+        } else {
+            setSnackbar({
+                open: true,
+                message: `กรุณาเลือกเวลาระหว่าง ${minBookingHour}:00 - ${maxBookingHour}:00`,
+                severity: "error",
+            });
+        }
     };
 
     const handleSubmit = async () => {
-        const bookingData = {
-            ...formData,
-            RoomName: roomName,
-        };
+        const bookingData = { ...formData, RoomName: roomName };
 
         try {
             const res = await fetch("/api/booking", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(bookingData),
             });
 
             if (res.ok) {
-                setSnackbarMessage("จองห้องสำเร็จ");
-                setSnackbarSeverity("success");
-                setSnackbarOpen(true);
-                resetForm();
+                setSnackbar({ open: true, message: "จองห้องสำเร็จ", severity: "success" });
+                setFormData(initialFormData(roomName));
                 setTimeout(() => {
-                    setSnackbarOpen(false);
+                    setSnackbar((prev) => ({ ...prev, open: false }));
                     onClose();
                 }, 2000);
             } else {
-                setSnackbarMessage("เกิดข้อผิดพลาดในการจองห้อง");
-                setSnackbarSeverity("error");
-                setSnackbarOpen(true);
+                setSnackbar({ open: true, message: "เกิดข้อผิดพลาดในการจองห้อง", severity: "error" });
             }
-        } catch (error) {
-            console.error("Booking error:", error);
-            setSnackbarMessage("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+        } catch {
+            setSnackbar({ open: true, message: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์", severity: "error" });
         }
+    };
+
+    const textFieldProps = {
+        size: "small" as const,
+        sx: { width: 300 },
+        required: true,
     };
 
     return (
@@ -99,8 +138,8 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                 <DialogTitle textAlign="center">แบบฟอร์มจองห้อง</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} mt={1}>
-                        <TextField label="ชื่อผู้ขอใช้" name="sender" value={formData.sender} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <FormControl size="small" sx={{ width: "300px" }} required>
+                        <TextField label="ชื่อผู้ขอใช้" name="sender" value={formData.sender} onChange={handleChange} {...textFieldProps} />
+                        <FormControl size="small" sx={{ width: 300 }} required>
                             <InputLabel id="jobName-label">ตำแหน่ง</InputLabel>
                             <Select
                                 labelId="jobName-label"
@@ -114,18 +153,46 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                                 <MenuItem value="เจ้าหน้าที่">เจ้าหน้าที่</MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="เบอร์โทรศัพท์ภายใน" name="phoneIn" value={formData.phoneIn} onChange={handleChange} size="small" sx={{ width: "300px" }} />
-                        <TextField label="สังกัดหน่วยงาน" name="officeLocation" value={formData.officeLocation} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="ห้องประชุม" name="RoomName" value={roomName} size="small" sx={{ width: "300px" }} disabled required />
-                        <TextField type="datetime-local" label="เริ่มวันที่" name="startDate" value={formData.startDate} onChange={handleChange} size="small" sx={{ width: "300px" }} InputLabelProps={{ shrink: true }} required />
-                        <TextField type="datetime-local" label="สิ้นสุดในวันที่" name="endDate" value={formData.endDate} onChange={handleChange} size="small" sx={{ width: "300px" }} InputLabelProps={{ shrink: true }} required />
-                        <TextField type="number" label="จำนวนผู้เข้าร่วม" name="capacity" value={formData.capacity} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="ผู้ขอใช้บริการ" name="cfSender" value={formData.cfSender} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
-                        <TextField label="เบอร์ติดต่อผู้ขอใช้" name="cfPhone" value={formData.cfPhone} onChange={handleChange} size="small" sx={{ width: "300px" }} required />
+                        <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} {...textFieldProps} />
+                        <TextField
+                            label="เบอร์โทรศัพท์ภายใน"
+                            name="phoneIn"
+                            value={formData.phoneIn}
+                            onChange={handleChange}
+                            {...textFieldProps}
+                            required={false}
+                        />
+                        <TextField label="สังกัดหน่วยงาน" name="officeLocation" value={formData.officeLocation} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="ห้องประชุม" name="RoomName" value={roomName} disabled {...textFieldProps} />
+                        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
+                            <DateTimePicker
+                                label="เริ่มวันที่"
+                                value={formData.startDate ? new Date(formData.startDate) : null}
+                                onChange={(val) => handleDateChange("startDate", val)}
+                                minutesStep={30}
+                                ampm={false}
+                                slotProps={{ textField: textFieldProps }}
+                                minTime={getTime(minBookingHour, 0)}
+                                maxTime={getTime(maxBookingHour, 0)}
+                            />
+                            <DateTimePicker
+                                label="สิ้นสุดในวันที่"
+                                value={formData.endDate ? new Date(formData.endDate) : null}
+                                onChange={(val) => handleDateChange("endDate", val)}
+                                minutesStep={30}
+                                ampm={false}
+                                slotProps={{ textField: textFieldProps }}
+                                minTime={getTime(minBookingHour, 0)}
+                                maxTime={getTime(maxBookingHour, 0)}
+                            />
+                        </LocalizationProvider>
+                        <TextField type="number" label="จำนวนผู้เข้าร่วม" name="capacity" value={formData.capacity} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="ผู้ขอใช้บริการ" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="เบอร์ติดต่อผู้ขอใช้" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
                     </Stack>
                 </DialogContent>
+
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Stack direction="row" justifyContent="space-between" width="100%">
                         <Button
@@ -134,10 +201,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             sx={{
                                 color: "error.main",
                                 borderColor: "white",
-                                "&:hover": {
-                                    backgroundColor: "error.main",
-                                    color: "white",
-                                },
+                                "&:hover": { backgroundColor: "error.main", color: "white" },
                             }}
                         >
                             ยกเลิก
@@ -148,10 +212,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             sx={{
                                 color: "success.main",
                                 borderColor: "white",
-                                "&:hover": {
-                                    backgroundColor: "success.main",
-                                    color: "white",
-                                },
+                                "&:hover": { backgroundColor: "success.main", color: "white" },
                             }}
                         >
                             ยืนยันการจอง
@@ -161,13 +222,17 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
             </Dialog>
 
             <Snackbar
-                open={snackbarOpen}
+                open={snackbar.open}
                 autoHideDuration={4000}
-                onClose={() => setSnackbarOpen(false)}
+                onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
             >
-                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: "100%" }}>
-                    {snackbarMessage}
+                <Alert
+                    onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                    severity={snackbar.severity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbar.message}
                 </Alert>
             </Snackbar>
         </>

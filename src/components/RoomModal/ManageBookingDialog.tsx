@@ -40,6 +40,28 @@ export default function ManageBookingDialog({
                 <Typography variant="body1" gutterBottom>
                     วัตถุประสงค์ : {booking.purpose || "-"}
                 </Typography>
+                <Typography variant="body1" gutterBottom>
+                    วันที่ :{" "}
+                    {booking.startDate
+                        ? new Date(booking.startDate).toLocaleString("th-TH", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })
+                        : "-"}
+                    {" "}ถึง{" "}
+                    {booking.endDate
+                        ? new Date(booking.endDate).toLocaleString("th-TH", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })
+                        : "-"}
+                </Typography>
 
                 <TextField
                     label="เหตุผล (ถ้าไม่อนุมัติ)"
