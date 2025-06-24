@@ -30,6 +30,13 @@ model BookingInfo {
   RecordStatus String?   @db.VarChar(1)
 }
 
+model RoomUsageStats {
+  id         Int      @id @default(autoincrement())
+  RoomName   String   @unique
+  totalUsage Int
+  updatedAt  DateTime @updatedAt
+}
+
 model users {
   userID         Int       @id @default(autoincrement())
   userEmail      String?   @unique @db.VarChar(255)
