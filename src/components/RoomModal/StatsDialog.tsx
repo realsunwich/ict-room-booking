@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, } from "@mui/material";
 
 interface RoomStat {
     RoomName: string;
@@ -15,26 +15,33 @@ interface StatsDialogProps {
 
 export default function StatsDialog({ open, onClose, stats }: StatsDialogProps) {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>สถิติการใช้งานห้องประชุม</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            {stats.length === 1 && (
+                <DialogTitle>สถิติการใช้งาน {stats[0].RoomName}</DialogTitle>
+            )}
             <DialogContent dividers>
                 {stats.length === 0 ? (
                     <Typography align="center">ไม่มีข้อมูลสถิติการใช้งาน</Typography>
                 ) : (
-                    stats.map((stat, index) => (
-                        <Box
-                            key={index}
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                borderBottom: "1px solid #ddd",
-                                py: 1,
-                            }}
-                        >
-                            <Typography>{stat.RoomName}</Typography>
-                            <Typography fontWeight="bold">{stat.totalUsage} ครั้ง</Typography>
-                        </Box>
-                    ))
+                    <Box display="flex" flexDirection="column" gap={2}>
+                        {stats.map((stat, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    p: 2,
+                                    borderRadius: 2,
+                                    boxShadow: 2,
+                                    bgcolor: "background.paper",
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                }}
+                            >
+                                <Typography variant="h6" fontWeight="bold" mb={1}>
+                                    ถูกใช้งานทั้งหมด {stat.totalUsage} ครั้ง
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
                 )}
             </DialogContent>
             <DialogActions>

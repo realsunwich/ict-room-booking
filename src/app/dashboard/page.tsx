@@ -19,6 +19,11 @@ interface Room {
     description: string;
 }
 
+interface RoomStat {
+    RoomName: string;
+    totalUsage: number;
+}
+
 const rooms: Room[] = [
     {
         name: "ห้องประชุมคณะ ICT",
@@ -59,7 +64,7 @@ export default function Dashboard() {
     const [roomDetailOpen, setRoomDetailOpen] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
     const [statsDialogOpen, setStatsDialogOpen] = useState(false);
-    const [roomStats, setRoomStats] = useState<{ RoomName: string; totalUsage: number }[]>([]);
+    const [roomStats, setRoomStats] = useState<RoomStat[]>([]);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -80,19 +85,22 @@ export default function Dashboard() {
         setOpenBooking(true);
     };
 
-    const updateAndFetchRoomStats = async () => {
+    const updateAndFetchRoomStats = async (roomName: string) => {
+        setRoomStats([]);
+        setStatsDialogOpen(false);
+
         try {
-            const updateRes = await fetch("/api/update-room-stats", { method: "POST" });
-            const updateResult = await updateRes.json();
-            if (!updateRes.ok || !updateResult.success) {
-                console.warn("Update stats failed", updateResult.message);
-            }
+            await fetch("/api/update-room-stats", { method: "POST" });
+
             const res = await fetch("/api/room-usage-stats");
-            const stats = await res.json();
-            setRoomStats(Array.isArray(stats) ? stats : []);
+            const allStats = await res.json();
+
+            const filtered = allStats.filter((stat: RoomStat) => stat.RoomName === roomName);
+
+            setRoomStats(filtered);
             setStatsDialogOpen(true);
-        } catch (error) {
-            console.error("Fetch error:", error);
+        } catch (err) {
+            console.error(err);
             setRoomStats([]);
             setStatsDialogOpen(true);
         }
@@ -160,7 +168,7 @@ export default function Dashboard() {
                             fullWidth
                             sx={{ mb: 1 }}
                             color="primary"
-                            onClick={updateAndFetchRoomStats}
+                            onClick={() => updateAndFetchRoomStats(room.name)}
                         >
                             ดูสถิติการใช้งานห้อง
                         </Button>
