@@ -41,7 +41,7 @@ export default function ManageBookingDialog({
                     วัตถุประสงค์ : {booking.purpose || "-"}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    วันที่ :{" "}
+                    เริ่มในวันที่ {" "}
                     {booking.startDate
                         ? new Date(booking.startDate).toLocaleString("th-TH", {
                             year: "numeric",
@@ -50,8 +50,8 @@ export default function ManageBookingDialog({
                             hour: "2-digit",
                             minute: "2-digit",
                         })
-                        : "-"}
-                    {" "}ถึง{" "}
+                        : "-"}<br />
+                    {" "}ถึงวันที่{" "}
                     {booking.endDate
                         ? new Date(booking.endDate).toLocaleString("th-TH", {
                             year: "numeric",
