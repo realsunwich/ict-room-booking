@@ -161,7 +161,7 @@ export default function BookingHistory() {
                                                             }}
                                                             color="primary"
                                                             sx={{ minWidth: 0, p: 1 }}
-                                                            disabled={booking.SendStatus.trim() !== "กำลังรอ"}
+                                                            disabled={booking.SendStatus.trim() !== "กำลังรอ" && !"ไม่อนุมัติ".includes(booking.SendStatus.trim())}
                                                         >
                                                             <EditIcon />
                                                         </Button>

@@ -20,6 +20,7 @@ export async function PUT(request: NextRequest) {
             capacity,
             cfSender,
             cfPhone,
+            SendStatus,
             updatedAt
         } = body;
 
@@ -38,6 +39,7 @@ export async function PUT(request: NextRequest) {
                 capacity: Number(capacity),
                 cfSender,
                 cfPhone,
+                SendStatus: 'กำลังรอ',
                 updatedAt: new Date(updatedAt)
             },
         });
