@@ -40,6 +40,11 @@ function formatThaiMonthYear(isoMonth: string): string {
     return `${thaiMonthName} ${year}`;
 }
 
+function formatThaiYear(year: string): string {
+    const thYear = parseInt(year, 10) + 543;
+    return `${thYear}`;
+}
+
 
 export default function StatsDialog({ open, onClose, stats }: StatsDialogProps) {
     return (
@@ -88,7 +93,7 @@ export default function StatsDialog({ open, onClose, stats }: StatsDialogProps) 
                                 {stat.usageByYear && stat.usageByYear.length > 0 ? (
                                     stat.usageByYear.map(({ year, count }) => (
                                         <Typography key={year} variant="body2" sx={{ ml: 2 }}>
-                                            ปี {formatThaiMonthYear(year)} {count} ครั้ง
+                                            ปี {formatThaiYear(year)} {count} ครั้ง
                                         </Typography>
                                     ))
                                 ) : (
