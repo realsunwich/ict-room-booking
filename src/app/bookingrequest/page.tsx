@@ -11,6 +11,7 @@ import Header from "@/components/header";
 import FormPDFButton from "@/components/PDFbutton";
 import ManageBookingDialog from "@/components/RoomModal/ManageBookingDialog";
 import CheckRoomDialog from "@/components/RoomModal/CheckRoomDialog";
+import RevertApprovalDialog from "@/components/RoomModal/RevertApprovalDialog";
 
 interface Booking {
     bookingID: string;
@@ -36,6 +37,7 @@ export default function BookingHistory() {
     const [loading, setLoading] = useState(true);
     const [manageDialogOpen, setManageDialogOpen] = useState(false);
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
+    const [revertDialogOpen, setRevertDialogOpen] = useState(false)
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -219,30 +221,49 @@ export default function BookingHistory() {
                                                 />
                                             </TableCell>
                                             <TableCell align="center" sx={{ width: 20 }}>
-                                                <Tooltip
-                                                    title={
-                                                        booking.SendStatus.trim() === "อนุมัติ" ||
-                                                            booking.SendStatus.trim() === "เสร็จสิ้น"
-                                                            ? "ไม่สามารถจัดการคำขอที่ได้รับการอนุมัติหรือเสร็จสิ้นแล้ว"
-                                                            : "จัดการคำขอ"
-                                                    }
-                                                >
-                                                    <span>
-                                                        <IconButton
-                                                            color="primary"
-                                                            onClick={() => {
-                                                                setSelectedBooking(booking);
-                                                                setManageDialogOpen(true);
-                                                            }}
-                                                            disabled={
-                                                                booking.SendStatus.trim() !== "กำลังรอ"
-                                                            }
-                                                        >
-                                                            <SettingsIcon />
-                                                        </IconButton>
-                                                    </span>
-                                                </Tooltip>
+                                                {["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim()) ? (
+                                                    <Tooltip
+                                                        title={
+                                                            booking.SendStatus.trim() === "กำลังรอ"
+                                                                ? "จัดการคำขอ"
+                                                                : "ยกเลิกการอนุมัติ"
+                                                        }
+                                                    >
+                                                        <span>
+                                                            <IconButton
+                                                                color="primary"
+                                                                onClick={() => {
+                                                                    setSelectedBooking(booking);
+                                                                    booking.SendStatus.trim() === "กำลังรอ"
+                                                                        ? setManageDialogOpen(true)
+                                                                        : setRevertDialogOpen(true);
+                                                                }}
+                                                            >
+                                                                <SettingsIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <Tooltip title="ไม่สามารถจัดการคำขอที่เสร็จสิ้นแล้ว">
+                                                        <span>
+                                                            <IconButton disabled>
+                                                                <SettingsIcon />
+                                                            </IconButton>
+                                                        </span>
+                                                    </Tooltip>
+                                                )}
                                             </TableCell>
+                                            {selectedBooking && (
+                                                <RevertApprovalDialog
+                                                    open={revertDialogOpen}
+                                                    onClose={() => setRevertDialogOpen(false)}
+                                                    bookingID={selectedBooking.bookingID}
+                                                    onSuccess={() => {
+                                                        fetchBookings();
+                                                        showSnackbar("ยกเลิกการอนุมัติแล้ว", "success");
+                                                    }}
+                                                />
+                                            )}
                                             {selectedBooking && (
                                                 <ManageBookingDialog
                                                     open={manageDialogOpen}

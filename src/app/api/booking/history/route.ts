@@ -10,7 +10,7 @@ export async function GET() {
                 RecordStatus: "N",
             },
             orderBy: {
-                startDate: "desc",
+                sendDate: "desc",
             },
         });
 
