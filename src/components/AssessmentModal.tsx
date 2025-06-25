@@ -67,17 +67,32 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
         meetingRoom: '',
     });
 
-    const groupedResponses: Record<string, Record<string, number>> = {};
+    const questionGroups: Record<string, string[]> = formSteps.reduce((acc, group) => {
+        acc[group.title] = group.items.map(i => i.id);
+        return acc;
+    }, {} as Record<string, string[]>);
 
-    formSteps.forEach(step => {
-        groupedResponses[step.title] = {};
-        step.items.forEach(item => {
-            if (responses[item.id] !== undefined) {
-                groupedResponses[step.title][item.id] = responses[item.id];
-            }
-        });
-    });
+    const questionLabels: Record<string, string> = formSteps
+        .flatMap(group => group.items)
+        .reduce((acc, cur) => {
+            acc[cur.id] = cur.label;
+            return acc;
+        }, {} as Record<string, string>);
 
+    function groupResponses(rawResponses: Record<string, number>) {
+        const grouped: Record<string, Record<string, number>> = {};
+
+        for (const [groupName, keys] of Object.entries(questionGroups)) {
+            grouped[groupName] = {};
+            keys.forEach((key) => {
+                if (rawResponses[key] !== undefined) {
+                    grouped[groupName][questionLabels[key]] = rawResponses[key];
+                }
+            });
+        }
+
+        return grouped;
+    }
 
     const totalSteps = 1 + formSteps.length + 1;
 
@@ -112,6 +127,8 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
 
     const handleSubmit = async () => {
         try {
+            const groupedResponses = groupResponses(responses);  // แปลง responses ก่อนส่ง
+
             const res = await fetch('/api/assessment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

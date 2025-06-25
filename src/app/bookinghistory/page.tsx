@@ -91,8 +91,11 @@ export default function BookingHistory() {
                         mb: 1,
                     }}
                 >
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        ประวัติการจองห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                    <Typography variant="h5" fontWeight={600}>
+                        ประวัติการจองห้องประชุม
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                        คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
 

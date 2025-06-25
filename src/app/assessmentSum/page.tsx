@@ -1,16 +1,104 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip } from "@mui/material";
-import "react-medium-image-zoom/dist/styles.css";
+import {
+    Box,
+    Typography,
+    Button,
+    Tooltip,
+    CircularProgress,
+    Paper,
+    Divider,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
+} from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Header from "@/components/header";
 
+interface AssessmentDetail {
+    id: string;
+    room: string;
+    gender: string;
+    role: string;
+    comment: string;
+    responses: {
+        title: string;
+        responses: Record<string, { label: string; score: number }>;
+    }[];
+}
+
+function RenderResponses({
+    responses,
+}: {
+    responses: { title: string; responses: Record<string, number> }[];
+}) {
+    return (
+        <Box>
+            {responses
+                .sort((a, b) => {
+                    const getGroupNumber = (title: string) => parseInt(title.split(".")[0]) || 99;
+                    return getGroupNumber(a.title) - getGroupNumber(b.title);
+                })
+                .map(({ title, responses: questions }) => (
+                    <Box key={title} sx={{ mb: 2 }}>
+                        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                            {title}
+                        </Typography>
+                        <Table size="small" sx={{ maxWidth: 400 }}>
+                            <TableBody>
+                                {Object.entries(questions)
+                                    .sort(([a], [b]) => {
+                                        const parse = (str: string) =>
+                                            str
+                                                .match(/^\d+\.\d+/)?.[0]
+                                                .split(".")
+                                                .map(Number) ?? [Number.MAX_VALUE];
+
+                                        const [aMain = 0, aSub = 0] = parse(a);
+                                        const [bMain = 0, bSub = 0] = parse(b);
+
+                                        return aMain - bMain || aSub - bSub;
+                                    })
+                                    .map(([label, score]) => (
+                                        <TableRow key={label}>
+                                            <TableCell>{label}</TableCell>
+                                            <TableCell align="right">{score}</TableCell>
+                                        </TableRow>
+                                    ))}
+                            </TableBody>
+                        </Table>
+                    </Box>
+                ))}
+        </Box>
+    );
+}
+
+interface Summary {
+    total: number;
+    assessments: AssessmentDetail[];
+}
+
 export default function AssessmentSum() {
     const [showContact, setShowContact] = useState(true);
+    const [summary, setSummary] = useState<Summary | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const res = await fetch("/api/assessment/summary");
+                const data = await res.json();
+                setSummary(data);
+            } catch (err) {
+                console.error("ไม่สามารถโหลดสรุปผลได้", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSummary();
         document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
     }, []);
 
@@ -19,23 +107,118 @@ export default function AssessmentSum() {
             <Header />
             <Box
                 sx={{
-                    display: "flex", flexDirection: "column",
-                    minHeight: "auto", bgcolor: "white",
-                    px: { xs: 2, sm: 4 }, pt: { xs: 2, sm: 4 },
-                    pb: 4, mt: 10, borderRadius: 7,
+                    bgcolor: "white",
+                    px: { xs: 2, sm: 4 },
+                    pt: { xs: 2, sm: 4 },
+                    pb: 4,
+                    mt: 10,
+                    borderRadius: 7,
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
                 <Box
                     sx={{
-                        display: "flex", flexDirection: "column", alignItems: "center",
-                        justifyContent: "center", textAlign: "center", mb: 4,
+                        textAlign: "center",
+                        mb: 3,
                     }}
                 >
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        สรุปผลการประเมินห้องประชุมภายในคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                    <Typography variant="h5" fontWeight={600}>
+                        สรุปผลการประเมินห้องประชุม
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                        คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
+
+                {loading ? (
+                    <Box display="flex" justifyContent="center">
+                        <CircularProgress />
+                    </Box>
+                ) : summary ? (
+                    <>
+                        <Typography variant="h6" gutterBottom>
+                            🔢 ผลการประเมินทั้งหมด {summary.total} ครั้ง
+                        </Typography>
+
+                        <Divider sx={{ my: 2 }} />
+
+                        {/* เช็ค assessments ก่อนแสดง */}
+                        {summary.assessments?.length === 0 && (
+                            <Typography>ไม่มีข้อมูลการประเมิน</Typography>
+                        )}
+                        {summary.assessments?.length > 0 && summary.assessments.map((item, index) => {
+                            return (
+                                <Paper
+                                    key={index}
+                                    sx={{
+                                        p: { xs: 1.5, sm: 2 },
+                                        mb: { xs: 2, sm: 2 },
+                                        borderRadius: 2,
+                                        boxShadow: 1,
+                                        maxWidth: { xs: "100%", sm: 500 },
+                                        mx: "auto",
+                                    }}
+                                    elevation={2}
+                                >
+                                    <Typography variant="h6" fontWeight={600}>
+                                        รหัสการประเมิน {index + 1}
+                                    </Typography>
+                                    <Typography variant="body2">สถานที่ {item.room}</Typography>
+                                    <Typography variant="body2">เพศ {item.gender}</Typography>
+                                    <Typography variant="body2">สถานภาพ {item.role}</Typography>
+                                    <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                                        ความคิดเห็น {item.comment || "-"}
+                                    </Typography>
+
+                                    <Typography sx={{ mt: 1, fontWeight: 400 }}>
+                                        Responses (รายละเอียดการประเมิน)
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: { xs: "flex", sm: "flex" },
+                                            flexDirection: { xs: "column", sm: "row" },
+                                            gap: 2,
+                                            p: { xs: 1, sm: 2 },
+                                            borderRadius: 1,
+                                            overflowX: "auto",
+                                            whiteSpace: "pre-wrap",
+                                            wordBreak: "break-word",
+                                            maxHeight: { xs: 220, sm: 300 },
+                                        }}
+                                    >
+                                        <RenderResponses
+                                            responses={
+                                                Array.isArray(item.responses)
+                                                    ? item.responses.map(({ title, responses }) => ({
+                                                        title,
+                                                        responses: Object.fromEntries(
+                                                            Object.entries(responses).map(([key, value]) =>
+                                                                typeof value === "object" && value !== null && "score" in value
+                                                                    ? [key, value.score]
+                                                                    : [key, value as number]
+                                                            )
+                                                        ),
+                                                    }))
+                                                    : Object.entries(item.responses).map(([title, responses]) => ({
+                                                        title,
+                                                        responses: Object.fromEntries(
+                                                            Object.entries(responses as Record<string, any>).map(([key, value]) =>
+                                                                typeof value === "object" && value !== null && "score" in value
+                                                                    ? [key, value.score]
+                                                                    : [key, value as number]
+                                                            )
+                                                        ),
+                                                    }))
+                                            }
+                                        />
+                                    </Box>
+                                </Paper>
+                            );
+                        })}
+                    </>
+                ) : (
+                    <Typography color="error">ไม่พบข้อมูลสรุป</Typography>
+                )}
 
                 <Box
                     sx={{

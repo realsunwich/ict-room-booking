@@ -3,18 +3,50 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface UserInfo {
+    meetingRoom?: string;
+    gender?: string;
+    role?: string;
+}
+
+interface BodyType {
+    userInfo?: UserInfo;
+    responses?: any;
+    comment?: string;
+}
+
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
-        const { userInfo, responses, comment } = body;
+        const body: BodyType = await req.json();
 
+        if (!body.userInfo || !body.responses) {
+            return NextResponse.json(
+                { message: "ข้อมูลไม่ครบถ้วน: userInfo และ responses ต้องถูกส่งมา" },
+                { status: 400 }
+            );
+        }
+
+        const { meetingRoom, gender, role } = body.userInfo;
+
+        if (
+            typeof meetingRoom !== "string" ||
+            typeof gender !== "string" ||
+            typeof role !== "string"
+        ) {
+            return NextResponse.json(
+                { message: "ข้อมูล userInfo ไม่ถูกต้อง" },
+                { status: 400 }
+            );
+        }
+
+        // สร้างเรคอร์ดใหม่
         const assessment = await prisma.assessment.create({
             data: {
-                meetingRoom: userInfo.meetingRoom,
-                gender: userInfo.gender,
-                role: userInfo.role,
-                responses: responses,
-                comment: comment || null,
+                meetingRoom,
+                gender,
+                role,
+                responses: body.responses,
+                comment: body.comment || null,
             },
         });
 
