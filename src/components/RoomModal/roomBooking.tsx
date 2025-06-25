@@ -1,8 +1,23 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, } from "@mui/material";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+    Stack,
+    Snackbar,
+    Alert,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { th as thLocale } from "date-fns/locale";
@@ -12,24 +27,6 @@ interface BookingModalProps {
     onClose: () => void;
     roomName: string;
 }
-
-function toLocalISOString(date: Date) {
-    const pad = (n: number) => (n < 10 ? "0" + n : n);
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const hour = pad(date.getHours());
-    const minute = pad(date.getMinutes());
-    return `${year}-${month}-${day}T${hour}:${minute}`;
-}
-
-const shouldDisableHour = (hour: number) => {
-    return hour < minBookingHour || hour >= maxBookingHour;
-};
-
-const shouldDisableMinute = (minute: number) => {
-    return minute !== 0 && minute !== 30;
-};
 
 const minBookingHour = 8;
 const maxBookingHour = 17;
@@ -49,12 +46,17 @@ const initialFormData = (roomName: string) => ({
     cfPhone: "",
 });
 
-export default function BookingDialog({
-    open,
-    onClose,
-    roomName,
-}: BookingModalProps) {
+export default function BookingDialog({ open, onClose, roomName }: BookingModalProps) {
+    // แยก state วันและเวลา สำหรับ start และ end
+    const [startDay, setStartDay] = useState<Date | null>(null);
+    const [startTime, setStartTime] = useState<Date | null>(null);
+
+    const [endDay, setEndDay] = useState<Date | null>(null);
+    const [endTime, setEndTime] = useState<Date | null>(null);
+
+    // เก็บ form data อื่น ๆ
     const [formData, setFormData] = useState(initialFormData(roomName));
+
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -64,47 +66,95 @@ export default function BookingDialog({
     useEffect(() => {
         if (open) {
             setFormData((prev) => ({ ...prev, RoomName: roomName }));
+            // เคลียร์วันที่และเวลาใหม่ทุกครั้งที่เปิด dialog
+            setStartDay(null);
+            setStartTime(null);
+            setEndDay(null);
+            setEndTime(null);
         }
     }, [open, roomName]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    // รวมวันที่และเวลาเป็น Date object เดียว
+    function combineDateTime(date: Date | null, time: Date | null): Date | null {
+        if (!date || !time) return null;
+        const combined = new Date(date);
+        combined.setHours(time.getHours(), time.getMinutes(), 0, 0);
+        return combined;
+    }
 
+    // ฟังก์ชันตรวจสอบเวลาว่าอยู่ในช่วง 08:00 - 17:00 หรือไม่
     const isWithinBookingHours = (date: Date | null) => {
         if (!date) return false;
         const hour = date.getHours();
         return hour >= minBookingHour && hour < maxBookingHour;
     };
 
-    const handleDateChange = (name: "startDate" | "endDate", value: Date | null) => {
-        if (!value) return;
+    // Handle change ฟิลด์ทั่วไป
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-        if (!isWithinBookingHours(value)) {
+    // ตรวจสอบและอัปเดต startDate ใน formData
+    useEffect(() => {
+        const combined = combineDateTime(startDay, startTime);
+        if (combined) {
+            if (!isWithinBookingHours(combined)) {
+                setSnackbar({
+                    open: true,
+                    message: `กรุณาเลือกเวลาระหว่าง ${minBookingHour}:00 - ${maxBookingHour}:00`,
+                    severity: "error",
+                });
+                setFormData((prev) => ({ ...prev, startDate: "" }));
+                return;
+            }
+            setFormData((prev) => ({ ...prev, startDate: combined.toISOString() }));
+        } else {
+            setFormData((prev) => ({ ...prev, startDate: "" }));
+        }
+    }, [startDay, startTime]);
+
+    // ตรวจสอบและอัปเดต endDate ใน formData
+    useEffect(() => {
+        const combined = combineDateTime(endDay, endTime);
+        if (combined) {
+            if (!isWithinBookingHours(combined)) {
+                setSnackbar({
+                    open: true,
+                    message: `กรุณาเลือกเวลาระหว่าง ${minBookingHour}:00 - ${maxBookingHour}:00`,
+                    severity: "error",
+                });
+                setFormData((prev) => ({ ...prev, endDate: "" }));
+                return;
+            }
+            // เช็คว่า endDate ต้องหลัง startDate
+            if (formData.startDate) {
+                const start = new Date(formData.startDate);
+                if (combined <= start) {
+                    setSnackbar({
+                        open: true,
+                        message: "วันที่สิ้นสุดต้องอยู๋หลังจากวันที่เริ่ม",
+                        severity: "error",
+                    });
+                    setFormData((prev) => ({ ...prev, endDate: "" }));
+                    return;
+                }
+            }
+            setFormData((prev) => ({ ...prev, endDate: combined.toISOString() }));
+        } else {
+            setFormData((prev) => ({ ...prev, endDate: "" }));
+        }
+    }, [endDay, endTime, formData.startDate]);
+
+    const handleSubmit = async () => {
+        if (!formData.startDate || !formData.endDate) {
             setSnackbar({
                 open: true,
-                message: `กรุณาเลือกเวลาระหว่าง ${minBookingHour}:00 - ${maxBookingHour}:00`,
+                message: "กรุณาเลือกวันและเวลาเริ่มต้น-สิ้นสุดให้ครบถ้วน",
                 severity: "error",
             });
             return;
         }
 
-        if (name === "endDate" && formData.startDate) {
-            const start = new Date(formData.startDate);
-            if (value <= start) {
-                setSnackbar({
-                    open: true,
-                    message: "วันที่สิ้นสุดต้องอยู๋หลังจากวันที่เริ่ม",
-                    severity: "error",
-                });
-                return;
-            }
-        }
-
-        setFormData({ ...formData, [name]: toLocalISOString(value) });
-    };
-
-    const handleSubmit = async () => {
         const bookingData = { ...formData, RoomName: roomName };
 
         try {
@@ -117,6 +167,10 @@ export default function BookingDialog({
             if (res.ok) {
                 setSnackbar({ open: true, message: "จองห้องสำเร็จ", severity: "success" });
                 setFormData(initialFormData(roomName));
+                setStartDay(null);
+                setStartTime(null);
+                setEndDay(null);
+                setEndTime(null);
                 setTimeout(() => {
                     setSnackbar((prev) => ({ ...prev, open: false }));
                     onClose();
@@ -168,35 +222,49 @@ export default function BookingDialog({
                         <TextField label="สังกัดหน่วยงาน" name="officeLocation" value={formData.officeLocation} onChange={handleChange} {...textFieldProps} />
                         <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
                         <TextField label="ห้องประชุม" name="RoomName" value={roomName} disabled {...textFieldProps} />
+
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
-                            <DateTimePicker
-                                label="เริ่มวันที่"
-                                value={formData.startDate ? new Date(formData.startDate) : null}
-                                onChange={(val) => handleDateChange("startDate", val)}
+                            {/* เริ่มวันที่ */}
+                            <DatePicker
+                                label="เลือกวันเริ่ม"
+                                value={startDay}
+                                onChange={(newDate) => setStartDay(newDate)}
+                                slotProps={{ textField: { ...textFieldProps } }}
+                                minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // เลือกวันตั้งแต่พรุ่งนี้
+                            />
+                            <TimePicker
+                                label="เลือกเวลาเริ่ม"
+                                value={startTime}
+                                onChange={(newTime) => setStartTime(newTime)}
                                 minutesStep={30}
                                 ampm={false}
-                                slotProps={{ textField: textFieldProps }}
-                                shouldDisableTime={(timeValue, clockType) => {
-                                    if (clockType === "hours") return shouldDisableHour(timeValue.getHours());
-                                    if (clockType === "minutes") return shouldDisableMinute(timeValue.getMinutes());
-                                    return false;
-                                }}
+                                minTime={new Date(0, 0, 0, minBookingHour, 0)}
+                                maxTime={new Date(0, 0, 0, maxBookingHour, 0)}
+                                slotProps={{ textField: { ...textFieldProps } }}
                             />
 
-                            <DateTimePicker
-                                label="สิ้นสุดในวันที่"
-                                value={formData.endDate ? new Date(formData.endDate) : null}
-                                onChange={(val) => handleDateChange("endDate", val)}
+                            {/* สิ้นสุดวันที่ */}
+                            <DatePicker
+                                label="เลือกวันสิ้นสุด"
+                                value={endDay}
+                                onChange={(newDate) => setEndDay(newDate)}
+                                minDate={startDay || new Date(new Date().setDate(new Date().getDate() + 1))} // ต้องไม่ก่อนวันเริ่ม
+                                disabled={!startDay} // ปิดจนกว่าจะเลือกวันเริ่มก่อน
+                                slotProps={{ textField: { ...textFieldProps } }}
+                            />
+                            <TimePicker
+                                label="เลือกเวลาสิ้นสุด"
+                                value={endTime}
+                                onChange={(newTime) => setEndTime(newTime)}
                                 minutesStep={30}
                                 ampm={false}
-                                slotProps={{ textField: textFieldProps }}
-                                shouldDisableTime={(timeValue, clockType) => {
-                                    if (clockType === "hours") return shouldDisableHour(timeValue.getHours());
-                                    if (clockType === "minutes") return shouldDisableMinute(timeValue.getMinutes());
-                                    return false;
-                                }}
+                                minTime={new Date(0, 0, 0, minBookingHour, 0)}
+                                maxTime={new Date(0, 0, 0, maxBookingHour, 0)}
+                                disabled={!endDay} // ปิดจนกว่าจะเลือกวันสิ้นสุดก่อน
+                                slotProps={{ textField: { ...textFieldProps } }}
                             />
                         </LocalizationProvider>
+
                         <TextField type="number" label="จำนวนผู้เข้าร่วม" name="capacity" value={formData.capacity} onChange={handleChange} {...textFieldProps} />
                         <TextField label="ผู้ขอใช้บริการ" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
                         <TextField label="เบอร์ติดต่อผู้ขอใช้" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
