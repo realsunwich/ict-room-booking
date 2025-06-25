@@ -188,7 +188,7 @@ export default function AssessmentSum() {
                                             </Typography>
 
                                             <Typography sx={{ mt: 1, fontWeight: 400 }}>
-                                                Responses (รายละเอียดการประเมิน)
+                                                รายละเอียดการประเมิน
                                             </Typography>
                                             <Box
                                                 sx={{
