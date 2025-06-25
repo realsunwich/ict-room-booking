@@ -142,79 +142,94 @@ export default function AssessmentSum() {
 
                         <Divider sx={{ my: 2 }} />
 
-                        {/* เช็ค assessments ก่อนแสดง */}
                         {summary.assessments?.length === 0 && (
                             <Typography>ไม่มีข้อมูลการประเมิน</Typography>
                         )}
-                        {summary.assessments?.length > 0 && summary.assessments.map((item, index) => {
-                            return (
-                                <Paper
-                                    key={index}
-                                    sx={{
-                                        p: { xs: 1.5, sm: 2 },
-                                        mb: { xs: 2, sm: 2 },
-                                        borderRadius: 2,
-                                        boxShadow: 1,
-                                        maxWidth: { xs: "100%", sm: 500 },
-                                        mx: "auto",
-                                    }}
-                                    elevation={2}
-                                >
-                                    <Typography variant="h6" fontWeight={600}>
-                                        รหัสการประเมิน {index + 1}
-                                    </Typography>
-                                    <Typography variant="body2">สถานที่ {item.room}</Typography>
-                                    <Typography variant="body2">เพศ {item.gender}</Typography>
-                                    <Typography variant="body2">สถานภาพ {item.role}</Typography>
-                                    <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
-                                        ความคิดเห็น {item.comment || "-"}
-                                    </Typography>
 
-                                    <Typography sx={{ mt: 1, fontWeight: 400 }}>
-                                        Responses (รายละเอียดการประเมิน)
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            display: { xs: "flex", sm: "flex" },
-                                            flexDirection: { xs: "column", sm: "row" },
-                                            gap: 2,
-                                            p: { xs: 1, sm: 2 },
-                                            borderRadius: 1,
-                                            overflowX: "auto",
-                                            whiteSpace: "pre-wrap",
-                                            wordBreak: "break-word",
-                                            maxHeight: { xs: 220, sm: 300 },
-                                        }}
-                                    >
-                                        <RenderResponses
-                                            responses={
-                                                Array.isArray(item.responses)
-                                                    ? item.responses.map(({ title, responses }) => ({
-                                                        title,
-                                                        responses: Object.fromEntries(
-                                                            Object.entries(responses).map(([key, value]) =>
-                                                                typeof value === "object" && value !== null && "score" in value
-                                                                    ? [key, value.score]
-                                                                    : [key, value as number]
-                                                            )
-                                                        ),
-                                                    }))
-                                                    : Object.entries(item.responses).map(([title, responses]) => ({
-                                                        title,
-                                                        responses: Object.fromEntries(
-                                                            Object.entries(responses as Record<string, any>).map(([key, value]) =>
-                                                                typeof value === "object" && value !== null && "score" in value
-                                                                    ? [key, value.score]
-                                                                    : [key, value as number]
-                                                            )
-                                                        ),
-                                                    }))
-                                            }
-                                        />
-                                    </Box>
-                                </Paper>
-                            );
-                        })}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: { xs: "column", sm: "row" },
+                                flexWrap: "wrap",
+                                gap: 2,
+                                justifyContent: { sm: "flex-start" },
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: { xs: "column", sm: "row" },
+                                    flexWrap: "wrap",
+                                    gap: 2,
+                                    justifyContent: { sm: "flex-start" },
+                                }}
+                            >
+                                {summary.assessments?.length > 0 &&
+                                    summary.assessments.map((item, index) => (
+                                        <Paper
+                                            key={index}
+                                            sx={{
+                                                p: { xs: 1.5, sm: 2 },
+                                                borderRadius: 2,
+                                                boxShadow: 1,
+                                                width: { xs: "100%", sm: "calc(25% - 16px)" },
+                                                minWidth: 200,
+                                            }}
+                                            elevation={2}
+                                        >
+                                            <Typography variant="h6" fontWeight={600}>
+                                                รหัสการประเมิน {index + 1}
+                                            </Typography>
+                                            <Typography variant="body2">สถานที่ {item.room}</Typography>
+                                            <Typography variant="body2">เพศ {item.gender}</Typography>
+                                            <Typography variant="body2">สถานภาพ {item.role}</Typography>
+                                            <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                                                ความคิดเห็น {item.comment || "-"}
+                                            </Typography>
+
+                                            <Typography sx={{ mt: 1, fontWeight: 400 }}>
+                                                Responses (รายละเอียดการประเมิน)
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    gap: 2,
+                                                    p: { xs: 1, sm: 2 },
+                                                    borderRadius: 1,
+                                                    overflowX: "auto",
+                                                    maxHeight: { xs: 220, sm: 300 },
+                                                }}
+                                            >
+                                                <RenderResponses
+                                                    responses={Array.isArray(item.responses)
+                                                        ? item.responses.map(({ title, responses }) => ({
+                                                            title,
+                                                            responses: Object.fromEntries(
+                                                                Object.entries(responses).map(([key, value]) =>
+                                                                    typeof value === "object" && value !== null && "score" in value
+                                                                        ? [key, value.score]
+                                                                        : [key, value as number]
+                                                                )
+                                                            ),
+                                                        }))
+                                                        : Object.entries(item.responses).map(([title, responses]) => ({
+                                                            title,
+                                                            responses: Object.fromEntries(
+                                                                Object.entries(responses as Record<string, any>).map(([key, value]) =>
+                                                                    typeof value === "object" && value !== null && "score" in value
+                                                                        ? [key, value.score]
+                                                                        : [key, value as number]
+                                                                )
+                                                            ),
+                                                        }))}
+                                                />
+                                            </Box>
+                                        </Paper>
+                                    ))
+                                }
+                            </Box>
+                        </Box>
                     </>
                 ) : (
                     <Typography color="error">ไม่พบข้อมูลสรุป</Typography>
