@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
             where: { bookingID },
             data: {
                 SendStatus: 'คำขอถูกยกเลิก',
-                updatedAt: new Date(updatedAt)
+                updatedAt: new Date()
             },
         });
 
