@@ -169,8 +169,8 @@ export default function BookingHistory() {
                                 ) : (
                                     bookings.map((booking, index) => (
                                         <TableRow key={booking.bookingID}>
-                                            <TableCell sx={{ width: 40 }}>{index + 1}</TableCell>
-                                            <TableCell sx={{ width: 180 }} align="center">
+                                            <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
+                                            <TableCell sx={{ width: 190 }} align="center">
                                                 {new Date(booking.startDate).toLocaleString("th-TH", {
                                                     weekday: "long",
                                                     year: "numeric",
@@ -180,7 +180,7 @@ export default function BookingHistory() {
                                                     minute: "2-digit",
                                                 })}
                                             </TableCell>
-                                            <TableCell sx={{ width: 180 }} align="center">
+                                            <TableCell sx={{ width: 190 }} align="center">
                                                 {new Date(booking.endDate).toLocaleString("th-TH", {
                                                     weekday: "long",
                                                     year: "numeric",
@@ -190,17 +190,17 @@ export default function BookingHistory() {
                                                     minute: "2-digit",
                                                 })}
                                             </TableCell>
-                                            <TableCell sx={{ width: 120 }} align="center">
+                                            <TableCell sx={{ width: 140 }} align="center">
                                                 {booking.RoomName}
                                             </TableCell>
-                                            <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell sx={{ width: 290 }}>{booking.purpose}</TableCell>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 {booking.capacity}
                                             </TableCell>
-                                            <TableCell align="center" sx={{ width: 100 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 {booking.SendStatus}
                                             </TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 <FormPDFButton
                                                     booking={{
                                                         ...booking,
@@ -218,7 +218,7 @@ export default function BookingHistory() {
                                                     }}
                                                 />
                                             </TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 <Tooltip
                                                     title={
                                                         booking.SendStatus.trim() === "อนุมัติ" ||
@@ -251,7 +251,7 @@ export default function BookingHistory() {
                                                     onStatusChange={handleStatusChange}
                                                 />
                                             )}
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 <Tooltip
                                                     title={
                                                         booking.SendStatus.trim() === "อนุมัติ"

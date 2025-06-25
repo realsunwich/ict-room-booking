@@ -5,6 +5,7 @@ import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableCon
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Header from "@/components/header";
 
 import EditBookingDialog from "@/components/RoomModal/EditBookingDialog";
@@ -125,8 +126,8 @@ export default function BookingHistory() {
                                 ) : (
                                     bookings.map((booking, index) => (
                                         <TableRow key={index}>
-                                            <TableCell sx={{ width: 40 }}>{index + 1}</TableCell>
-                                            <TableCell sx={{ width: 180 }} align="center">
+                                            <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
+                                            <TableCell sx={{ width: 200 }} align="center">
                                                 {new Date(booking.startDate).toLocaleString("th-TH", {
                                                     weekday: "long",
                                                     year: "numeric",
@@ -136,7 +137,7 @@ export default function BookingHistory() {
                                                     minute: "2-digit"
                                                 })}
                                             </TableCell>
-                                            <TableCell sx={{ width: 180 }} align="center">
+                                            <TableCell sx={{ width: 200 }} align="center">
                                                 {new Date(booking.endDate).toLocaleString("th-TH", {
                                                     weekday: "long",
                                                     year: "numeric",
@@ -146,11 +147,11 @@ export default function BookingHistory() {
                                                     minute: "2-digit"
                                                 })}
                                             </TableCell>
-                                            <TableCell sx={{ width: 120 }} align="center">{booking.RoomName}</TableCell>
+                                            <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
                                             <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
-                                            <TableCell align="center" sx={{ width: 100 }}>{booking.SendStatus}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>{booking.capacity}</TableCell>
+                                            <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 <Tooltip title="แก้ไขคำขอ">
                                                     <span>
                                                         <Button
@@ -175,7 +176,7 @@ export default function BookingHistory() {
                                                     defaultData={selectedBooking}
                                                 />
                                             )}
-                                            <TableCell align="center" sx={{ width: 40 }}>
+                                            <TableCell align="center" sx={{ width: 20 }}>
                                                 <Tooltip
                                                     title={
                                                         ["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())
@@ -193,7 +194,7 @@ export default function BookingHistory() {
                                                                 setCancelDialogOpen(true);
                                                             }}
                                                         >
-                                                            ❌
+                                                            <CancelIcon />
                                                         </Button>
                                                     </span>
                                                 </Tooltip>

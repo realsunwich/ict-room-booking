@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
-        const { bookingID } = body;
+        const { bookingID,updatedAt } = body;
 
         if (!bookingID) {
             return NextResponse.json({ error: 'Missing booking id' }, { status: 400 });
@@ -26,7 +26,8 @@ export async function PUT(req: NextRequest) {
         await prisma.bookingInfo.update({
             where: { bookingID },
             data: {
-                SendStatus: 'ยกเลิกโดยผู้ใช้',
+                SendStatus: 'คำขอถูกยกเลิก',
+                updatedAt: new Date(updatedAt)
             },
         });
 

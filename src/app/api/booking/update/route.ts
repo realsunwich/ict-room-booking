@@ -38,7 +38,7 @@ export async function PUT(request: NextRequest) {
                 capacity: Number(capacity),
                 cfSender,
                 cfPhone,
-                updatedAt
+                updatedAt: new Date(updatedAt)
             },
         });
 
