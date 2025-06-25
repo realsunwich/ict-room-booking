@@ -262,7 +262,6 @@ export default function BookingHistory() {
                                                     <span>
                                                         <IconButton
                                                             color="success"
-
                                                             onClick={() => {
                                                                 setSelectedBooking(booking);
                                                                 setCheckDialogOpen(true);

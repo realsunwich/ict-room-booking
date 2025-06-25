@@ -211,17 +211,10 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             </Select>
                         </FormControl>
                         <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} {...textFieldProps} />
-                        <TextField
-                            label="เบอร์โทรศัพท์ภายใน"
-                            name="phoneIn"
-                            value={formData.phoneIn}
-                            onChange={handleChange}
-                            {...textFieldProps}
-                            required={false}
-                        />
+                        <TextField label="เบอร์โทรศัพท์ภายใน" name="phoneIn" value={formData.phoneIn} onChange={handleChange}                            {...textFieldProps} required={false} />
                         <TextField label="สังกัดหน่วยงาน" name="officeLocation" value={formData.officeLocation} onChange={handleChange} {...textFieldProps} />
-                        <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
                         <TextField label="ห้องประชุม" name="RoomName" value={roomName} disabled {...textFieldProps} />
+                        <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
 
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
                             {/* เริ่มวันที่ */}
