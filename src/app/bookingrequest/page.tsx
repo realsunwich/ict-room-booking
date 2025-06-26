@@ -102,7 +102,7 @@ export default function BookingHistory() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>
+        <Box sx={{ marginTop: { xs: 19, sm: 15 } }}>
             <Header />
             <Box
                 sx={{

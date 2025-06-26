@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-    Box,
-    Typography,
-    Button,
-    Tooltip,
-    CircularProgress,
-    Paper,
-    Divider,
-    Table,
-    TableBody,
-    TableRow,
-    TableCell,
-} from "@mui/material";
+import { Box, Typography, Button, Tooltip, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Header from "@/components/header";
+import AssessmentFilter, { FilterOptions } from "@/components/AssessmentFilter";
 
 interface AssessmentDetail {
     id: string;
@@ -50,7 +39,6 @@ function RenderResponses({
                     const maxScore = Object.keys(questions).length * 5;
                     const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
-                    // สะสมคะแนนรวมทั้งหมด
                     grandTotalScore += totalScore;
                     grandMaxScore += maxScore;
 
@@ -98,6 +86,22 @@ export default function AssessmentSum() {
     const [showContact, setShowContact] = useState(true);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState<FilterOptions>({
+        room: "",
+        role: "",
+        gender: "",
+    });
+    const rooms = summary ? [...new Set(summary.assessments.map((a) => a.room))].filter(Boolean) : [];
+    const roles = summary ? [...new Set(summary.assessments.map((a) => a.role))].filter(Boolean) : [];
+    const genders = summary ? [...new Set(summary.assessments.map((a) => a.gender))].filter(Boolean) : [];
+
+    const filteredAssessments = summary
+        ? summary.assessments.filter((a) =>
+            (!filter.room || a.room === filter.room) &&
+            (!filter.role || a.role === filter.role) &&
+            (!filter.gender || a.gender === filter.gender)
+        )
+        : [];
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -116,7 +120,7 @@ export default function AssessmentSum() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 25, sm: 15 } }}>
+        <Box sx={{ marginTop: { xs: 20, sm: 15 } }}>
             <Header />
             <Box
                 sx={{
@@ -143,6 +147,18 @@ export default function AssessmentSum() {
                     </Typography>
                 </Box>
 
+                <Divider sx={{ my: 2 }} />
+
+                <Box sx={{mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
+                    <AssessmentFilter
+                        filter={filter}
+                        setFilter={setFilter}
+                        availableRooms={rooms}
+                        availableRoles={roles}
+                        availableGenders={genders}
+                    />
+                </Box>
+
                 {loading ? (
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
@@ -150,13 +166,18 @@ export default function AssessmentSum() {
                 ) : summary ? (
                     <>
                         <Typography variant="h6" gutterBottom>
-                            🔢 ผลการประเมินทั้งหมด {summary.total} ครั้ง
+                            🔢 ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
+                            {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
                         </Typography>
 
                         <Divider sx={{ my: 2 }} />
-
                         {summary.assessments?.length === 0 && (
-                            <Typography>ไม่มีข้อมูลการประเมิน</Typography>
+                            <Typography
+                                variant="body1"
+                                sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}
+                            >
+                                ไม่มีข้อมูลการประเมิน
+                            </Typography>
                         )}
 
                         <Box
@@ -168,80 +189,87 @@ export default function AssessmentSum() {
                                 justifyContent: { sm: "flex-start" },
                             }}
                         >
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: { xs: "column", sm: "row" },
-                                    flexWrap: "wrap",
-                                    gap: 2,
-                                    justifyContent: { sm: "flex-start" },
-                                }}
-                            >
-                                {summary.assessments?.length > 0 &&
-                                    summary.assessments.map((item, index) => (
-                                        <Paper
-                                            key={index}
-                                            sx={{
-                                                p: { xs: 1.5, sm: 2 },
-                                                borderRadius: 2,
-                                                boxShadow: 1,
-                                                width: { xs: "100%", sm: "calc(25% - 16px)" },
-                                                minWidth: 200,
-                                            }}
-                                            elevation={2}
-                                        >
-                                            <Typography variant="h6" fontWeight={600}>
-                                                รหัสการประเมิน {index + 1}
-                                            </Typography>
-                                            <Typography variant="body2">สถานที่ {item.room}</Typography>
-                                            <Typography variant="body2">เพศ {item.gender}</Typography>
-                                            <Typography variant="body2">สถานภาพ {item.role}</Typography>
-                                            <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
-                                                ความคิดเห็น {item.comment || "-"}
-                                            </Typography>
+                            {filteredAssessments.length > 0 ? (
+                                filteredAssessments.map((item, index) => (
+                                    <Paper
+                                        key={index}
+                                        sx={{
+                                            p: { xs: 1.5, sm: 2 },
+                                            borderRadius: 2,
+                                            boxShadow: 1,
+                                            width: { xs: "100%", sm: "calc(25% - 16px)" },
+                                            minWidth: 200,
+                                        }}
+                                        elevation={2}
+                                    >
+                                        <Typography variant="h6" fontWeight={600}>
+                                            รหัสการประเมิน {index + 1}
+                                        </Typography>
+                                        <Typography variant="body2">สถานที่ {item.room}</Typography>
+                                        <Typography variant="body2">เพศ {item.gender}</Typography>
+                                        <Typography variant="body2">สถานภาพ {item.role}</Typography>
+                                        <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                                            ความคิดเห็น {item.comment || "-"}
+                                        </Typography>
 
-                                            <Typography sx={{ mt: 1, fontWeight: 400 }}>
-                                                รายละเอียดการประเมิน
-                                            </Typography>
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    flexDirection: "column",
-                                                    gap: 2,
-                                                    p: { xs: 1, sm: 2 },
-                                                    borderRadius: 1,
-                                                    overflowX: "auto",
-                                                    maxHeight: { xs: 220, sm: 300 },
-                                                }}
-                                            >
-                                                <RenderResponses
-                                                    responses={Array.isArray(item.responses)
-                                                        ? item.responses.map(({ title, responses }) => ({
-                                                            title,
-                                                            responses: Object.fromEntries(
-                                                                Object.entries(responses).map(([key, value]) =>
-                                                                    typeof value === "object" && value !== null && "score" in value
-                                                                        ? [key, value.score]
-                                                                        : [key, value as number]
-                                                                )
-                                                            ),
-                                                        }))
-                                                        : Object.entries(item.responses).map(([title, responses]) => ({
-                                                            title,
-                                                            responses: Object.fromEntries(
-                                                                Object.entries(responses as Record<string, any>).map(([key, value]) =>
-                                                                    typeof value === "object" && value !== null && "score" in value
-                                                                        ? [key, value.score]
-                                                                        : [key, value as number]
-                                                                )
-                                                            ),
-                                                        }))}
-                                                />
-                                            </Box>
-                                        </Paper>
-                                    ))
-                                }
-                            </Box>
+                                        <Typography sx={{ mt: 1, fontWeight: 400 }}>
+                                            รายละเอียดการประเมิน
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                gap: 2,
+                                                p: { xs: 1, sm: 2 },
+                                                borderRadius: 1,
+                                                overflowX: "auto",
+                                                maxHeight: { xs: 220, sm: 300 },
+                                            }}
+                                        >
+                                            <RenderResponses
+                                                responses={Array.isArray(item.responses)
+                                                    ? item.responses.map(({ title, responses }) => ({
+                                                        title,
+                                                        responses: Object.fromEntries(
+                                                            Object.entries(responses).map(([key, value]) =>
+                                                                typeof value === "object" && value !== null && "score" in value
+                                                                    ? [key, value.score]
+                                                                    : [key, value as number]
+                                                            )
+                                                        ),
+                                                    }))
+                                                    : Object.entries(item.responses).map(([title, responses]) => ({
+                                                        title,
+                                                        responses: Object.fromEntries(
+                                                            Object.entries(responses as Record<string, any>).map(([key, value]) =>
+                                                                typeof value === "object" && value !== null && "score" in value
+                                                                    ? [key, value.score]
+                                                                    : [key, value as number]
+                                                            )
+                                                        ),
+                                                    }))}
+                                            />
+                                        </Box>
+                                    </Paper>
+                                ))
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "100%",
+                                        height: 200,
+                                    }}>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}
+                                    >
+                                        ไม่มีข้อมูลที่ตรงกับเงื่อนไข
+                                    </Typography>
+                                </Box>
+                            )}
                         </Box>
                     </>
                 ) : (
