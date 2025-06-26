@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -83,6 +84,7 @@ interface Summary {
 }
 
 export default function AssessmentSum() {
+    const { data: session } = useSession();
     const [showContact, setShowContact] = useState(true);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -120,7 +122,14 @@ export default function AssessmentSum() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 20, sm: 15 } }}>
+        <Box
+            sx={{
+                marginTop:
+                    session?.user?.role === "User"
+                        ? { xs: 23, sm: 15 }
+                        : { xs: 19, sm: 15 },
+            }}
+        >
             <Header />
             <Box
                 sx={{
@@ -149,7 +158,7 @@ export default function AssessmentSum() {
 
                 <Divider sx={{ my: 2 }} />
 
-                <Box sx={{mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
+                <Box sx={{ mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
                     <AssessmentFilter
                         filter={filter}
                         setFilter={setFilter}

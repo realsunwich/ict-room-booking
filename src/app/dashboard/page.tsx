@@ -57,7 +57,6 @@ const rooms: Room[] = [
 
 export default function Dashboard() {
     const { data: session } = useSession();
-
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
@@ -185,7 +184,14 @@ export default function Dashboard() {
     );
 
     return (
-        <Box sx={{ marginTop: { xs: 20, sm: 15 } }}>
+        <Box
+            sx={{
+            marginTop:
+                session?.user?.role === "User"
+                ? { xs: 23, sm: 15 }
+                : { xs: 19, sm: 15 },
+            }}
+        >
             <Header />
 
             <Box

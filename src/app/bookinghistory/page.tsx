@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -30,6 +31,7 @@ interface Booking {
 }
 
 export default function BookingHistory() {
+    const { data: session } = useSession();
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -65,7 +67,14 @@ export default function BookingHistory() {
     }, []);
 
     return (
-        <Box sx={{ marginTop: { xs: 19, sm: 15 } }}>
+        <Box
+            sx={{
+                marginTop:
+                    session?.user?.role === "User"
+                        ? { xs: 23, sm: 15 }
+                        : { xs: 19, sm: 15 },
+            }}
+        >
             <Header />
             <Box
                 sx={{
