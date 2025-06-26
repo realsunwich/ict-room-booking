@@ -2,9 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Box, Typography, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
 import Header from "@/components/header";
 import AssessmentFilter, { FilterOptions } from "@/components/AssessmentFilter";
 
@@ -16,7 +14,7 @@ interface AssessmentDetail {
     comment: string;
     responses: {
         title: string;
-        responses: Record<string, { label: string; score: number }>;
+        responses: Record<string, { label: string; score: number }> | Record<string, number>;
     }[];
 }
 
@@ -25,11 +23,23 @@ function RenderResponses({
 }: {
     responses: { title: string; responses: Record<string, number> }[];
 }) {
-    let grandTotalScore = 0;
-    let grandMaxScore = 0;
+    const grandTotalScore = responses.reduce(
+        (sum, { responses }) =>
+            sum + Object.values(responses).reduce((s, v) => s + v, 0),
+        0
+    );
+    const grandMaxScore = responses.reduce(
+        (sum, { responses }) => sum + Object.keys(responses).length * 5,
+        0
+    );
+    const grandPercentage = grandMaxScore > 0 ? (grandTotalScore / grandMaxScore) * 100 : 0;
 
     return (
         <Box>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+                คะแนนรวมทั้งหมด ({grandPercentage.toFixed(2)}%)
+            </Typography>
+
             {responses
                 .sort((a, b) => {
                     const getGroupNumber = (title: string) => parseInt(title.split(".")[0]) || 99;
@@ -40,19 +50,11 @@ function RenderResponses({
                     const maxScore = Object.keys(questions).length * 5;
                     const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
-                    grandTotalScore += totalScore;
-                    grandMaxScore += maxScore;
-
                     return (
                         <Box key={title} sx={{ mb: 2 }}>
-                            <Typography variant="subtitle1" fontWeight={600}>
-                                คะแนนรวมทั้งหมด ({((grandTotalScore / grandMaxScore) * 100).toFixed(2)}%)
-                            </Typography>
-
                             <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                                 {title} — {percentage.toFixed(2)}%
                             </Typography>
-
                             <Table size="small" sx={{ maxWidth: 400 }}>
                                 <TableBody>
                                     {Object.entries(questions)
@@ -93,17 +95,6 @@ export default function AssessmentSum() {
         role: "",
         gender: "",
     });
-    const rooms = summary ? [...new Set(summary.assessments.map((a) => a.room))].filter(Boolean) : [];
-    const roles = summary ? [...new Set(summary.assessments.map((a) => a.role))].filter(Boolean) : [];
-    const genders = summary ? [...new Set(summary.assessments.map((a) => a.gender))].filter(Boolean) : [];
-
-    const filteredAssessments = summary
-        ? summary.assessments.filter((a) =>
-            (!filter.room || a.room === filter.room) &&
-            (!filter.role || a.role === filter.role) &&
-            (!filter.gender || a.gender === filter.gender)
-        )
-        : [];
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -121,15 +112,58 @@ export default function AssessmentSum() {
         document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
     }, []);
 
+    const rooms = summary ? [...new Set(summary.assessments.map((a) => a.room))].filter(Boolean) : [];
+    const roles = summary ? [...new Set(summary.assessments.map((a) => a.role))].filter(Boolean) : [];
+    const genders = summary ? [...new Set(summary.assessments.map((a) => a.gender))].filter(Boolean) : [];
+
+    const filteredAssessments = summary
+        ? summary.assessments.filter((a) =>
+            (!filter.room || a.room === filter.room) &&
+            (!filter.role || a.role === filter.role) &&
+            (!filter.gender || a.gender === filter.gender)
+        )
+        : [];
+
+    function calculateRoomAveragePercentages(assessments: AssessmentDetail[]) {
+        const roomMap: Record<string, { totalScore: number; maxScore: number }> = {};
+
+        assessments.forEach(({ room, responses }) => {
+            let totalScore = 0;
+            let maxScore = 0;
+
+            const responsesArray = Array.isArray(responses)
+                ? responses
+                : Object.entries(responses).map(([title, resp]) => ({
+                    title,
+                    responses: Object.fromEntries(
+                        Object.entries(resp as Record<string, any>).map(([key, value]) =>
+                            typeof value === "object" && value !== null && "score" in value
+                                ? [key, value.score]
+                                : [key, value as number]
+                        )
+                    ),
+                }));
+
+            responsesArray.forEach(({ responses: questions }) => {
+                Object.values(questions).forEach((score) => {
+                    totalScore += score ?? 0;
+                    maxScore += 5;
+                });
+            });
+
+            if (!roomMap[room]) roomMap[room] = { totalScore: 0, maxScore: 0 };
+            roomMap[room].totalScore += totalScore;
+            roomMap[room].maxScore += maxScore;
+        });
+
+        return Object.entries(roomMap).map(([room, { totalScore, maxScore }]) => ({
+            room,
+            average: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
+        }));
+    }
+
     return (
-        <Box
-            sx={{
-                marginTop:
-                    session?.user?.role === "User"
-                        ? { xs: 23, sm: 15 }
-                        : { xs: 19, sm: 15 },
-            }}
-        >
+        <Box sx={{ marginTop: session?.user?.role === "User" ? { xs: 23, sm: 15 } : { xs: 19, sm: 15 } }}>
             <Header />
             <Box
                 sx={{
@@ -142,12 +176,7 @@ export default function AssessmentSum() {
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                <Box
-                    sx={{
-                        textAlign: "center",
-                        mb: 3,
-                    }}
-                >
+                <Box sx={{ textAlign: "center", mb: 3 }}>
                     <Typography variant="h5" fontWeight={600}>
                         สรุปผลการประเมินห้องประชุม
                     </Typography>
@@ -155,9 +184,7 @@ export default function AssessmentSum() {
                         คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
-
                 <Divider sx={{ my: 2 }} />
-
                 <Box sx={{ mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
                     <AssessmentFilter
                         filter={filter}
@@ -167,28 +194,51 @@ export default function AssessmentSum() {
                         availableGenders={genders}
                     />
                 </Box>
-
                 {loading ? (
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
                     </Box>
                 ) : summary ? (
                     <>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom fontWeight={600}>
                             🔢 ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
                             {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
                         </Typography>
-
+                        {filteredAssessments.length > 0 && (
+                            <Box sx={{ mt: 2 }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: { xs: "column", sm: "row" },
+                                        flexWrap: "wrap",
+                                        alignItems: { xs: "flex-start", sm: "center" },
+                                        gap: { xs: 0.5, sm: 2 },
+                                    }}
+                                >
+                                    <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
+                                        🏢 คะแนนเฉลี่ยรายห้อง
+                                    </Typography>
+                                    {calculateRoomAveragePercentages(filteredAssessments).map((room) => (
+                                        <Typography
+                                            key={room.room}
+                                            variant="body2"
+                                            sx={{
+                                                fontSize: { xs: "0.9rem", sm: "1rem" },
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            {room.room} มีผลการประเมิน {room.average.toFixed(2)}%
+                                        </Typography>
+                                    ))}
+                                </Box>
+                            </Box>
+                        )}
                         <Divider sx={{ my: 2 }} />
                         {summary.assessments?.length === 0 && (
-                            <Typography
-                                variant="body1"
-                                sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}
-                            >
+                            <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}>
                                 ไม่มีข้อมูลการประเมิน
                             </Typography>
                         )}
-
                         <Box
                             sx={{
                                 display: "flex",
@@ -220,7 +270,6 @@ export default function AssessmentSum() {
                                         <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
                                             ความคิดเห็น {item.comment || "-"}
                                         </Typography>
-
                                         <Typography sx={{ mt: 1, fontWeight: 400 }}>
                                             รายละเอียดการประเมิน
                                         </Typography>
@@ -236,27 +285,29 @@ export default function AssessmentSum() {
                                             }}
                                         >
                                             <RenderResponses
-                                                responses={Array.isArray(item.responses)
-                                                    ? item.responses.map(({ title, responses }) => ({
-                                                        title,
-                                                        responses: Object.fromEntries(
-                                                            Object.entries(responses).map(([key, value]) =>
-                                                                typeof value === "object" && value !== null && "score" in value
-                                                                    ? [key, value.score]
-                                                                    : [key, value as number]
-                                                            )
-                                                        ),
-                                                    }))
-                                                    : Object.entries(item.responses).map(([title, responses]) => ({
-                                                        title,
-                                                        responses: Object.fromEntries(
-                                                            Object.entries(responses as Record<string, any>).map(([key, value]) =>
-                                                                typeof value === "object" && value !== null && "score" in value
-                                                                    ? [key, value.score]
-                                                                    : [key, value as number]
-                                                            )
-                                                        ),
-                                                    }))}
+                                                responses={
+                                                    Array.isArray(item.responses)
+                                                        ? item.responses.map(({ title, responses }) => ({
+                                                            title,
+                                                            responses: Object.fromEntries(
+                                                                Object.entries(responses).map(([key, value]) =>
+                                                                    typeof value === "object" && value !== null && "score" in value
+                                                                        ? [key, value.score]
+                                                                        : [key, value as number]
+                                                                )
+                                                            ),
+                                                        }))
+                                                        : Object.entries(item.responses).map(([title, resp]) => ({
+                                                            title,
+                                                            responses: Object.fromEntries(
+                                                                Object.entries(resp as Record<string, any>).map(([key, value]) =>
+                                                                    typeof value === "object" && value !== null && "score" in value
+                                                                        ? [key, value.score]
+                                                                        : [key, value as number]
+                                                                )
+                                                            ),
+                                                        }))
+                                                }
                                             />
                                         </Box>
                                     </Paper>
@@ -284,57 +335,6 @@ export default function AssessmentSum() {
                 ) : (
                     <Typography color="error">ไม่พบข้อมูลสรุป</Typography>
                 )}
-
-                <Box
-                    sx={{
-                        position: "fixed",
-                        bottom: 24,
-                        right: 24,
-                        zIndex: 1000,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-end",
-                        gap: 1,
-                    }}
-                >
-                    {showContact && (
-                        <Box
-                            sx={{
-                                bgcolor: "background.paper",
-                                p: 2,
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                minWidth: 250,
-                            }}
-                        >
-                            <Typography variant="body2" gutterBottom>
-                                ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                ตำแหน่ง : นักวิชาการโสตทัศนศึกษา
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                เบอร์โทรติดต่อ : 098-9562398
-                            </Typography>
-                        </Box>
-                    )}
-                    <Tooltip title={showContact ? "ซ่อนข้อมูลติดต่อ" : "แสดงข้อมูลติดต่อ"}>
-                        <Button
-                            onClick={() => setShowContact((prev) => !prev)}
-                            sx={{
-                                minWidth: 0,
-                                width: 30,
-                                height: 30,
-                                borderRadius: "50%",
-                                bgcolor: "primary.main",
-                                color: "white",
-                                "&:hover": { bgcolor: "primary.dark" },
-                            }}
-                        >
-                            {showContact ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </Button>
-                    </Tooltip>
-                </Box>
             </Box>
         </Box>
     );
