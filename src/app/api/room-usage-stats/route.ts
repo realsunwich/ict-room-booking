@@ -6,57 +6,85 @@ const prisma = new PrismaClient();
 export async function GET() {
     try {
         const bookings = await prisma.bookingInfo.findMany({
-            where: { SendStatus: "เสร็จสิ้น" },
             select: {
                 RoomName: true,
-                startDate: true,
+                SendStatus: true,
+                CancelReason: true,
+                RejectReason: true,
+                createdAt: true,
             },
         });
 
-        const statsMap: Record<string, {
+        const roomStatsMap: Record<string, {
             totalUsage: number;
+            statusCounts: Record<string, number>;
             usageByMonth: Record<string, number>;
             usageByYear: Record<string, number>;
         }> = {};
 
-        bookings.forEach(({ RoomName, startDate }) => {
-            if (!RoomName || !startDate) return;
+        const canceledOrRejected: {
+            RoomName: string;
+            SendStatus: string;
+            CancelReason?: string | null;
+            RejectReason?: string | null;
+        }[] = [];
 
-            if (!statsMap[RoomName]) {
-                statsMap[RoomName] = {
+        bookings.forEach((b) => {
+            const room = b.RoomName || "ไม่ทราบชื่อห้อง";
+            const status = b.SendStatus || "ไม่ทราบสถานะ";
+            const createdAt = b.createdAt ? new Date(b.createdAt) : new Date();
+
+            const monthKey = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}`;
+            const yearKey = `${createdAt.getFullYear()}`;
+
+            if (!roomStatsMap[room]) {
+                roomStatsMap[room] = {
                     totalUsage: 0,
+                    statusCounts: {},
                     usageByMonth: {},
                     usageByYear: {},
                 };
             }
 
-            const stat = statsMap[RoomName];
-            stat.totalUsage++;
+            const stats = roomStatsMap[room];
 
-            const date = new Date(startDate);
-            const year = date.getFullYear().toString();
-            const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 01-12
-            const monthKey = `${year}-${month}`;
+            stats.totalUsage += 1;
 
-            stat.usageByMonth[monthKey] = (stat.usageByMonth[monthKey] || 0) + 1;
+            // สถานะ
+            stats.statusCounts[status] = (stats.statusCounts[status] || 0) + 1;
 
-            stat.usageByYear[year] = (stat.usageByYear[year] || 0) + 1;
+            // รายเดือน
+            stats.usageByMonth[monthKey] = (stats.usageByMonth[monthKey] || 0) + 1;
+
+            // รายปี
+            stats.usageByYear[yearKey] = (stats.usageByYear[yearKey] || 0) + 1;
+
+            // ถูกยกเลิก / ไม่อนุมัติ
+            if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") {
+                canceledOrRejected.push({
+                    RoomName: room,
+                    SendStatus: status,
+                    CancelReason: b.CancelReason,
+                    RejectReason: b.RejectReason,
+                });
+            }
         });
 
-        const stats = Object.entries(statsMap).map(([RoomName, data]) => ({
+        const stats = Object.entries(roomStatsMap).map(([RoomName, data]) => ({
             RoomName,
             totalUsage: data.totalUsage,
-            usageByMonth: Object.entries(data.usageByMonth)
-                .map(([month, count]) => ({ month, count }))
-                .sort((a, b) => a.month.localeCompare(b.month)),
-            usageByYear: Object.entries(data.usageByYear)
-                .map(([year, count]) => ({ year, count }))
-                .sort((a, b) => a.year.localeCompare(b.year)),
+            statusCounts: data.statusCounts,
+            usageByMonth: Object.entries(data.usageByMonth).map(([month, count]) => ({ month, count })),
+            usageByYear: Object.entries(data.usageByYear).map(([year, count]) => ({ year, count })),
         }));
 
-        return NextResponse.json(stats);
+        return NextResponse.json({
+            stats,
+            canceledOrRejected,
+        });
+
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });
+        console.error("เกิดข้อผิดพลาด:", error);
+        return NextResponse.json({ error: "เกิดข้อผิดพลาดในการโหลดข้อมูล" }, { status: 500 });
     }
 }

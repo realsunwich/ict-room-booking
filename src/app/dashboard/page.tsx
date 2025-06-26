@@ -65,6 +65,8 @@ export default function Dashboard() {
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
     const [statsDialogOpen, setStatsDialogOpen] = useState(false);
     const [roomStats, setRoomStats] = useState<RoomStat[]>([]);
+    const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
+    const [canceledOrRejected, setCanceledOrRejected] = useState<any[]>([]);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -90,14 +92,18 @@ export default function Dashboard() {
         setStatsDialogOpen(false);
 
         try {
-            await fetch("/api/update-room-stats", { method: "POST" });
-
             const res = await fetch("/api/room-usage-stats");
-            const allStats = await res.json();
+            const data = await res.json();
 
-            const filtered = allStats.filter((stat: RoomStat) => stat.RoomName === roomName);
+            if (!Array.isArray(data?.stats)) {
+                console.error("ข้อมูลที่ได้รับไม่ใช่ array:", data);
+                return;
+            }
 
+            const filtered = data.stats.filter((stat: RoomStat) => stat.RoomName === roomName);
             setRoomStats(filtered);
+            setStatusCounts(data.statusCounts || {});
+            setCanceledOrRejected(data.canceledOrRejected || []);
             setStatsDialogOpen(true);
         } catch (err) {
             console.error(err);
@@ -239,6 +245,8 @@ export default function Dashboard() {
                     open={statsDialogOpen}
                     onClose={() => setStatsDialogOpen(false)}
                     stats={roomStats}
+                    statusCounts={statusCounts}
+                    canceledOrRejected={canceledOrRejected}
                 />
             </Box>
 

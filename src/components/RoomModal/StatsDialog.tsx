@@ -1,14 +1,14 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, } from "@mui/material";
 
 interface MonthlyCount {
-    month: string; // เช่น "01", "02", ..., "12"
+    month: string;
     count: number;
 }
 
 interface YearlyCount {
-    year: string; // เช่น "2023", "2024"
+    year: string;
     count: number;
 }
 
@@ -17,41 +17,50 @@ interface RoomStat {
     totalUsage: number;
     usageByMonth?: MonthlyCount[];
     usageByYear?: YearlyCount[];
+    statusCounts?: Record<string, number>;
 }
 
 interface StatsDialogProps {
     open: boolean;
     onClose: () => void;
     stats: RoomStat[];
+    statusCounts: Record<string, number>;
+    canceledOrRejected: {
+        RoomName: string;
+        SendStatus: string;
+        RejectReason?: string | null;
+        CancelReason?: string | null;
+    }[];
 }
 
 function formatThaiMonthYear(isoMonth: string): string {
     const [yearStr, monthStr] = isoMonth.split("-");
     const year = parseInt(yearStr, 10) + 543;
     const month = parseInt(monthStr, 10);
-
     const thaiMonths = [
         "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
         "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
     ];
-
-    const thaiMonthName = thaiMonths[month - 1] || "ไม่ทราบเดือน";
-
-    return `${thaiMonthName} ${year}`;
+    return `${thaiMonths[month - 1] || "ไม่ทราบเดือน"} ${year}`;
 }
 
 function formatThaiYear(year: string): string {
-    const thYear = parseInt(year, 10) + 543;
-    return `${thYear}`;
+    return `${parseInt(year, 10) + 543}`;
 }
 
-
-export default function StatsDialog({ open, onClose, stats }: StatsDialogProps) {
+export default function StatsDialog({
+    open,
+    onClose,
+    stats,
+    statusCounts,
+    canceledOrRejected,
+}: StatsDialogProps) {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            {stats.length === 1 && <DialogTitle>สถิติการใช้งาน {stats[0].RoomName}</DialogTitle>}
+            <DialogTitle>สถิติการใช้งานห้องประชุม</DialogTitle>
 
             <DialogContent dividers>
+                {/* สถิติรายห้อง */}
                 {stats.length === 0 ? (
                     <Typography align="center">ไม่มีข้อมูลสถิติการใช้งาน</Typography>
                 ) : (
@@ -69,8 +78,46 @@ export default function StatsDialog({ open, onClose, stats }: StatsDialogProps) 
                                 }}
                             >
                                 <Typography variant="h6" fontWeight="bold" mb={1}>
-                                    ถูกใช้งานทั้งหมด {stat.totalUsage} ครั้ง
+                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
                                 </Typography>
+
+                                {/* แสดงสถานะคำขอในแต่ละห้อง */}
+                                <Typography variant="subtitle1" fontWeight="bold" mt={2}>
+                                    สถิติการใช้งานห้องประชุม
+                                </Typography>
+                                {stat.statusCounts && Object.entries(stat.statusCounts).map(([status, count]) => (
+                                    <Typography key={status} variant="body2" sx={{ ml: 2 }}>
+                                        คำขอ{status} จำนวน {count} ครั้ง
+                                    </Typography>
+                                ))}
+                                <Typography variant="subtitle1" fontWeight="bold" mt={2}>
+                                    รายการที่ถูกยกเลิก / ไม่อนุมัติ
+                                </Typography>
+                                {canceledOrRejected.filter(item => item.RoomName === stat.RoomName).length > 0 ? (
+                                    canceledOrRejected
+                                        .filter(item => item.RoomName === stat.RoomName)
+                                        .map((item, idx) => (
+                                            <Box key={idx} sx={{ ml: 2, mb: 1 }}>
+                                                <Typography variant="body2">
+                                                    สถานะคำขอ <strong>{item.SendStatus}</strong>
+                                                </Typography>
+                                                {item.CancelReason && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        เหตุผล {item.CancelReason}
+                                                    </Typography>
+                                                )}
+                                                {item.RejectReason && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        เหตุผล {item.RejectReason}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                        ))
+                                ) : (
+                                    <Typography variant="body2" sx={{ ml: 2 }}>
+                                        ไม่มีรายการถูกยกเลิกหรือไม่อนุมัติ
+                                    </Typography>
+                                )}
 
                                 <Typography variant="subtitle1" fontWeight="bold" mt={1} mb={0.5}>
                                     รายเดือน

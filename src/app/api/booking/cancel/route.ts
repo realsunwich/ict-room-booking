@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
         await prisma.bookingInfo.update({
             where: { bookingID },
             data: {
-                SendStatus: 'คำขอถูกยกเลิก',
+                SendStatus: 'ถูกยกเลิก',
                 CancelReason: cancelReason || null,
                 updatedAt: new Date(),
             },
