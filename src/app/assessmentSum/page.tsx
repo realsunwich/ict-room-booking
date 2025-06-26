@@ -35,6 +35,9 @@ function RenderResponses({
 }: {
     responses: { title: string; responses: Record<string, number> }[];
 }) {
+    let grandTotalScore = 0;
+    let grandMaxScore = 0;
+
     return (
         <Box>
             {responses
@@ -42,36 +45,46 @@ function RenderResponses({
                     const getGroupNumber = (title: string) => parseInt(title.split(".")[0]) || 99;
                     return getGroupNumber(a.title) - getGroupNumber(b.title);
                 })
-                .map(({ title, responses: questions }) => (
-                    <Box key={title} sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                            {title}
-                        </Typography>
-                        <Table size="small" sx={{ maxWidth: 400 }}>
-                            <TableBody>
-                                {Object.entries(questions)
-                                    .sort(([a], [b]) => {
-                                        const parse = (str: string) =>
-                                            str
-                                                .match(/^\d+\.\d+/)?.[0]
-                                                .split(".")
-                                                .map(Number) ?? [Number.MAX_VALUE];
+                .map(({ title, responses: questions }) => {
+                    const totalScore = Object.values(questions).reduce((sum, score) => sum + score, 0);
+                    const maxScore = Object.keys(questions).length * 5;
+                    const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
 
-                                        const [aMain = 0, aSub = 0] = parse(a);
-                                        const [bMain = 0, bSub = 0] = parse(b);
+                    // สะสมคะแนนรวมทั้งหมด
+                    grandTotalScore += totalScore;
+                    grandMaxScore += maxScore;
 
-                                        return aMain - bMain || aSub - bSub;
-                                    })
-                                    .map(([label, score]) => (
-                                        <TableRow key={label}>
-                                            <TableCell>{label}</TableCell>
-                                            <TableCell align="right">{score}</TableCell>
-                                        </TableRow>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </Box>
-                ))}
+                    return (
+                        <Box key={title} sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" fontWeight={600}>
+                                คะแนนรวมทั้งหมด ({((grandTotalScore / grandMaxScore) * 100).toFixed(2)}%)
+                            </Typography>
+
+                            <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                                {title} — {percentage.toFixed(2)}%
+                            </Typography>
+
+                            <Table size="small" sx={{ maxWidth: 400 }}>
+                                <TableBody>
+                                    {Object.entries(questions)
+                                        .sort(([a], [b]) => {
+                                            const parse = (str: string) =>
+                                                str.match(/^\d+\.\d+/)?.[0]?.split(".").map(Number) ?? [99];
+                                            const [aMain = 0, aSub = 0] = parse(a);
+                                            const [bMain = 0, bSub = 0] = parse(b);
+                                            return aMain - bMain || aSub - bSub;
+                                        })
+                                        .map(([label, score]) => (
+                                            <TableRow key={label}>
+                                                <TableCell>{label}</TableCell>
+                                                <TableCell align="right">{score}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    );
+                })}
         </Box>
     );
 }
