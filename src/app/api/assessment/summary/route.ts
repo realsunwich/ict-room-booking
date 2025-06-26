@@ -5,7 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET() {
     try {
-        const assessments = await prisma.assessment.findMany();
+        const assessments = await prisma.assessment.findMany({
+            orderBy: {
+                createdAt: "desc", // เรียงจากล่าสุดไปเก่าสุด
+            },
+        });
 
         const total = assessments.length;
 
@@ -30,4 +34,3 @@ export async function GET() {
         );
     }
 }
-

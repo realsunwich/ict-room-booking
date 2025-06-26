@@ -87,7 +87,6 @@ interface Summary {
 
 export default function AssessmentSum() {
     const { data: session } = useSession();
-    const [showContact, setShowContact] = useState(true);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<FilterOptions>({
@@ -218,18 +217,21 @@ export default function AssessmentSum() {
                                     <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
                                         🏢 คะแนนเฉลี่ยรายห้อง
                                     </Typography>
-                                    {calculateRoomAveragePercentages(filteredAssessments).map((room) => (
-                                        <Typography
-                                            key={room.room}
-                                            variant="body2"
-                                            sx={{
-                                                fontSize: { xs: "0.9rem", sm: "1rem" },
-                                                whiteSpace: "nowrap",
-                                            }}
-                                        >
-                                            {room.room} มีผลการประเมิน {room.average.toFixed(2)}%
-                                        </Typography>
-                                    ))}
+                                    {calculateRoomAveragePercentages(filteredAssessments)
+                                        .sort((a, b) => a.room.localeCompare(b.room))
+                                        .map((room) => (
+                                            <Typography
+                                                key={room.room}
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {room.room} มีผลการประเมิน {room.average.toFixed(2)}%
+                                            </Typography>
+                                        ))
+                                    }
                                 </Box>
                             </Box>
                         )}
