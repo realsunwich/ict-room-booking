@@ -23,11 +23,12 @@ model BookingInfo {
   cfSender       String?   @db.VarChar(255)
   cfPhone        String?   @db.VarChar(255)
   SendStatus     String?   @db.VarChar(255)
-  reason         String?   @db.VarChar(255)
+  RejectReason   String?   @db.VarChar(255)
+  CancelReason   String?   @db.VarChar(255)
 
-  clearStatus     String?   @db.VarChar(50)
-  damageAction    String?   @db.VarChar(100)
-  remark          String?   @db.Text
+  clearStatus  String? @db.VarChar(50)
+  damageAction String? @db.VarChar(100)
+  remark       String? @db.Text
 
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt

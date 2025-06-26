@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
 export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
-        const { bookingID,updatedAt } = body;
+        const { bookingID, cancelReason } = body;
 
         if (!bookingID) {
             return NextResponse.json({ error: 'Missing booking id' }, { status: 400 });
@@ -27,7 +28,8 @@ export async function PUT(req: NextRequest) {
             where: { bookingID },
             data: {
                 SendStatus: 'คำขอถูกยกเลิก',
-                updatedAt: new Date()
+                CancelReason: cancelReason || null,
+                updatedAt: new Date(),
             },
         });
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, } from "@mui/material";
+import { useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, } from "@mui/material";
 
 interface Booking {
     startDate: string;
@@ -31,12 +32,17 @@ export default function CancelDialog({
     booking,
     onSuccess,
 }: CancelDialogProps) {
+    const [reason, setReason] = useState("");
+
     const handleCancel = async () => {
         try {
             const res = await fetch("/api/booking/cancel", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bookingID: booking.bookingID }),
+                body: JSON.stringify({
+                    bookingID: booking.bookingID,
+                    cancelReason: reason,
+                }),
             });
 
             if (!res.ok) throw new Error();
@@ -52,6 +58,15 @@ export default function CancelDialog({
             <DialogTitle>ยืนยันการยกเลิกคำขอ</DialogTitle>
             <DialogContent>
                 <Typography>คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำขอนี้?</Typography>
+                <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    label="กรุณาระบุเหตุผล"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    sx={{ mt: 2 }}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="inherit">
