@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, } from "@mui/material";
+import { Box, Typography, Button, Tooltip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, Divider, } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,6 +11,7 @@ import Header from "@/components/header";
 
 import EditBookingDialog from "@/components/RoomModal/EditBookingDialog";
 import CancelDialog from "@/components/RoomModal/CancleDialog";
+import BookingFilter from "@/components/BookingFilter";
 
 interface Booking {
     bookingID: string;
@@ -39,6 +40,10 @@ export default function BookingHistory() {
     const [showContact, setShowContact] = useState(true);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
+    const [filterRoom, setFilterRoom] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
+    const [filterStartDate, setFilterStartDate] = useState("");
+    const [filterEndDate, setFilterEndDate] = useState("");
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
@@ -46,6 +51,40 @@ export default function BookingHistory() {
     useEffect(() => {
         document.title = "ประวัติการจอง | ระบบจองห้องประชุม ICT";
     }, []);
+
+    const currentMonth = new Date().getMonth(); // 0-based (0 = Jan)
+    const currentYear = new Date().getFullYear();
+
+    const availableRooms = Array.from(new Set(bookings.map((b) => b.RoomName)));
+
+    const filteredBookings = bookings.filter((booking) => {
+        const startDate = new Date(booking.startDate);
+        const endDate = new Date(booking.endDate);
+
+        const matchMonth =
+            startDate.getMonth() === currentMonth &&
+            startDate.getFullYear() === currentYear;
+
+        const matchRoom =
+            !filterRoom || booking.RoomName === filterRoom;
+
+        const matchStatus =
+            !filterStatus || booking.SendStatus.trim() === filterStatus;
+
+        const matchStartDate =
+            !filterStartDate || startDate >= new Date(filterStartDate);
+
+        const matchEndDate =
+            !filterEndDate || endDate <= new Date(filterEndDate);
+
+        return (
+            matchMonth &&
+            matchRoom &&
+            matchStatus &&
+            matchStartDate &&
+            matchEndDate
+        );
+    });
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -107,6 +146,21 @@ export default function BookingHistory() {
                         คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Typography>
                 </Box>
+                <Divider sx={{ my: 2 }} />
+
+                <Box sx={{ mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
+                    <BookingFilter
+                        filterRoom={filterRoom}
+                        setFilterRoom={setFilterRoom}
+                        filterStatus={filterStatus}
+                        setFilterStatus={setFilterStatus}
+                        filterStartDate={filterStartDate}
+                        setFilterStartDate={setFilterStartDate}
+                        filterEndDate={filterEndDate}
+                        setFilterEndDate={setFilterEndDate}
+                        availableRooms={availableRooms}
+                    />
+                </Box>
 
                 {loading ? (
                     <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -129,14 +183,14 @@ export default function BookingHistory() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {bookings.length === 0 ? (
+                                {filteredBookings.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={10} align="center" sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}>
                                             ไม่มีข้อมูลการจองในระบบ
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    bookings.map((booking, index) => (
+                                    filteredBookings.map((booking, index) => (
                                         <TableRow key={index}>
                                             <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
                                             <TableCell sx={{ width: 200 }} align="center">
@@ -160,8 +214,8 @@ export default function BookingHistory() {
                                                 })}
                                             </TableCell>
                                             <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
-                                            <TableCell sx={{ width: 300 }}>{booking.purpose}</TableCell>
-                                            <TableCell align="center" sx={{ width: 20 }}>{booking.capacity}</TableCell>
+                                            <TableCell sx={{ width: 280 }}>{booking.purpose}</TableCell>
+                                            <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                             <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
                                             <TableCell align="center" sx={{ width: 20 }}>
                                                 <Tooltip title="แก้ไขคำขอ">

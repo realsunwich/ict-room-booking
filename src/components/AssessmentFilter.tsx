@@ -23,6 +23,7 @@ export default function AssessmentFilter({
     availableRoles,
     availableGenders,
 }: AssessmentFilterProps) {
+
     const handleChange = (field: keyof FilterOptions) => (event: SelectChangeEvent) => {
         setFilter({ ...filter, [field]: event.target.value });
     };
