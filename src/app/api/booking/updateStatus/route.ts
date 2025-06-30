@@ -6,12 +6,12 @@ const prisma = new PrismaClient();
 interface UpdateBookingPayload {
     bookingId: number;
     status: string;
-    reason?: string;
+    RejectReason?: string;
 }
 
 export async function POST(req: Request) {
     try {
-        const { bookingId, status, reason }: UpdateBookingPayload = await req.json();
+        const { bookingId, status, RejectReason }: UpdateBookingPayload = await req.json();
 
         if (!bookingId || !status) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         const updateData: Prisma.BookingInfoUpdateInput = {
             SendStatus: status,
             updatedAt: new Date(),
-            reason: status === "ไม่อนุมัติ" ? reason ?? "" : null,
+            RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : null,
         };
 
         const updated = await prisma.bookingInfo.update({

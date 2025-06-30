@@ -20,7 +20,6 @@ export async function PUT(request: NextRequest) {
             capacity,
             cfSender,
             cfPhone,
-            SendStatus,
             updatedAt
         } = body;
 

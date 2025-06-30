@@ -52,7 +52,6 @@ export default function StatsDialog({
     open,
     onClose,
     stats,
-    statusCounts,
     canceledOrRejected,
 }: StatsDialogProps) {
     return (

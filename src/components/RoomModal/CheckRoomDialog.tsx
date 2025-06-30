@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, TextField, CircularProgress, Alert, } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, RadioGroup, FormControlLabel, Radio, TextField, CircularProgress, Alert, } from "@mui/material";
 
 interface CheckRoomDialogProps {
     open: boolean;
@@ -44,7 +44,10 @@ const CheckRoomDialog: React.FC<CheckRoomDialogProps> = ({
 
             onCheckComplete();
             onClose();
-        } catch (err: any) {
+        } catch (error) 
+        {
+            console.error("Error submitting room check:", error);
+            const err = error as Error;
             setError(err.message || "เกิดข้อผิดพลาด");
         } finally {
             setLoading(false);

@@ -48,7 +48,8 @@ export default function CancelDialog({
             if (!res.ok) throw new Error();
             onSuccess();
             onClose();
-        } catch (err) {
+        } catch (error) {
+            console.error("Error cancelling booking:", error);
             alert("เกิดข้อผิดพลาดในการยกเลิกคำขอ");
         }
     };

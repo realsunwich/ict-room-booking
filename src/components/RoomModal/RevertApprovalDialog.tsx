@@ -39,6 +39,7 @@ export default function RevertApprovalDialog({
             onSuccess();
             onClose();
         } catch (error) {
+            console.error("Error reverting approval:", error);
             alert("ไม่สามารถเปลี่ยนกลับเป็นกำลังรอได้");
         } finally {
             setLoading(false);

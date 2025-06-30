@@ -11,7 +11,6 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import AssessmentModal from "@/components/AssessmentModal";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const Header = () => {

@@ -9,11 +9,21 @@ interface UserInfo {
     role?: string;
 }
 
+interface ResponseItem {
+    label: string;
+    score: number;
+}
+
+interface Responses {
+    [key: string]: ResponseItem;
+}
+
 interface BodyType {
     userInfo?: UserInfo;
-    responses?: any;
+    responses?: Responses;
     comment?: string;
 }
+
 
 export async function POST(req: NextRequest) {
     try {
@@ -45,7 +55,7 @@ export async function POST(req: NextRequest) {
                 meetingRoom,
                 gender,
                 role,
-                responses: body.responses,
+                responses: JSON.parse(JSON.stringify(body.responses)),
                 comment: body.comment || null,
             },
         });
