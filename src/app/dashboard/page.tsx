@@ -65,7 +65,14 @@ export default function Dashboard() {
     const [statsDialogOpen, setStatsDialogOpen] = useState(false);
     const [roomStats, setRoomStats] = useState<RoomStat[]>([]);
     const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
-    const [canceledOrRejected, setCanceledOrRejected] = useState<any[]>([]);
+    interface CanceledOrRejectedStat {
+        RoomName: string;
+        SendStatus: string;
+        RejectReason?: string | null;
+        CancelReason?: string | null;
+    }
+    
+    const [canceledOrRejected, setCanceledOrRejected] = useState<CanceledOrRejectedStat[]>([]);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -186,10 +193,10 @@ export default function Dashboard() {
     return (
         <Box
             sx={{
-            marginTop:
-                session?.user?.role === "User"
-                ? { xs: 23, sm: 15 }
-                : { xs: 19, sm: 15 },
+                marginTop:
+                    session?.user?.role === "User"
+                        ? { xs: 23, sm: 15 }
+                        : { xs: 19, sm: 15 },
             }}
         >
             <Header />

@@ -6,11 +6,26 @@ import { DatePicker, TimePicker, LocalizationProvider } from "@mui/x-date-picker
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { th as thLocale } from "date-fns/locale";
 
+interface BookingFormData {
+    sender: string;
+    jobName: string;
+    phoneIn: string;
+    phoneOut: string;
+    officeLocation: string;
+    purpose: string;
+    RoomName: string;
+    startDate: string;
+    endDate: string;
+    capacity: string;
+    cfSender: string;
+    cfPhone: string;
+}
+
 interface EditBookingDialogProps {
     open: boolean;
     onClose: () => void;
     roomName: string;
-    defaultData: any;
+    defaultData: BookingFormData;
 }
 
 function combineDateTime(date: Date, time: Date) {

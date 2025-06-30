@@ -135,7 +135,7 @@ export default function AssessmentSum() {
                 : Object.entries(responses).map(([title, resp]) => ({
                     title,
                     responses: Object.fromEntries(
-                        Object.entries(resp as Record<string, any>).map(([key, value]) =>
+                        Object.entries(resp as Record<string, ResponseInit | number>).map(([key, value]) =>
                             typeof value === "object" && value !== null && "score" in value
                                 ? [key, value.score]
                                 : [key, value as number]
@@ -145,7 +145,12 @@ export default function AssessmentSum() {
 
             responsesArray.forEach(({ responses: questions }) => {
                 Object.values(questions).forEach((score) => {
-                    totalScore += score ?? 0;
+                    const numericScore = typeof score === "number"
+                        ? score
+                        : (typeof score === "object" && score !== null && "score" in score)
+                            ? (score as { score: number }).score
+                            : 0;
+                    totalScore += numericScore;
                     maxScore += 5;
                 });
             });
@@ -302,7 +307,7 @@ export default function AssessmentSum() {
                                                         : Object.entries(item.responses).map(([title, resp]) => ({
                                                             title,
                                                             responses: Object.fromEntries(
-                                                                Object.entries(resp as Record<string, any>).map(([key, value]) =>
+                                                                Object.entries(resp as Record<string, { score: number } | number>).map(([key, value]) =>
                                                                     typeof value === "object" && value !== null && "score" in value
                                                                         ? [key, value.score]
                                                                         : [key, value as number]

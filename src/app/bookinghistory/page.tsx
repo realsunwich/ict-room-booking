@@ -239,7 +239,10 @@ export default function BookingHistory() {
                                                     open={editDialogOpen}
                                                     onClose={() => setEditDialogOpen(false)}
                                                     roomName={selectedBooking.RoomName}
-                                                    defaultData={selectedBooking}
+                                                    defaultData={{
+                                                        ...selectedBooking,
+                                                        capacity: selectedBooking.capacity.toString(),
+                                                    }}
                                                 />
                                             )}
                                             <TableCell align="center" sx={{ width: 20 }}>
