@@ -40,7 +40,7 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
     const styles = StyleSheet.create({
         page: {
             fontFamily: 'Th Niramit',
-            backgroundColor: '#f4f4f4',
+            backgroundColor: '#ffffff',
             paddingTop: cm(0.54),
             paddingBottom: cm(2.54),
             paddingLeft: cm(2.54),
@@ -66,15 +66,38 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
             lineHeight: 1.5,
             wordBreak: 'break-word',
         },
+        noteBox1: {
+            position: 'absolute',
+            top: cm(1),
+            right: cm(1),
+            width: cm(6.3),
+            padding: cm(0.3),
+            border: '1 solid #000',
+            fontSize: 8,
+            fontWeight: 'bold',
+        },
+        boxApproval: {
+            border: '1 solid #000',
+            padding: cm(0.5),
+            marginTop: cm(1),
+            width: '50%',
+            fontSize: 10,
+            justifyContent: 'center',
+            alignSelf: 'flex-end',
+        },
     });
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
+                <View style={styles.noteBox1}>
+                    <Text>งานโสตทัศนศึกษา-๐๑ เลขที่............../..............</Text>
+                </View>
+
                 {/* eslint-disable-next-line jsx-a11y/alt-text */}
                 <Image
                     src="http://localhost:3000/images/brand.png"
-                    style={{ width: 80, height: 90, alignSelf: 'center' }}
+                    style={{ width: 80, height: 90, alignSelf: 'center', marginBottom: cm(1) }}
                 />
 
                 <Text style={styles.title}>แบบฟอร์มขอใช้ห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา</Text>
@@ -120,11 +143,13 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
                         ประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                     </Text>
 
-                    <View style={{ marginTop: cm(0.5), alignItems: 'flex-end' }}>
-                        <Text style={[styles.text, { textAlign: 'right', paddingRight: cm(1), marginBottom: cm(0.5) }]}>
+                    <View style={{ marginTop: cm(0.5), alignItems: 'flex-start' }}>
+                        <Text style={[styles.text, { textAlign: 'left', paddingLeft: cm(1), marginBottom: cm(0.5) }]}>
                             จึงเรียนมาเพื่อโปรดพิจารณาอนุญาต
                         </Text>
+                    </View>
 
+                    <View style={{ marginTop: cm(0.5), alignItems: 'flex-end' }}>
                         <View style={{ alignItems: 'center', paddingRight: cm(1), marginBottom: cm(0.5) }}>
                             <Text style={[styles.text]}>
                                 ลงชื่อ..........................................................
@@ -143,6 +168,20 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
                             </Text>
                         </View>
                     </View>
+                </View>
+                <View style={[styles.boxApproval, { alignItems: 'center', }]}>
+                    <Text style={[styles.text]}>
+                        เสนอ      [  ] อนุมัติ            [  ] ไม่อนุมัติ
+                    </Text>
+                    <Text style={[styles.text, { marginBottom: cm(0.5) }]}>
+                        ลงชื่อ..........................................................
+                    </Text>
+                    <Text style={[styles.text]}>
+                        {` ดร. เกวรินทร์ จันทร์ดำ `}
+                    </Text>
+                    <Text style={[styles.text]}>
+                        รองคณบดีฝ่ายยุทธศาสตร์และพัฒนาองค์กร
+                    </Text>
                 </View>
             </Page>
         </Document>
