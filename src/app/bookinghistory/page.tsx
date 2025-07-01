@@ -12,6 +12,7 @@ import Header from "@/components/header";
 import EditBookingDialog from "@/components/RoomModal/EditBookingDialog";
 import CancelDialog from "@/components/RoomModal/CancleDialog";
 import BookingFilter from "@/components/BookingFilter";
+import ExportBookingExcelButton from "@/components/ExportBookingExcelButton";
 
 interface Booking {
     bookingID: string;
@@ -155,6 +156,38 @@ export default function BookingHistory() {
                         setFilterEndDate={setFilterEndDate}
                         availableRooms={availableRooms}
                     />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <ExportBookingExcelButton
+                            data={filteredBookings.map((b, i) => ({
+                                no: i + 1,
+                                start: new Date(b.startDate).toLocaleString("th-TH"),
+                                end: new Date(b.endDate).toLocaleString("th-TH"),
+                                room: b.RoomName,
+                                purpose: b.purpose,
+                                capacity: b.capacity,
+                                status: b.SendStatus,
+                                sender: b.sender,
+                                job: b.jobName,
+                                phoneOut: b.phoneOut,
+                                phoneIn: b.phoneIn,
+                            }))}
+                            columns={[
+                                { header: "#", key: "no", width: 5 },
+                                { header: "เริ่ม", key: "start", width: 25 },
+                                { header: "สิ้นสุด", key: "end", width: 25 },
+                                { header: "สถานที่", key: "room", width: 20 },
+                                { header: "วัตถุประสงค์", key: "purpose", width: 30 },
+                                { header: "จำนวนคน", key: "capacity", width: 15 },
+                                { header: "สถานะ", key: "status", width: 15 },
+                                { header: "ผู้ขอ", key: "sender", width: 25 },
+                                { header: "ตำแหน่ง", key: "job", width: 25 },
+                                { header: "โทรศัพท์", key: "phoneOut", width: 20 },
+                                { header: "โทรภายใน", key: "phoneIn", width: 20 },
+                            ]}
+                            filename="booking_history.xlsx"
+                            buttonLabel="บันทึกเป็น Excel"
+                        />
+                    </Box>
                 </Box>
 
                 {loading ? (
@@ -162,131 +195,133 @@ export default function BookingHistory() {
                         <CircularProgress />
                     </Box>
                 ) : (
-                    <TableContainer component={Paper} sx={{ mt: 2 }}>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}>
-                                    <TableCell>#</TableCell>
-                                    <TableCell align="center">เริ่ม</TableCell>
-                                    <TableCell align="center">สิ้นสุด</TableCell>
-                                    <TableCell align="center">สถานที่</TableCell>
-                                    <TableCell align="center">วัตถุประสงค์</TableCell>
-                                    <TableCell align="center">จำนวนคน</TableCell>
-                                    <TableCell align="center">สถานะ</TableCell>
-                                    <TableCell align="center">แก้ไข</TableCell>
-                                    <TableCell align="center">ยกเลิก</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filteredBookings.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={10} align="center" sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}>
-                                            ไม่มีข้อมูลการจองในระบบ
-                                        </TableCell>
+                    <>
+                        <TableContainer component={Paper} sx={{ mt: 2 }}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}>
+                                        <TableCell>#</TableCell>
+                                        <TableCell align="center">เริ่ม</TableCell>
+                                        <TableCell align="center">สิ้นสุด</TableCell>
+                                        <TableCell align="center">สถานที่</TableCell>
+                                        <TableCell align="center">วัตถุประสงค์</TableCell>
+                                        <TableCell align="center">จำนวนคน</TableCell>
+                                        <TableCell align="center">สถานะ</TableCell>
+                                        <TableCell align="center">แก้ไข</TableCell>
+                                        <TableCell align="center">ยกเลิก</TableCell>
                                     </TableRow>
-                                ) : (
-                                    filteredBookings.map((booking, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
-                                            <TableCell sx={{ width: 200 }} align="center">
-                                                {new Date(booking.startDate).toLocaleString("th-TH", {
-                                                    weekday: "long",
-                                                    year: "numeric",
-                                                    month: "long",
-                                                    day: "numeric",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit"
-                                                })}
+                                </TableHead>
+                                <TableBody>
+                                    {filteredBookings.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={10} align="center" sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}>
+                                                ไม่มีข้อมูลการจองในระบบ
                                             </TableCell>
-                                            <TableCell sx={{ width: 200 }} align="center">
-                                                {new Date(booking.endDate).toLocaleString("th-TH", {
-                                                    weekday: "long",
-                                                    year: "numeric",
-                                                    month: "long",
-                                                    day: "numeric",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit"
-                                                })}
-                                            </TableCell>
-                                            <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
-                                            <TableCell sx={{ width: 280 }}>{booking.purpose}</TableCell>
-                                            <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
-                                            <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
-                                            <TableCell align="center" sx={{ width: 20 }}>
-                                                <Tooltip title="แก้ไขคำขอ">
-                                                    <span>
-                                                        <Button
-                                                            onClick={() => {
-                                                                setSelectedBooking(booking);
-                                                                setEditDialogOpen(true);
-                                                            }}
-                                                            color="primary"
-                                                            sx={{ minWidth: 0, p: 1 }}
-                                                            disabled={booking.SendStatus.trim() !== "กำลังรอ" && !"ไม่อนุมัติ".includes(booking.SendStatus.trim())}
-                                                        >
-                                                            <EditIcon />
-                                                        </Button>
-                                                    </span>
-                                                </Tooltip>
-                                            </TableCell>
-                                            {selectedBooking && (
-                                                <EditBookingDialog
-                                                    open={editDialogOpen}
-                                                    onClose={() => setEditDialogOpen(false)}
-                                                    roomName={selectedBooking.RoomName}
-                                                    defaultData={{
-                                                        ...selectedBooking,
-                                                        capacity: selectedBooking.capacity.toString(),
-                                                    }}
-                                                />
-                                            )}
-                                            <TableCell align="center" sx={{ width: 20 }}>
-                                                <Tooltip
-                                                    title={
-                                                        ["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())
-                                                            ? "ยกเลิกคำขอ"
-                                                            : "ไม่สามารถยกเลิกคำขอที่ดำเนินการแล้ว"
-                                                    }
-                                                >
-                                                    <span>
-                                                        <Button
-                                                            color="error"
-                                                            sx={{ minWidth: 0, p: 1 }}
-                                                            disabled={!["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())}
-                                                            onClick={() => {
-                                                                setCancelTarget(booking);
-                                                                setCancelDialogOpen(true);
-                                                            }}
-                                                        >
-                                                            <CancelIcon />
-                                                        </Button>
-                                                    </span>
-                                                </Tooltip>
-                                            </TableCell>
-                                            {cancelTarget && (
-                                                <CancelDialog
-                                                    open={cancelDialogOpen}
-                                                    onClose={() => {
-                                                        setCancelDialogOpen(false);
-                                                        setCancelTarget(null);
-                                                    }}
-                                                    booking={cancelTarget}
-                                                    onSuccess={async () => {
-                                                        setSnackbarMessage("ยกเลิกคำขอสำเร็จ");
-                                                        setSnackbarSeverity("success");
-                                                        setSnackbarOpen(true);
-                                                        const updated = await fetch("/api/booking/history");
-                                                        const newData = await updated.json();
-                                                        setBookings(newData);
-                                                    }}
-                                                />
-                                            )}
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                    ) : (
+                                        filteredBookings.map((booking, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
+                                                <TableCell sx={{ width: 200 }} align="center">
+                                                    {new Date(booking.startDate).toLocaleString("th-TH", {
+                                                        weekday: "long",
+                                                        year: "numeric",
+                                                        month: "long",
+                                                        day: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit"
+                                                    })}
+                                                </TableCell>
+                                                <TableCell sx={{ width: 200 }} align="center">
+                                                    {new Date(booking.endDate).toLocaleString("th-TH", {
+                                                        weekday: "long",
+                                                        year: "numeric",
+                                                        month: "long",
+                                                        day: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit"
+                                                    })}
+                                                </TableCell>
+                                                <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
+                                                <TableCell sx={{ width: 280 }}>{booking.purpose}</TableCell>
+                                                <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
+                                                <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
+                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                    <Tooltip title="แก้ไขคำขอ">
+                                                        <span>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setSelectedBooking(booking);
+                                                                    setEditDialogOpen(true);
+                                                                }}
+                                                                color="primary"
+                                                                sx={{ minWidth: 0, p: 1 }}
+                                                                disabled={booking.SendStatus.trim() !== "กำลังรอ" && !"ไม่อนุมัติ".includes(booking.SendStatus.trim())}
+                                                            >
+                                                                <EditIcon />
+                                                            </Button>
+                                                        </span>
+                                                    </Tooltip>
+                                                </TableCell>
+                                                {selectedBooking && (
+                                                    <EditBookingDialog
+                                                        open={editDialogOpen}
+                                                        onClose={() => setEditDialogOpen(false)}
+                                                        roomName={selectedBooking.RoomName}
+                                                        defaultData={{
+                                                            ...selectedBooking,
+                                                            capacity: selectedBooking.capacity.toString(),
+                                                        }}
+                                                    />
+                                                )}
+                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                    <Tooltip
+                                                        title={
+                                                            ["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())
+                                                                ? "ยกเลิกคำขอ"
+                                                                : "ไม่สามารถยกเลิกคำขอที่ดำเนินการแล้ว"
+                                                        }
+                                                    >
+                                                        <span>
+                                                            <Button
+                                                                color="error"
+                                                                sx={{ minWidth: 0, p: 1 }}
+                                                                disabled={!["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())}
+                                                                onClick={() => {
+                                                                    setCancelTarget(booking);
+                                                                    setCancelDialogOpen(true);
+                                                                }}
+                                                            >
+                                                                <CancelIcon />
+                                                            </Button>
+                                                        </span>
+                                                    </Tooltip>
+                                                </TableCell>
+                                                {cancelTarget && (
+                                                    <CancelDialog
+                                                        open={cancelDialogOpen}
+                                                        onClose={() => {
+                                                            setCancelDialogOpen(false);
+                                                            setCancelTarget(null);
+                                                        }}
+                                                        booking={cancelTarget}
+                                                        onSuccess={async () => {
+                                                            setSnackbarMessage("ยกเลิกคำขอสำเร็จ");
+                                                            setSnackbarSeverity("success");
+                                                            setSnackbarOpen(true);
+                                                            const updated = await fetch("/api/booking/history");
+                                                            const newData = await updated.json();
+                                                            setBookings(newData);
+                                                        }}
+                                                    />
+                                                )}
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </>
                 )}
                 <Box
                     sx={{
