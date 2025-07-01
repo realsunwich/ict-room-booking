@@ -144,7 +144,7 @@ export default function BookingHistory() {
                 </Box>
                 <Divider sx={{ my: 2 }} />
 
-                <Box sx={{ mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
+                <Box sx={{ mt: 5, mb: 1, px: { xs: 1, sm: 2 } }}>
                     <BookingFilter
                         filterRoom={filterRoom}
                         setFilterRoom={setFilterRoom}
@@ -158,33 +158,21 @@ export default function BookingHistory() {
                     />
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                         <ExportBookingExcelButton
-                            data={filteredBookings.map((b, i) => ({
-                                no: i + 1,
-                                start: new Date(b.startDate).toLocaleString("th-TH"),
-                                end: new Date(b.endDate).toLocaleString("th-TH"),
-                                room: b.RoomName,
-                                purpose: b.purpose,
-                                capacity: b.capacity,
-                                status: b.SendStatus,
-                                sender: b.sender,
-                                job: b.jobName,
-                                phoneOut: b.phoneOut,
-                                phoneIn: b.phoneIn,
-                            }))}
+                            data={filteredBookings}
                             columns={[
-                                { header: "#", key: "no", width: 5 },
-                                { header: "เริ่ม", key: "start", width: 25 },
-                                { header: "สิ้นสุด", key: "end", width: 25 },
-                                { header: "สถานที่", key: "room", width: 20 },
-                                { header: "วัตถุประสงค์", key: "purpose", width: 30 },
-                                { header: "จำนวนคน", key: "capacity", width: 15 },
-                                { header: "สถานะ", key: "status", width: 15 },
+                                { header: "วัน เวลา ที่เริ่ม", key: "startDate", width: 25 },
+                                { header: "วัน เวลา ที่สิ้นสุด", key: "endDate", width: 25 },
+                                { header: "สถานที่", key: "RoomName", width: 40 },
+                                { header: "วัตถุประสงค์", key: "purpose", width: 50 },
+                                { header: "จำนวน (คน)", key: "capacity", width: 20 },
+                                { header: "สถานะ", key: "SendStatus", width: 15 },
                                 { header: "ผู้ขอ", key: "sender", width: 25 },
-                                { header: "ตำแหน่ง", key: "job", width: 25 },
+                                { header: "ตำแหน่ง", key: "jobName", width: 25 },
                                 { header: "โทรศัพท์", key: "phoneOut", width: 20 },
                                 { header: "โทรภายใน", key: "phoneIn", width: 20 },
                             ]}
-                            filename="booking_history.xlsx"
+                            filterStartDate={filterStartDate}
+                            filterEndDate={filterEndDate}
                             buttonLabel="บันทึกเป็น Excel"
                         />
                     </Box>
@@ -196,7 +184,7 @@ export default function BookingHistory() {
                     </Box>
                 ) : (
                     <>
-                        <TableContainer component={Paper} sx={{ mt: 2 }}>
+                        <TableContainer component={Paper}>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}>
