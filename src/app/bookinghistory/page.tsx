@@ -61,28 +61,23 @@ export default function BookingHistory() {
         const startDate = new Date(booking.startDate);
         const endDate = new Date(booking.endDate);
 
-        const matchMonth =
+        const isFilterDateEmpty = !filterStartDate && !filterEndDate;
+
+        const isInCurrentMonth =
             startDate.getMonth() === currentMonth &&
             startDate.getFullYear() === currentYear;
 
-        const matchRoom =
-            !filterRoom || booking.RoomName === filterRoom;
-
-        const matchStatus =
-            !filterStatus || booking.SendStatus.trim() === filterStatus;
-
-        const matchStartDate =
-            !filterStartDate || startDate >= new Date(filterStartDate);
-
-        const matchEndDate =
-            !filterEndDate || endDate <= new Date(filterEndDate);
+        const matchRoom = !filterRoom || booking.RoomName === filterRoom;
+        const matchStatus = !filterStatus || booking.SendStatus.trim() === filterStatus;
+        const matchStartDate = !filterStartDate || startDate >= new Date(filterStartDate);
+        const matchEndDate = !filterEndDate || endDate <= new Date(filterEndDate);
 
         return (
-            matchMonth &&
             matchRoom &&
             matchStatus &&
             matchStartDate &&
-            matchEndDate
+            matchEndDate &&
+            (isFilterDateEmpty ? isInCurrentMonth : true)
         );
     });
 
