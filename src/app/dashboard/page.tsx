@@ -9,7 +9,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
 import RoomDetailDialog from "@/components/RoomModal/RoomDetailDialog";
-import StatsDialog from "@/components/RoomModal/StatsDialog";
+
+import { useRouter } from "next/navigation";
 
 interface Room {
     name: string;
@@ -17,11 +18,6 @@ interface Room {
     detailImage_1: string;
     detailImage_2?: string;
     description: string;
-}
-
-interface RoomStat {
-    RoomName: string;
-    totalUsage: number;
 }
 
 const rooms: Room[] = [
@@ -62,17 +58,8 @@ export default function Dashboard() {
     const [selectedRoom, setSelectedRoom] = useState<string>("");
     const [roomDetailOpen, setRoomDetailOpen] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
-    const [statsDialogOpen, setStatsDialogOpen] = useState(false);
-    const [roomStats, setRoomStats] = useState<RoomStat[]>([]);
-    const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
-    interface CanceledOrRejectedStat {
-        RoomName: string;
-        SendStatus: string;
-        RejectReason?: string | null;
-        CancelReason?: string | null;
-    }
-    
-    const [canceledOrRejected, setCanceledOrRejected] = useState<CanceledOrRejectedStat[]>([]);
+    const router = useRouter();
+
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -80,7 +67,7 @@ export default function Dashboard() {
     });
 
     useEffect(() => {
-        document.title = "ระบบจองห้องประชุม ICT";
+        document.title = "ระบบจองห้องประชุม ICT | ระบบจองห้องประชุม ICT";
     }, []);
 
     const handleOpenRoomDetail = (room: Room) => {
@@ -91,31 +78,6 @@ export default function Dashboard() {
     const handleOpenBooking = (roomName: string) => {
         setSelectedRoom(roomName);
         setOpenBooking(true);
-    };
-
-    const updateAndFetchRoomStats = async (roomName: string) => {
-        setRoomStats([]);
-        setStatsDialogOpen(false);
-
-        try {
-            const res = await fetch("/api/room-usage-stats");
-            const data = await res.json();
-
-            if (!Array.isArray(data?.stats)) {
-                console.error("ข้อมูลที่ได้รับไม่ใช่ array:", data);
-                return;
-            }
-
-            const filtered = data.stats.filter((stat: RoomStat) => stat.RoomName === roomName);
-            setRoomStats(filtered);
-            setStatusCounts(data.statusCounts || {});
-            setCanceledOrRejected(data.canceledOrRejected || []);
-            setStatsDialogOpen(true);
-        } catch (err) {
-            console.error(err);
-            setRoomStats([]);
-            setStatsDialogOpen(true);
-        }
     };
 
     const RoomCard = ({ room }: { room: Room }) => (
@@ -180,7 +142,7 @@ export default function Dashboard() {
                             fullWidth
                             sx={{ mb: 1 }}
                             color="primary"
-                            onClick={() => updateAndFetchRoomStats(room.name)}
+                            onClick={() => router.push(`/BookingStat?room=${encodeURIComponent(room.name)}`)}
                         >
                             ดูสถิติการใช้งานห้อง
                         </Button>
@@ -252,14 +214,6 @@ export default function Dashboard() {
                     open={roomDetailOpen}
                     onClose={() => setRoomDetailOpen(false)}
                     room={selectedRoomDetail}
-                />
-
-                <StatsDialog
-                    open={statsDialogOpen}
-                    onClose={() => setStatsDialogOpen(false)}
-                    stats={roomStats}
-                    statusCounts={statusCounts}
-                    canceledOrRejected={canceledOrRejected}
                 />
             </Box>
 
