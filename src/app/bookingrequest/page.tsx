@@ -25,10 +25,10 @@ interface Booking {
 
     sendDate?: string;
     sender?: string;
-    jobname?: string;
+    jobName?: string;
     phoneIn?: string;
     phoneOut?: string;
-    department?: string;
+    officeLocation?: string;
     cfSender?: string;
     cfPhone?: string;
 }
@@ -221,10 +221,10 @@ export default function BookingHistory() {
                                                         endDate: new Date(booking.endDate),
                                                         sendDate: new Date(booking.sendDate ?? booking.startDate),
                                                         sender: booking.sender ?? "",
-                                                        jobname: booking.jobname ?? "",
+                                                        jobName: booking.jobName ?? "",
                                                         phoneIn: booking.phoneIn ?? "",
                                                         phoneOut: booking.phoneOut ?? "",
-                                                        department: booking.department ?? "",
+                                                        officeLocation: booking.officeLocation ?? "",
                                                         cfSender: booking.cfSender ?? "",
                                                         cfPhone: booking.cfPhone ?? "",
                                                         capacity: String(booking.capacity),

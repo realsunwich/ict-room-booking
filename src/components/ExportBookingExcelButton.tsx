@@ -94,14 +94,14 @@ export default function ExportBookingExcelButton<T extends { startDate: string; 
         };
 
         data.forEach((item) => {
-            const rowValues: Record<string, any> = {};
+            const rowValues: Partial<Record<keyof T, T[keyof T]>> = {};
 
             columns.forEach((col) => {
                 const value = item[col.key];
                 if ((col.key === "startDate" || col.key === "endDate") && typeof value === "string") {
-                    rowValues[String(col.key)] = toThaiDate(new Date(value));
+                    rowValues[col.key] = toThaiDate(new Date(value)) as T[keyof T];
                 } else {
-                    rowValues[String(col.key)] = value;
+                    rowValues[col.key] = value;
                 }
             });
 
