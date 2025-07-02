@@ -97,19 +97,55 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
                     ),
                 }));
 
+            const sectionNames: Record<number, string> = {
+                1: "ด้านมาตรฐานของการปฏิบัติงาน",
+                2: "ด้านความเต็มใจในการให้บริการ",
+                3: "ด้านคุณภาพการให้บริการ",
+                4: "ด้านการปรับปรุงบริการ",
+                5: "ความพึงพอใจโดยรวม",
+            };
+
+            let currentSection = 0;
+
             let firstRow = true;
 
-            responsesArray.forEach(({ responses }) => {
-                Object.entries(responses).forEach(([question, score]) => {
-                    worksheet.addRow({
-                        ...(firstRow ? baseInfo : {}),
-                        question,
-                        score,
-                    });
-                    firstRow = false;
-                });
-            });
+            responsesArray
+                .sort((a, b) => {
+                    const sectionA = parseInt(a.title.split('.')[0]);
+                    const sectionB = parseInt(b.title.split('.')[0]);
+                    return sectionA - sectionB;
+                })
+                .forEach(({ title, responses }) => {
+                    const sectionNumber = parseInt(title.split('.')[0]);
 
+                    if (sectionNumber !== currentSection) {
+                        currentSection = sectionNumber;
+                        const sectionTitle = `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ''}`;
+                        worksheet.addRow({
+                            question: sectionTitle,
+                        }).eachCell(cell => {
+                            cell.font = { bold: true, name: 'TH Niramit AS', size: 14 };
+                            cell.alignment = { horizontal: "left", vertical: "middle" };
+                        });
+                    }
+
+                    Object.entries(responses)
+                        .sort(([a], [b]) => {
+                            const parse = (str: string) =>
+                                str.match(/^\d+\.\d+/)?.[0]?.split(".").map(Number) ?? [99];
+                            const [aMain = 0, aSub = 0] = parse(a);
+                            const [bMain = 0, bSub = 0] = parse(b);
+                            return aMain - bMain || aSub - bSub;
+                        })
+                        .forEach(([question, score]) => {
+                            worksheet.addRow({
+                                ...(firstRow ? baseInfo : {}),
+                                question,
+                                score,
+                            });
+                            firstRow = false;
+                        });
+                });
             worksheet.addRow({});
             index++;
         });
