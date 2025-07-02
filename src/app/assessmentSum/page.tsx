@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
 import Header from "@/components/header";
 import AssessmentFilter, { FilterOptions } from "@/components/AssessmentFilter";
+import ExportAssessmentExcel from "@/components/ExportAssessmentExcel";
 
 interface AssessmentDetail {
     id: string;
@@ -198,6 +199,7 @@ export default function AssessmentSum() {
                         availableGenders={genders}
                     />
                 </Box>
+
                 {loading ? (
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
@@ -205,38 +207,34 @@ export default function AssessmentSum() {
                 ) : summary ? (
                     <>
                         <Typography variant="h6" gutterBottom fontWeight={600}>
-                            🔢 ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
-                            {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
+                            ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
                         </Typography>
+                        {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
                         {filteredAssessments.length > 0 && (
-                            <Box sx={{ mt: 2 }}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: { xs: "column", sm: "row" },
-                                        flexWrap: "wrap",
-                                        alignItems: { xs: "flex-start", sm: "center" },
-                                        gap: { xs: 0.5, sm: 2 },
-                                    }}
-                                >
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
                                     <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
-                                        🏢 คะแนนเฉลี่ยรายห้อง
+                                        คะแนนเฉลี่ยรายห้อง:
                                     </Typography>
                                     {calculateRoomAveragePercentages(filteredAssessments)
                                         .sort((a, b) => a.room.localeCompare(b.room))
-                                        .map((room) => (
+                                        .map((room, idx) => (
                                             <Typography
                                                 key={room.room}
                                                 variant="body2"
                                                 sx={{
                                                     fontSize: { xs: "0.9rem", sm: "1rem" },
                                                     whiteSpace: "nowrap",
+                                                    mr: idx !== calculateRoomAveragePercentages(filteredAssessments).length - 1 ? 2 : 0,
                                                 }}
                                             >
-                                                {room.room} มีผลการประเมิน {room.average.toFixed(2)}%
+                                                {room.room} {room.average.toFixed(2)}%
                                             </Typography>
                                         ))
                                     }
+                                </Box>
+                                <Box>
+                                    <ExportAssessmentExcel data={filteredAssessments} />
                                 </Box>
                             </Box>
                         )}
