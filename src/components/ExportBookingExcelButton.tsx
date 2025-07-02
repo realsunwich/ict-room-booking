@@ -15,21 +15,25 @@ interface ExportBookingExcelButtonProps<T> {
 
     filterStartDate?: string;
     filterEndDate?: string;
+    filterRoom?: string;
+    filterStatus?: string;
 }
 
-
-export default function ExportBookingExcelButton<T extends { startDate: string; endDate: string }>({
+export default function ExportBookingExcelButton<T extends { startDate: string; endDate: string; RoomName: string; SendStatus: string; }>({
     data,
     columns,
     filename,
     buttonLabel = "Export to Excel",
     filterStartDate,
     filterEndDate,
+    filterRoom,
+    filterStatus,
 }: ExportBookingExcelButtonProps<T>) {
     const handleExport = async () => {
         const formatDateThai = (dateStr?: string) => {
             if (!dateStr) return "NA";
             const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return "NA";
             const yearBE = date.getFullYear() + 543;
             const mm = String(date.getMonth() + 1).padStart(2, "0");
             const dd = String(date.getDate()).padStart(2, "0");
@@ -39,9 +43,22 @@ export default function ExportBookingExcelButton<T extends { startDate: string; 
         const startPart = formatDateThai(filterStartDate);
         const endPart = formatDateThai(filterEndDate);
 
-        const dynamicFilename = filename
-            ? filename
-            : `booking_history_${startPart}-${endPart}.xlsx`;
+        const sanitize = (text?: string) =>
+            text?.trim()
+                .replace(/[\/\\:*?"<>|]/g, "")
+                .replace(/\s+/g, "_")
+            || "";
+
+        const roomPart = filterRoom ? `_room-${sanitize(filterRoom)}` : "";
+        const statusPart = filterStatus ? `_status-${sanitize(filterStatus)}` : "";
+
+
+        const dynamicFilename =
+            filename
+                ? filename
+                : (startPart === "NA" || endPart === "NA")
+                    ? `booking_history_invalid_Date${roomPart}${statusPart}.xlsx`
+                    : `booking_history_${startPart}-${endPart}${roomPart}${statusPart}.xlsx`;
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Booking History");

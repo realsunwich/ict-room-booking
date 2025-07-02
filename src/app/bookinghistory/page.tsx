@@ -173,6 +173,8 @@ export default function BookingHistory() {
                             ]}
                             filterStartDate={filterStartDate}
                             filterEndDate={filterEndDate}
+                            filterRoom={filterRoom}
+                            filterStatus={filterStatus}
                             buttonLabel="บันทึกเป็น Excel"
                         />
                     </Box>
