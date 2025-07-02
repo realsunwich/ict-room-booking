@@ -7,10 +7,10 @@ interface BookingInfo {
     RoomName: string;
     sendDate: Date;
     sender: string;
-    jobname: string;
+    jobName: string;
+    officeLocation: string;
     phoneIn: string;
     phoneOut: string;
-    department: string;
     purpose: string;
     startDate: Date;
     endDate: Date;
