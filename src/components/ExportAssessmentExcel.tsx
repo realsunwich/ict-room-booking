@@ -98,12 +98,18 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
 
                     if (sectionNumber !== currentSection) {
                         currentSection = sectionNumber;
+
+                        const scores = Object.values(responses).map((score) => Number(score));
+                        const sumScore = scores.reduce((a, b) => a + b, 0);
+                        const maxScore = 5 * scores.length;
+                        const percent = maxScore > 0 ? ((sumScore / maxScore) * 100).toFixed(2) : "0.00";
+
                         worksheet.addRow(
                             currentSection === 1
                                 ? {
                                     ...baseInfo,
                                     question: `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ""}`,
-                                    score: "",
+                                    score: `${percent} %`,
                                 }
                                 : {
                                     index: "",
@@ -112,9 +118,10 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
                                     role: "",
                                     comment: "",
                                     question: `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ""}`,
-                                    score: "",
+                                    score: `${percent} %`,
                                 }
                         );
+
                         Object.entries(responses)
                             .sort(([a], [b]) => {
                                 const parse = (str: string) =>
