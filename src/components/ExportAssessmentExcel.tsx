@@ -36,13 +36,13 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
             key: col.key,
             width: col.width,
             style: {
-                font: { name: 'TH Niramit AS', size: 14, bold: true },
+                font: { name: "TH Niramit AS", size: 14, bold: true },
                 alignment: col.style.alignment,
             },
         }));
 
         worksheet.getRow(1).eachCell((cell) => {
-            cell.font = { bold: true, size: 16, name: 'TH Niramit AS' };
+            cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
             cell.fill = {
                 type: "pattern",
                 pattern: "solid",
@@ -57,25 +57,9 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
             };
         });
 
-        worksheet.eachRow((row, rowNumber) => {
-            if (rowNumber !== 1) {
-                row.eachCell((cell) => {
-                    row.height = 25;
-                    cell.border = {
-                        top: { style: "thin" },
-                        left: { style: "thin" },
-                        bottom: { style: "thin" },
-                        right: { style: "thin" },
-                    };
-                    cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
-                    cell.font = { bold: true, size: 16, name: 'TH Niramit AS' };
-                });
-            }
-        });
-
         let index = 1;
 
-        data.forEach((item) => {
+        for (const item of data) {
             const baseInfo = {
                 index,
                 room: item.room,
@@ -107,60 +91,86 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
 
             let currentSection = 0;
 
-            let firstRow = true;
-
             responsesArray
-                .sort((a, b) => {
-                    const sectionA = parseInt(a.title.split('.')[0]);
-                    const sectionB = parseInt(b.title.split('.')[0]);
-                    return sectionA - sectionB;
-                })
+                .sort((a, b) => parseInt(a.title.split(".")[0]) - parseInt(b.title.split(".")[0]))
                 .forEach(({ title, responses }) => {
-                    const sectionNumber = parseInt(title.split('.')[0]);
+                    const sectionNumber = parseInt(title.split(".")[0]);
 
                     if (sectionNumber !== currentSection) {
                         currentSection = sectionNumber;
-                        const sectionTitle = `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ''}`;
-                        worksheet.addRow({
-                            question: sectionTitle,
-                        }).eachCell(cell => {
-                            cell.font = { bold: true, name: 'TH Niramit AS', size: 14 };
-                            cell.alignment = { horizontal: "left", vertical: "middle" };
-                        });
-                    }
-
-                    Object.entries(responses)
-                        .sort(([a], [b]) => {
-                            const parse = (str: string) =>
-                                str.match(/^\d+\.\d+/)?.[0]?.split(".").map(Number) ?? [99];
-                            const [aMain = 0, aSub = 0] = parse(a);
-                            const [bMain = 0, bSub = 0] = parse(b);
-                            return aMain - bMain || aSub - bSub;
-                        })
-                        .forEach(([question, score]) => {
-                            worksheet.addRow({
-                                ...(firstRow ? baseInfo : {}),
-                                question,
-                                score,
+                        worksheet.addRow(
+                            currentSection === 1
+                                ? {
+                                    ...baseInfo,
+                                    question: `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ""}`,
+                                    score: "",
+                                }
+                                : {
+                                    index: "",
+                                    room: "",
+                                    gender: "",
+                                    role: "",
+                                    comment: "",
+                                    question: `หมวด ${sectionNumber}. ${sectionNames[sectionNumber] || ""}`,
+                                    score: "",
+                                }
+                        );
+                        Object.entries(responses)
+                            .sort(([a], [b]) => {
+                                const parse = (str: string) =>
+                                    str.match(/^\d+\.\d+/)?.[0]?.split(".").map(Number) ?? [99];
+                                const [aMain = 0, aSub = 0] = parse(a);
+                                const [bMain = 0, bSub = 0] = parse(b);
+                                return aMain - bMain || aSub - bSub;
+                            })
+                            .forEach(([question, score]) => {
+                                worksheet.addRow({
+                                    index: "",
+                                    room: "",
+                                    gender: "",
+                                    role: "",
+                                    comment: "",
+                                    question,
+                                    score,
+                                });
                             });
-                            firstRow = false;
-                        });
+                    }
                 });
             worksheet.addRow({});
             index++;
-        });
+        }
 
-        worksheet.getRow(1).font = { bold: true };
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber !== 1) {
+                row.height = 25;
+                row.eachCell((cell, colNumber) => {
+                    const align = columns[colNumber - 1]?.style.alignment.horizontal || "center";
+                    cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
+                    cell.alignment = { horizontal: align as any, vertical: "middle", wrapText: true };
+                    cell.border = {
+                        top: { style: "thin" },
+                        left: { style: "thin" },
+                        bottom: { style: "thin" },
+                        right: { style: "thin" },
+                    };
+                });
+            }
+        });
 
         const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-        saveAs(blob, "assessment_summary.xlsx");
+        saveAs(
+            new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            }),
+            "assessment_summary.xlsx"
+        );
     };
 
     return (
-        <Button variant="outlined" color="primary" onClick={handleExport}
+        <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleExport}
             sx={{ ":hover": { backgroundColor: "primary.main", color: "white" } }}
         >
             บันทึกเป็น Excel
