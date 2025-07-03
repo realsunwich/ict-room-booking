@@ -156,28 +156,30 @@ export default function BookingHistory() {
                         setFilterEndDate={setFilterEndDate}
                         availableRooms={availableRooms}
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <ExportBookingExcelButton
-                            data={filteredBookings}
-                            columns={[
-                                { header: "วัน เวลา ที่เริ่ม", key: "startDate", width: 25 },
-                                { header: "วัน เวลา ที่สิ้นสุด", key: "endDate", width: 25 },
-                                { header: "สถานที่", key: "RoomName", width: 40 },
-                                { header: "วัตถุประสงค์", key: "purpose", width: 50 },
-                                { header: "จำนวน (คน)", key: "capacity", width: 20 },
-                                { header: "สถานะ", key: "SendStatus", width: 15 },
-                                { header: "ผู้ขอ", key: "sender", width: 25 },
-                                { header: "ตำแหน่ง", key: "jobName", width: 25 },
-                                { header: "โทรศัพท์", key: "phoneOut", width: 20 },
-                                { header: "โทรภายใน", key: "phoneIn", width: 20 },
-                            ]}
-                            filterStartDate={filterStartDate}
-                            filterEndDate={filterEndDate}
-                            filterRoom={filterRoom}
-                            filterStatus={filterStatus}
-                            buttonLabel="บันทึกเป็น Excel"
-                        />
-                    </Box>
+                    {session?.user?.role === "Admin" && (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <ExportBookingExcelButton
+                                data={filteredBookings}
+                                columns={[
+                                    { header: "วัน เวลา ที่เริ่ม", key: "startDate", width: 25 },
+                                    { header: "วัน เวลา ที่สิ้นสุด", key: "endDate", width: 25 },
+                                    { header: "สถานที่", key: "RoomName", width: 40 },
+                                    { header: "วัตถุประสงค์", key: "purpose", width: 50 },
+                                    { header: "จำนวน (คน)", key: "capacity", width: 20 },
+                                    { header: "สถานะ", key: "SendStatus", width: 15 },
+                                    { header: "ผู้ขอ", key: "sender", width: 25 },
+                                    { header: "ตำแหน่ง", key: "jobName", width: 25 },
+                                    { header: "โทรศัพท์", key: "phoneOut", width: 20 },
+                                    { header: "โทรภายใน", key: "phoneIn", width: 20 },
+                                ]}
+                                filterStartDate={filterStartDate}
+                                filterEndDate={filterEndDate}
+                                filterRoom={filterRoom}
+                                filterStatus={filterStatus}
+                                buttonLabel="บันทึกเป็น Excel"
+                            />
+                        </Box>
+                    )}
                 </Box>
 
                 {loading ? (
