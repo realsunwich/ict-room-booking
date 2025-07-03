@@ -16,7 +16,16 @@ interface AssessmentDetail {
     }[];
 }
 
-export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail[] }) {
+interface ExportAssessmentExcelProps {
+    data: AssessmentDetail[];
+    filter: {
+        room: string;
+        gender: string;
+        role: string;
+    };
+}
+
+export default function ExportAssessmentExcel({ data, filter }: ExportAssessmentExcelProps) {
     const handleExport = async () => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("สรุปผลการประเมิน");
@@ -86,10 +95,11 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
                 2: "ด้านความเต็มใจในการให้บริการ",
                 3: "ด้านคุณภาพการให้บริการ",
                 4: "ด้านการปรับปรุงบริการ",
-                5: "ความพึงพอใจโดยรวม",
+                5: "ด้านความพึงพอใจโดยรวม",
             };
 
             let currentSection = 0;
+            let allScores: number[] = [];
 
             responsesArray
                 .sort((a, b) => parseInt(a.title.split(".")[0]) - parseInt(b.title.split(".")[0]))
@@ -131,6 +141,7 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
                                 return aMain - bMain || aSub - bSub;
                             })
                             .forEach(([question, score]) => {
+                                allScores.push(Number(score));
                                 worksheet.addRow({
                                     index: "",
                                     room: "",
@@ -143,6 +154,21 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
                             });
                     }
                 });
+
+            const totalScore = allScores.reduce((a, b) => a + b, 0);
+            const totalMaxScore = allScores.length * 5;
+            const totalPercent = totalMaxScore > 0 ? ((totalScore / totalMaxScore) * 100).toFixed(2) : "0.00";
+
+            worksheet.addRow({
+                index: "",
+                room: "",
+                gender: "",
+                role: "",
+                comment: "",
+                question: "คะแนนเฉลี่ยรวม",
+                score: `${totalPercent} %`,
+            });
+
             worksheet.addRow({});
             index++;
         }
@@ -165,14 +191,32 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
         });
 
         const buffer = await workbook.xlsx.writeBuffer();
+        const sanitizeForFilename = (text?: string) => {
+            return text?.trim() ? text.replace(/[^\wก-๙]/g, "_").trim() : "";
+        };
+
+        const genderPart =
+            filter.gender === "อื่น ๆ"
+                ? "ที่เป็นเพศทางเลือก"
+                : filter.gender
+                    ? `ที่เป็นเพศ${sanitizeForFilename(filter.gender)}`
+                    : "";
+
+        const parts = [
+            sanitizeForFilename(filter.room),
+            genderPart,
+            filter.role ? `โดย${sanitizeForFilename(filter.role)}` : "",
+        ].filter(Boolean);
+
+        const filename = `สรุปผลการประเมิน${parts.join("")}.xlsx`;
+
         saveAs(
             new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             }),
-            "assessment_summary.xlsx"
+            filename
         );
     };
-
     return (
         <Button
             variant="outlined"
@@ -183,4 +227,4 @@ export default function ExportAssessmentExcel({ data }: { data: AssessmentDetail
             บันทึกเป็น Excel
         </Button>
     );
-}
+};

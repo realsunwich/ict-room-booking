@@ -234,7 +234,7 @@ export default function AssessmentSum() {
                                     }
                                 </Box>
                                 <Box>
-                                    <ExportAssessmentExcel data={filteredAssessments} />
+                                    <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
                                 </Box>
                             </Box>
                         )}
