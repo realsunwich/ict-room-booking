@@ -6,6 +6,8 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Header from "@/components/header";
 
+import ExportRoomStat from "@/components/ExportExcel/ExportRoomStat";
+
 interface MonthlyCount {
     month: string;
     count: number;
@@ -81,7 +83,7 @@ export default function StatsPage() {
         if (room) {
             document.title = `สถิติ${room} | ระบบจองห้องประชุม ICT`;
         } else {
-            document.title = "สถิติการใช้งานห้องประชุมทั้งหมด | ระบบจองห้องประชุม ICT";
+            document.title = "สถิติการใช้งานห้องประชุม | ระบบจองห้องประชุม ICT";
         }
     }, [room]);
 
@@ -120,7 +122,7 @@ export default function StatsPage() {
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        {room ? `สถิติการใช้งาน${room}` : "สถิติการใช้งานห้องประชุมทั้งหมด"}
+                        {room ? `สถิติการใช้งาน${room}` : "สถิติการใช้งานห้องประชุม"}
                     </Typography>
                 </Box>
 
@@ -133,9 +135,15 @@ export default function StatsPage() {
                 ) : (
                     stats.map((stat, index) => (
                         <Box key={index} sx={{ p: 2, mb: 2 }}>
-                            <Typography variant="h6" fontWeight="bold" mb={1}>
-                                {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
-                            </Typography>
+                            <Box>
+                                <Typography variant="h6" fontWeight="bold" mb={1}>
+                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
+                                </Typography>
+                                <ExportRoomStat
+                                    data={[stat]}
+                                    filename={`สถิติ${stat.RoomName}.xlsx`}
+                                />
+                            </Box>
 
                             {stat.statusCounts && (
                                 <>

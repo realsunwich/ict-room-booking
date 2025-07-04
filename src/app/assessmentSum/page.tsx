@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Box, Typography, CircularProgress, Paper, Divider, Table, TableBody, TableRow, TableCell, } from "@mui/material";
 import Header from "@/components/header";
 import AssessmentFilter, { FilterOptions } from "@/components/AssessmentFilter";
-import ExportAssessmentExcel from "@/components/ExportAssessmentExcel";
+import ExportAssessmentExcel from "@/components/ExportExcel/ExportAssessmentExcel";
 
 interface AssessmentDetail {
     id: string;

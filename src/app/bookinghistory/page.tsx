@@ -12,7 +12,7 @@ import Header from "@/components/header";
 import EditBookingDialog from "@/components/RoomModal/EditBookingDialog";
 import CancelDialog from "@/components/RoomModal/CancleDialog";
 import BookingFilter from "@/components/BookingFilter";
-import ExportBookingExcelButton from "@/components/ExportBookingExcelButton";
+import ExportBookingExcelButton from "@/components/ExportExcel/ExportBookingExcelButton";
 
 interface Booking {
     bookingID: string;
