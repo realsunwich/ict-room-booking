@@ -11,8 +11,10 @@ jobs:
     steps:
       - name: Notify Discord
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.Code_Alert }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: |
-            🚀 โค้ดถูก push เข้า branch `main` โดย **${{ github.actor }}**
-            🔗 [ดู commit](${{ github.event.head_commit.url }})
+          entryPoint: send
+          args: |
+            --webhook "${{ secrets.Code_Alert }}" \
+            --message "🚀 โค้ดถูก push เข้า branch main โดย **${{ github.actor }}** 🔗 [ดู commit](${{ github.event.head_commit.url }})"
