@@ -9,6 +9,12 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
+      - name: Get formatted Thai time
+        id: time
+        run: |
+          export TZ="Asia/Bangkok"
+          echo "time=$(date '+%d/%m/%Y เวลา %H:%M น.')" >> $GITHUB_OUTPUT
+
       - name: Notify Discord
         uses: Ilshidur/action-discord@master
         env:
@@ -16,10 +22,10 @@ jobs:
         with:
           args: |
             --webhook "${{ secrets.Code_Alert }}" 
-            "**📦 โปรเจกต์** ${{ github.repository }}
-            **📍 Branch** ${{ github.ref_name }}
-            **🚀 โค้ดถูก push โดย** ${{ github.actor }}
-            📝 Commit ${{ github.event.head_commit.message }}
-            📌 [ดู commit](${{ github.event.head_commit.url }})
-            🕒 เวลา ${{ github.event.head_commit.timestamp }}
+            "**📦 โปรเจกต์:** `${{ github.repository }}`\n\
+            **📍 Branch:** `${{ github.ref_name }}`\n\
+            **🚀 โค้ดถูก push โดย:** `${{ github.actor }}`\n\
+            📝 Commit: `${{ github.event.head_commit.message }}`\n\
+            📌 [ดู commit](${{ github.event.head_commit.url }})\n\
+            🕒 เวลา: `${{ steps.time.outputs.time }}`\n\
             <@&1390556493798965308>"
