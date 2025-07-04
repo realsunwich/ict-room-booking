@@ -16,6 +16,7 @@ jobs:
         with:
           args: |
             --webhook "${{ secrets.Code_Alert }}" 
-            "**🚀 โค้ดถูก push เข้า branch `main` โดย:** `${{ github.actor }}`
+            "**📦 โปรเจกต์: `${{ github.event.repository.name }}`
+            **🚀 โค้ดถูก push เข้า branch `main` โดย:** `${{ github.actor }}`
             📌 โปรดตรวจสอบ [commit](${{ github.event.head_commit.url }})
             <@&1390556493798965308>"
