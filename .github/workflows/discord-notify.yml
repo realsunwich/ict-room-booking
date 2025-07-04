@@ -28,10 +28,10 @@ jobs:
       - name: Notify Discord
         uses: Ilshidur/action-discord@master
         env:
-          DISCORD_WEBHOOK: ${{ secrets.Code_Alert }}
+          DISCORD_WEBHOOK: ${{ secrets.Github }}
         with:
           args: |
-            --webhook "${{ secrets.Code_Alert }}" 
+            --webhook "${{ secrets.Github }}" 
             "**📦 โปรเจกต์:** ${{ github.event.repository.name }}
             **📍 Branch:** ${{ github.ref_name }}
             **🚀 โค้ดถูก push โดย:** ${{ github.actor }}
