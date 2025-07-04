@@ -135,8 +135,8 @@ export default function StatsPage() {
                 ) : (
                     stats.map((stat, index) => (
                         <Box key={index} sx={{ p: 2, mb: 2 }}>
-                            <Box>
-                                <Typography variant="h6" fontWeight="bold" mb={1}>
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+                                <Typography variant="h6" fontWeight="bold">
                                     {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
                                 </Typography>
                                 <ExportRoomStat

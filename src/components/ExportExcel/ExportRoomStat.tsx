@@ -21,16 +21,60 @@ interface RoomStat {
 interface ExportProps {
     data: RoomStat[];
     filename: string;
-    buttonLabel?: string;
 }
 
-export default function ExportRoomStat({ data, filename, buttonLabel = "Export" }: ExportProps) {
+const FONT_NAME = "TH Niramit AS";
+const FONT_SIZE = 16;
+
+export default function ExportRoomStat({ data, filename = "Export" }: ExportProps) {
     const handleExport = async () => {
         const workbook = new ExcelJS.Workbook();
         const sheet = workbook.addWorksheet("Room Stats");
 
-        // Add header
-        sheet.addRow(["ห้อง", "จำนวนใช้งานรวม", "เดือน", "จำนวน (เดือน)", "ปี", "จำนวน (ปี)", "สถานะ", "จำนวน (สถานะ)"]);
+        const formatThaiMonth = (isoMonth: string): string => {
+            const [yearStr, monthStr] = isoMonth.split("-");
+            const year = parseInt(yearStr, 10) + 543;
+            const month = parseInt(monthStr, 10);
+            const thaiMonths = [
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+            ];
+            return `${thaiMonths[month - 1] || "ไม่ทราบ"} ${year}`;
+        };
+
+        const formatThaiYear = (year: string): string => {
+            return `${parseInt(year, 10) + 543}`;
+        };
+
+        const headers = [
+            "ห้อง", "จำนวนใช้งานรวม", "เดือน", "จำนวน (เดือน)", "ปี", "จำนวน (ปี)", "สถานะ", "จำนวน (สถานะ)"
+        ];
+
+        sheet.columns = headers.map((header, idx) => ({
+            header,
+            key: `col${idx}`,
+            width: 20,
+        }));
+
+        const headerRow = sheet.getRow(1);
+        headerRow.height = 30;
+        headerRow.eachCell((cell) => {
+            cell.font = { name: FONT_NAME, size: FONT_SIZE, bold: true };
+            cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+            cell.fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "FFCCE5FF" },
+            };
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+        });
+
+        let currentRow = 2;
 
         data.forEach(stat => {
             const maxLen = Math.max(
@@ -40,23 +84,44 @@ export default function ExportRoomStat({ data, filename, buttonLabel = "Export" 
             );
 
             for (let i = 0; i < maxLen; i++) {
-                sheet.addRow([
-                    i === 0 ? stat.RoomName : "",
-                    i === 0 ? stat.totalUsage : "",
-                    stat.usageByMonth?.[i]?.month || "",
-                    stat.usageByMonth?.[i]?.count || "",
-                    stat.usageByYear?.[i]?.year || "",
-                    stat.usageByYear?.[i]?.count || "",
-                    Object.entries(stat.statusCounts || {})[i]?.[0] || "",
-                    Object.entries(stat.statusCounts || {})[i]?.[1] || "",
-                ]);
+                const row = sheet.getRow(currentRow++);
+                row.height = 25;
+
+                row.getCell(1).value = i === 0 ? stat.RoomName : "";
+                row.getCell(2).value = i === 0 ? stat.totalUsage : "";
+                row.getCell(3).value = stat.usageByMonth?.[i]?.month ? formatThaiMonth(stat.usageByMonth[i].month) : "";
+                row.getCell(4).value = stat.usageByMonth?.[i]?.count || "";
+                row.getCell(5).value = stat.usageByYear?.[i]?.year ? formatThaiYear(stat.usageByYear[i].year) : "";
+                row.getCell(6).value = stat.usageByYear?.[i]?.count || "";
+
+                const statusEntries = Object.entries(stat.statusCounts || {});
+                row.getCell(7).value = statusEntries[i]?.[0] || "";
+                row.getCell(8).value = statusEntries[i]?.[1] || "";
+
+                row.eachCell((cell, colNumber) => {
+                    cell.font = { name: FONT_NAME, size: FONT_SIZE };
+                    cell.alignment = {
+                        vertical: "middle",
+                        horizontal: colNumber === 1
+                            ? "left" : "center",
+                        wrapText: true,
+                    };
+                    cell.border = {
+                        top: { style: "thin" },
+                        left: { style: "thin" },
+                        bottom: { style: "thin" },
+                        right: { style: "thin" },
+                    };
+                });
             }
 
-            sheet.addRow([]); // blank row between rooms
+            currentRow++;
         });
 
         const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
         saveAs(blob, filename);
     };
 
