@@ -193,6 +193,7 @@ export default function ExportAssessmentExcel({ data, filter }: ExportAssessment
         const worksheet2 = workbook.addWorksheet("ผลสรุปแบบย่อ");
 
         const summaryColumns = [
+            { header: "ลำดับ", key: "index", width: 10, style: { alignment: { horizontal: "center" as const } } },
             { header: "ห้อง", key: "room", width: 25, style: { alignment: { horizontal: "center" as const } } },
             { header: "เพศ", key: "gender", width: 12, style: { alignment: { horizontal: "center" as const } } },
             { header: "สถานภาพ", key: "role", width: 20, style: { alignment: { horizontal: "center" as const } } },
@@ -209,42 +210,25 @@ export default function ExportAssessmentExcel({ data, filter }: ExportAssessment
             key: col.key,
             width: col.width,
             style: {
-                font: { name: "TH Niramit AS", size: 14, bold: true },
-                alignment: col.style.alignment,
+            font: { name: "TH Niramit AS", size: 14, bold: true },
+            alignment: col.style.alignment,
             },
         }));
 
         worksheet2.getRow(1).eachCell((cell) => {
             cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
             cell.fill = {
-                type: "pattern",
-                pattern: "solid",
-                fgColor: { argb: "FFCCE5FF" },
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCE5FF" },
             };
             cell.alignment = { horizontal: "center", vertical: "middle" };
             cell.border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
             };
-        });
-
-        worksheet2.eachRow((row, rowNumber) => {
-            if (rowNumber !== 1) {
-                row.height = 25;
-                row.eachCell((cell, colNumber) => {
-                    const align = summaryColumns[colNumber - 1]?.style.alignment.horizontal || "center";
-                    cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
-                    cell.alignment = { horizontal: align as any, vertical: "middle", wrapText: true };
-                    cell.border = {
-                        top: { style: "thin" },
-                        left: { style: "thin" },
-                        bottom: { style: "thin" },
-                        right: { style: "thin" },
-                    };
-                });
-            }
         });
 
         const grouped = new Map<string, { room: string; gender: string; role: string; scores: Record<number, number[]> }>();
@@ -252,34 +236,34 @@ export default function ExportAssessmentExcel({ data, filter }: ExportAssessment
         for (const item of data) {
             const key = `${item.room}|||${item.gender}|||${item.role}`;
             if (!grouped.has(key)) {
-                grouped.set(key, {
-                    room: item.room,
-                    gender: item.gender,
-                    role: item.role,
-                    scores: { 1: [], 2: [], 3: [], 4: [], 5: [] },
-                });
+            grouped.set(key, {
+                room: item.room,
+                gender: item.gender,
+                role: item.role,
+                scores: { 1: [], 2: [], 3: [], 4: [], 5: [] },
+            });
             }
 
             const group = grouped.get(key)!;
 
             const responsesArray = Array.isArray(item.responses)
-                ? item.responses
-                : Object.entries(item.responses).map(([title, resp]) => ({
-                    title,
-                    responses: Object.fromEntries(
-                        Object.entries(resp as Record<string, { score: number } | number>).map(([key, value]) =>
-                            typeof value === "object" && value !== null && "score" in value
-                                ? [key, value.score]
-                                : [key, value as number]
-                        )
-                    ),
-                }));
+            ? item.responses
+            : Object.entries(item.responses).map(([title, resp]) => ({
+                title,
+                responses: Object.fromEntries(
+                Object.entries(resp as Record<string, { score: number } | number>).map(([key, value]) =>
+                    typeof value === "object" && value !== null && "score" in value
+                    ? [key, value.score]
+                    : [key, value as number]
+                )
+                ),
+            }));
 
             responsesArray.forEach(({ title, responses }) => {
-                const sectionNumber = parseInt(title.split(".")[0]);
-                if (group.scores[sectionNumber]) {
-                    group.scores[sectionNumber].push(...Object.values(responses).map(Number));
-                }
+            const sectionNumber = parseInt(title.split(".")[0]);
+            if (group.scores[sectionNumber]) {
+                group.scores[sectionNumber].push(...Object.values(responses).map(Number));
+            }
             });
         }
 
@@ -289,29 +273,57 @@ export default function ExportAssessmentExcel({ data, filter }: ExportAssessment
             let totalCount = 0;
 
             for (let i = 1; i <= 5; i++) {
-                const section = group.scores[i] || [];
-                const sectionSum = section.reduce((a, b) => a + b, 0);
-                const sectionMax = section.length * 5;
-                const percent = sectionMax > 0 ? (sectionSum / sectionMax) * 100 : 0;
-                sectionPercents[i] = percent.toFixed(2);
-                totalSum += sectionSum;
-                totalCount += section.length * 5;
+            const section = group.scores[i] || [];
+            const sectionSum = section.reduce((a, b) => a + b, 0);
+            const sectionMax = section.length * 5;
+            const percent = sectionMax > 0 ? (sectionSum / sectionMax) * 100 : 0;
+            sectionPercents[i] = percent.toFixed(2);
+            totalSum += sectionSum;
+            totalCount += section.length * 5;
             }
 
             const totalPercent = totalCount > 0 ? (totalSum / totalCount) * 100 : 0;
 
-            worksheet2.addRow({
-                room: group.room,
-                gender: group.gender,
-                role: group.role,
-                section1: sectionPercents[1],
-                section2: sectionPercents[2],
-                section3: sectionPercents[3],
-                section4: sectionPercents[4],
-                section5: sectionPercents[5],
-                total: totalPercent.toFixed(2),
+            const row = worksheet2.addRow({
+            index: worksheet2.rowCount,
+            room: group.room,
+            gender: group.gender,
+            role: group.role,
+            section1: sectionPercents[1],
+            section2: sectionPercents[2],
+            section3: sectionPercents[3],
+            section4: sectionPercents[4],
+            section5: sectionPercents[5],
+            total: totalPercent.toFixed(2),
+            });
+
+            row.eachCell((cell, colNumber) => {
+            const align = summaryColumns[colNumber - 1]?.style.alignment.horizontal || "center";
+            cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
+            cell.alignment = { horizontal: align as any, vertical: "middle", wrapText: true };
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
             });
         }
+
+        worksheet2.eachRow((row, rowNumber) => {
+            row.height = 25;
+            row.eachCell((cell, colNumber) => {
+            const align = summaryColumns[colNumber - 1]?.style.alignment.horizontal || "center";
+            cell.font = { bold: true, size: 16, name: "TH Niramit AS" };
+            cell.alignment = { horizontal: align as any, vertical: "middle", wrapText: true };
+            cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            });
+        });
 
         const worksheet3 = workbook.addWorksheet("สรุปผลแบบแยกตามกลุ่ม");
 
