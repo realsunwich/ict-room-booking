@@ -9,11 +9,21 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Get formatted Thai time
+      - name: แปลงวันที่เป็นภาษาไทย
         id: time
         run: |
           export TZ="Asia/Bangkok"
-          echo "time=$(date '+%d/%m/%Y เวลา %H:%M น.')" >> $GITHUB_OUTPUT
+          DAY=$(date '+%-d')
+          MONTH_NUM=$(date '+%-m')
+          YEAR=$(date '+%Y')
+          TIME=$(date '+%H:%M')
+
+          # แปลงเดือนเป็นภาษาไทย
+          MONTH_TH=(มกราคม กุมภาพันธ์ มีนาคม เมษายน พฤษภาคม มิถุนายน กรกฎาคม สิงหาคม กันยายน ตุลาคม พฤศจิกายน ธันวาคม)
+          MONTH_NAME=${MONTH_TH[$((MONTH_NUM - 1))]}
+
+          # สร้างข้อความสุดท้าย
+          echo "time=${DAY} ${MONTH_NAME} ${YEAR} เวลา ${TIME} น." >> $GITHUB_OUTPUT
 
       - name: Notify Discord
         uses: Ilshidur/action-discord@master
@@ -22,10 +32,10 @@ jobs:
         with:
           args: |
             --webhook "${{ secrets.Code_Alert }}" 
-            "**📦 โปรเจกต์:** `${{ github.repository }}`\n\
-            **📍 Branch:** `${{ github.ref_name }}`\n\
-            **🚀 โค้ดถูก push โดย:** `${{ github.actor }}`\n\
-            📝 Commit: `${{ github.event.head_commit.message }}`\n\
-            📌 [ดู commit](${{ github.event.head_commit.url }})\n\
-            🕒 เวลา: `${{ steps.time.outputs.time }}`\n\
+            "**📦 โปรเจกต์:** ${{ github.event.repository.name }}
+            **📍 Branch:** ${{ github.ref_name }}
+            **🚀 โค้ดถูก push โดย:** ${{ github.actor }}
+            📝 Commit: ${{ github.event.head_commit.message }}
+            🕒 เวลา: ${{ steps.time.outputs.time }}
+            📌 [ดู commit](${{ github.event.head_commit.url }})
             <@&1390556493798965308>"
