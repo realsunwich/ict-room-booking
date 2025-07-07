@@ -1,15 +1,29 @@
-'use client';
-
 import React from 'react';
-import './globals.css';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/components/theme';
-import { SessionProvider } from "next-auth/react";
+import { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
+import Providers from '@/components/Providers';
+import './globals.css';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+
+export const metadata: Metadata = {
+  title: "ICT Room Booking System",
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "shortcut icon", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+  ],
+  description: "ระบบจองห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา",
+  keywords: "ICT Room Booking System, ระบบจองห้องประชุม, มหาวิทยาลัยพะเยา",
+  authors: [
+    {
+      name: "Nuntiya Suwannasak",
+    },
+  ],
+  creator: "Nuntiya Suwannasak",
+  publisher: "Nuntiya Suwannasak",
+};
 
 const kanit = Kanit({
   subsets: ['thai', 'latin'],
@@ -26,18 +40,15 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="th" className={kanit.className}>
       <body>
-        <SessionProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-              <div style={{ display: 'flex', flex: 1 }}>
-                <main style={{ flex: '100%', padding: '0% 1%' }}>
-                  {children}
-                </main>
-              </div>
+        <Providers>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <div style={{ display: 'flex', flex: 1 }}>
+              <main style={{ flex: '100%', padding: '0% 1%' }}>
+                {children}
+              </main>
             </div>
-          </ThemeProvider>
-        </SessionProvider>
+          </div>
+        </Providers>
       </body>
     </html>
   );
