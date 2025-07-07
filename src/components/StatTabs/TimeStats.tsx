@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
 
 interface MonthlyCount {
     month: string;
@@ -8,56 +9,121 @@ interface YearlyCount {
     year: string;
     count: number;
 }
+interface Props {
+    usageByMonth?: MonthlyCount[];
+    usageByYear?: YearlyCount[];
+}
 
-function formatThaiMonthYear(isoMonth: string): string {
-    const [yearStr, monthStr] = isoMonth.split("-");
-    const year = parseInt(yearStr, 10) + 543;
-    const month = parseInt(monthStr, 10);
-    const thaiMonths = [
-        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-    ];
-    return `${thaiMonths[month - 1] || "ไม่ทราบเดือน"} ${year}`;
+const thaiMonths = [
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+];
+
+function formatThaiMonth(isoMonth: string): string {
+    const [year, month] = isoMonth.split("-");
+    const monthIndex = +month - 1;
+    const thaiMonth = thaiMonths[monthIndex] || "ไม่ทราบเดือน";
+    const buddhistYear = +year + 543;
+    return `เดือน${thaiMonth} ${buddhistYear}`;
 }
 
 function formatThaiYear(year: string): string {
-    return `${parseInt(year, 10) + 543}`;
+    return `ปี ${+year + 543}`;
 }
 
-export default function TimeStats({
-    usageByMonth,
-    usageByYear,
+function ChartSection({
+    title,
+    rawData,
+    formatLabel,
+    barColor
 }: {
-    usageByMonth?: MonthlyCount[];
-    usageByYear?: YearlyCount[];
+    title: string;
+    rawData: { label: string; value: number }[];
+    formatLabel: (label: string) => string;
+    barColor: string;
 }) {
+    const chartData = rawData.map(({ label, value }) => ({
+        name: formatLabel(label),
+        count: value
+    }));
+
     return (
         <Box>
-            <Typography variant="subtitle1" fontWeight="bold" mt={2}>รายเดือน</Typography>
-            {Array.isArray(usageByMonth) && usageByMonth.length > 0 ? (
-                usageByMonth.map(({ month, count }) => (
-                    <Typography key={month} variant="body2" sx={{ ml: 2 }}>
-                        {formatThaiMonthYear(month)} {count} ครั้ง
-                    </Typography>
-                ))
-            ) : (
-                <Typography variant="body2" sx={{ ml: 2 }}>
-                    ไม่มีข้อมูลรายเดือน
-                </Typography>
-            )}
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+                {title}
+            </Typography>
 
-            <Typography variant="subtitle1" fontWeight="bold" mt={3}>รายปี</Typography>
-            {Array.isArray(usageByYear) && usageByYear.length > 0 ? (
-                usageByYear.map(({ year, count }) => (
-                    <Typography key={year} variant="body2" sx={{ ml: 2 }}>
-                        ปี {formatThaiYear(year)} {count} ครั้ง
-                    </Typography>
-                ))
+            {rawData.length === 0 ? (
+                <Typography variant="body2">ไม่มีข้อมูล</Typography>
             ) : (
-                <Typography variant="body2" sx={{ ml: 2 }}>
-                    ไม่มีข้อมูลรายปี
-                </Typography>
+                <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={3}>
+                    <Box flex={1}>
+                        {rawData.map(({ label, value }) => (
+                            <Typography key={label} variant="body2" mb={0.5}>
+                                {formatLabel(label)} จำนวน {value} ครั้ง
+                            </Typography>
+                        ))}
+                    </Box>
+
+                    <Box flex={2} minWidth={0}>
+                        <ResponsiveContainer width="100%" height={280}>
+                            <BarChart
+                                data={chartData}
+                                margin={{ top: 10, right: 30, left: 0, bottom: 50 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="name"
+                                    interval={0}
+                                    tick={{ fontSize: 12 }}
+                                    tickFormatter={(label) => label.replace("เดือน", "").replace("ปี ", "")}
+                                />
+                                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                                <Tooltip
+                                    formatter={(value: any) => [`${value} ครั้ง`, "จำนวนการใช้งาน"]}
+                                />
+                                <Legend wrapperStyle={{ fontSize: 12 }} />
+                                <Bar
+                                    dataKey="count"
+                                    fill={barColor}
+                                    name="จำนวนการใช้งาน"
+                                    barSize={35}
+                                    radius={[4, 4, 0, 0]}
+                                />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </Box>
+                </Box>
             )}
+        </Box>
+    );
+}
+
+export default function TimeStats({ usageByMonth = [], usageByYear = [] }: Props) {
+    const monthData = usageByMonth.map(({ month, count }) => ({
+        label: month,
+        value: count
+    }));
+
+    const yearData = usageByYear.map(({ year, count }) => ({
+        label: year,
+        value: count
+    }));
+
+    return (
+        <Box display="flex" flexDirection="column" gap={5}>
+            <ChartSection
+                title="รายเดือน"
+                rawData={monthData}
+                formatLabel={formatThaiMonth}
+                barColor="#1976d2"
+            />
+            <ChartSection
+                title="รายปี"
+                rawData={yearData}
+                formatLabel={formatThaiYear}
+                barColor="#388e3c"
+            />
         </Box>
     );
 }

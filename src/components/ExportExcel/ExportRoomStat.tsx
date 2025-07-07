@@ -26,10 +26,21 @@ interface ExportProps {
 const FONT_NAME = "TH Niramit AS";
 const FONT_SIZE = 16;
 
-export default function ExportRoomStat({ data, filename = "Export" }: ExportProps) {
+export default function ExportRoomStat({ data, }: ExportProps) {
     const handleExport = async () => {
         const workbook = new ExcelJS.Workbook();
-        const sheet = workbook.addWorksheet("Room Stats");
+        const sheet = workbook.addWorksheet("สถิติการใช้งาน");
+
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const year = now.getFullYear();
+        const formattedDate = `${day}${month}${year}`;
+
+        const roomName = data[0]?.RoomName || "ไม่ทราบชื่อห้อง";
+        const safeRoomName = roomName.replace(/[\\/:*?"<>|]/g, "_");
+
+        const filename = `สถิติ_${safeRoomName}_${formattedDate}.xlsx`;
 
         const formatThaiMonth = (isoMonth: string): string => {
             const [yearStr, monthStr] = isoMonth.split("-");
