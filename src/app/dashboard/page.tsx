@@ -8,7 +8,6 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 
-
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
 import RoomDetailDialog from "@/components/RoomModal/RoomDetailDialog";
@@ -18,9 +17,9 @@ import { useRouter } from "next/navigation";
 interface Room {
     name: string;
     image: string;
-    image2:string;
-    image3:string;
-    image4:string;
+    image2: string;
+    image3: string;
+    image4: string;
     detailImage_1: string;
     detailImage_2?: string;
     description: string;
@@ -106,7 +105,7 @@ export default function Dashboard() {
                 pagination={{ clickable: true }}
                 style={{ width: "100%", height: 180 }}
             >
-                {[room.image,room.image2,room.image3,room.image4,].filter(Boolean).map((src, index) => (
+                {[room.image, room.image2, room.image3, room.image4,].filter(Boolean).map((src, index) => (
                     <SwiperSlide key={index}>
                         <Box
                             component="img"
