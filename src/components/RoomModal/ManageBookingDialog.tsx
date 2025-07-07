@@ -40,7 +40,18 @@ export default function ManageBookingDialog({
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            maxWidth="sm"
+            slotProps={{
+                backdrop: {
+                    sx: {
+                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    },
+                },
+            }}
+        >
             <DialogTitle>จัดการคำขอใช้ห้องประชุม</DialogTitle>
             <DialogContent>
                 <Typography variant="body1" gutterBottom>
