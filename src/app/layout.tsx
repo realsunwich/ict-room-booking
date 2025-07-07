@@ -7,6 +7,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/components/theme';
 import { SessionProvider } from "next-auth/react";
 import { Kanit } from 'next/font/google';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const kanit = Kanit({
   subsets: ['thai', 'latin'],

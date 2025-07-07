@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Snackbar, Alert, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+
 
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
@@ -15,6 +18,9 @@ import { useRouter } from "next/navigation";
 interface Room {
     name: string;
     image: string;
+    image2:string;
+    image3:string;
+    image4:string;
     detailImage_1: string;
     detailImage_2?: string;
     description: string;
@@ -24,6 +30,9 @@ const rooms: Room[] = [
     {
         name: "ห้องประชุมคณะ ICT",
         image: "/images/ห้องประชุม ICT-1.jpg",
+        image2: "/images/ห้องประชุม ICT-2.jpg",
+        image3: "/images/ห้องประชุม ICT-3.jpg",
+        image4: "/images/ห้องประชุม ICT-8.jpg",
         detailImage_1: "/images/ห้องประชุม ICT.jpg",
         detailImage_2: "/images/ผังห้องประชุม ICT.jpg",
         description: "รองรับได้ 98 ที่นั่ง",
@@ -31,6 +40,9 @@ const rooms: Room[] = [
     {
         name: "ห้องประชุมแม่กา",
         image: "/images/ห้องประชุมแม่กา1.jpg",
+        image2: "/images/ห้องประชุมแม่กา3.jpg",
+        image3: "/images/ห้องประชุมแม่กา4.jpg",
+        image4: "/images/ห้องประชุมแม่กา6.jpg",
         detailImage_1: "/images/ห้องประชุมแม่กา.jpg",
         detailImage_2: "/images/ผังห้องประชุมแม่กา.jpg",
         description: "รองรับได้ 38 ที่นั่ง",
@@ -38,6 +50,9 @@ const rooms: Room[] = [
     {
         name: "ห้องบัณฑิตศึกษา ICT1318",
         image: "/images/ห้องบัณฑิตศึกษา1.jpg",
+        image2: "/images/ห้องบัณฑิตศึกษา3.jpg",
+        image3: "/images/ห้องบัณฑิตศึกษา4.jpg",
+        image4: "/images/ห้องบัณฑิตศึกษา6.jpg",
         detailImage_1: "/images/ห้องบัณฑิตศึกษา.jpg",
         detailImage_2: "/images/ผังห้องบัณฑิตศึกษา.jpg",
         description: "รองรับได้ 30 ที่นั่ง",
@@ -45,6 +60,9 @@ const rooms: Room[] = [
     {
         name: "ลานกิจกรรมใต้ถุนอาคาร ICT",
         image: "/images/test.jpg",
+        image2: "",
+        image3: "",
+        image4: "",
         detailImage_1: "/images/detail_ict.jpg",
         detailImage_2: "/images/detail_ict.jpg",
         description: "รองรับได้ 300 ที่นั่ง",
@@ -81,22 +99,25 @@ export default function Dashboard() {
     };
 
     const RoomCard = ({ room }: { room: Room }) => (
-        <Box
-            key={room.name}
-            sx={{
-                width: 320,
-                borderRadius: 3,
-                boxShadow: 2,
-                bgcolor: "background.paper",
-                overflow: "hidden",
-            }}
-        >
-            <Box
-                component="img"
-                src={room.image}
-                alt={room.name}
-                sx={{ width: "100%", height: 180, objectFit: "cover" }}
-            />
+        <Box sx={{ width: 320, borderRadius: 3, boxShadow: 2, bgcolor: "background.paper", overflow: "hidden" }}>
+            <Swiper
+                modules={[Navigation, Pagination]}
+                navigation
+                pagination={{ clickable: true }}
+                style={{ width: "100%", height: 180 }}
+            >
+                {[room.image,room.image2,room.image3,room.image4,].filter(Boolean).map((src, index) => (
+                    <SwiperSlide key={index}>
+                        <Box
+                            component="img"
+                            src={src}
+                            alt={`Slide ${index + 1}`}
+                            sx={{ width: "100%", height: 180, objectFit: "cover" }}
+                        />
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+
             <Box sx={{ p: 2 }}>
                 <Typography variant="h6" fontWeight={700}>
                     {room.name}
@@ -114,21 +135,10 @@ export default function Dashboard() {
                 <Box sx={{ gap: 1 }}>
                     {session?.user?.role === "User" && (
                         <>
-                            <Button
-                                variant="outlined"
-                                fullWidth
-                                sx={{ mb: 1 }}
-                                onClick={() => handleOpenRoomDetail(room)}
-                            >
+                            <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
                                 รายละเอียดห้องประชุม
                             </Button>
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                color="primary"
-                                sx={{ mb: 1 }}
-                                onClick={() => handleOpenBooking(room.name)}
-                            >
+                            <Button variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}>
                                 จองห้องประชุม
                             </Button>
                         </>
