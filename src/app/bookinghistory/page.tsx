@@ -53,7 +53,7 @@ export default function BookingHistory() {
         document.title = "ประวัติการจอง | ระบบจองห้องประชุม ICT";
     }, []);
 
-    const currentMonth = new Date().getMonth(); // 0-based (0 = Jan)
+    const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
     const availableRooms = Array.from(new Set(bookings.map((b) => b.RoomName)));
@@ -70,8 +70,8 @@ export default function BookingHistory() {
 
         const matchRoom = !filterRoom || booking.RoomName === filterRoom;
         const matchStatus = !filterStatus || booking.SendStatus.trim() === filterStatus;
-        const matchStartDate = !filterStartDate || startDate >= new Date(filterStartDate);
-        const matchEndDate = !filterEndDate || endDate <= new Date(filterEndDate);
+        const matchStartDate = !filterStartDate || startDate >= new Date(new Date(filterStartDate).setHours(0, 0, 0, 0));
+        const matchEndDate = !filterEndDate || endDate <= new Date(new Date(filterEndDate).setHours(23, 59, 59, 999));
 
         return (
             matchRoom &&
