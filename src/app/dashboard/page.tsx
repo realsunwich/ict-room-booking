@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { Box, Typography, Button, Tooltip, Snackbar, Alert, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 import Header from "@/components/header";
 import BookingModal from "@/components/RoomModal/roomBooking";
@@ -97,69 +99,108 @@ export default function Dashboard() {
         setOpenBooking(true);
     };
 
-    const RoomCard = ({ room }: { room: Room }) => (
-        <Box sx={{ width: 320, borderRadius: 3, boxShadow: 2, bgcolor: "background.paper", overflow: "hidden" }}>
-            <Swiper
-                modules={[Navigation, Pagination]}
-                navigation
+    const navButtonStyle = (position: "left" | "right") => ({
+        position: "absolute",
+        top: "50%",
+        [position]: 8,
+        width: 32,
+        height: 32,
+        zIndex: 10,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        borderRadius: "50%",
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        transform: "translateY(-50%)",
+        "&::after": {
+            fontSize: "16px",
+        },
+    });
+
+    const RoomCard = ({ room }: { room: Room }) => {
+        const safeClassName = room.name.replace(/\s/g, "-");
+
+        return (
+            <Box sx={{ width: 320, borderRadius: 3, boxShadow: 2, bgcolor: "background.paper", overflow: "hidden" }}>
+                <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                navigation={{
+                    nextEl: `.swiper-button-next-${safeClassName}`,
+                    prevEl: `.swiper-button-prev-${safeClassName}`,
+                }}
                 pagination={{ clickable: true }}
-                style={{ width: "100%", height: 180 }}
+                autoplay={{
+                    delay: 3000,
+                    disableOnInteraction: false,
+                }}
+                style={{ width: "100%", height: 180, position: "relative" }}
             >
-                {[room.image, room.image2, room.image3, room.image4,].filter(Boolean).map((src, index) => (
-                    <SwiperSlide key={index}>
-                        <Box
-                            component="img"
-                            src={src}
-                            alt={`Slide ${index + 1}`}
-                            sx={{ width: "100%", height: 180, objectFit: "cover" }}
-                        />
-                    </SwiperSlide>
-                ))}
+                {[room.image, room.image2, room.image3, room.image4]
+                    .filter(Boolean)
+                    .map((src, index) => (
+                        <SwiperSlide key={index}>
+                            <Box
+                                component="img"
+                                src={src}
+                                alt={`Slide ${index + 1}`}
+                                sx={{ width: "100%", height: 180, objectFit: "cover" }}
+                            />
+                        </SwiperSlide>
+                    ))}
+                <Box className={`swiper-button-prev-${safeClassName}`} sx={navButtonStyle("left")}>
+                    <ArrowBackIosNewIcon fontSize="small" />
+                </Box>
+                <Box className={`swiper-button-next-${safeClassName}`} sx={navButtonStyle("right")}>
+                    <ArrowForwardIosIcon fontSize="small" />
+                </Box>
             </Swiper>
 
-            <Box sx={{ p: 2 }}>
-                <Typography variant="h6" fontWeight={700}>
-                    {room.name}
-                </Typography>
-                <Typography
-                    variant="body2"
-                    sx={{
-                        textAlign: "left",
-                        fontSize: { xs: "0.9rem", sm: "0.95rem" },
-                        color: "text.secondary",
-                    }}
-                >
-                    {room.description}
-                </Typography>
-                <Box sx={{ gap: 1 }}>
-                    {session?.user?.role === "User" && (
-                        <>
-                            <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
-                                รายละเอียดห้องประชุม
-                            </Button>
-                            <Button variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}>
-                                จองห้องประชุม
-                            </Button>
-                        </>
-                    )}
-                    <Button variant="outlined" fullWidth color="primary" sx={{ mb: 1 }}>
-                        ปฏิทินห้องประชุม
-                    </Button>
-                    {session?.user?.role === "Admin" && (
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            sx={{ mb: 1 }}
-                            color="primary"
-                            onClick={() => router.push(`/BookingStat?room=${encodeURIComponent(room.name)}`)}
-                        >
-                            ดูสถิติการใช้งานห้อง
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h6" fontWeight={700}>
+                        {room.name}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            textAlign: "left",
+                            fontSize: { xs: "0.9rem", sm: "0.95rem" },
+                            color: "text.secondary",
+                        }}
+                    >
+                        {room.description}
+                    </Typography>
+                    <Box sx={{ gap: 1 }}>
+                        {session?.user?.role === "User" && (
+                            <>
+                                <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
+                                    รายละเอียดห้องประชุม
+                                </Button>
+                                <Button variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}>
+                                    จองห้องประชุม
+                                </Button>
+                            </>
+                        )}
+                        <Button variant="outlined" fullWidth color="primary" sx={{ mb: 1 }}>
+                            ปฏิทินห้องประชุม
                         </Button>
-                    )}
+                        {session?.user?.role === "Admin" && (
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                sx={{ mb: 1 }}
+                                color="primary"
+                                onClick={() => router.push(`/BookingStat?room=${encodeURIComponent(room.name)}`)}
+                            >
+                                ดูสถิติการใช้งานห้อง
+                            </Button>
+                        )}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
-    );
+        )
+    };
 
     return (
         <Box
