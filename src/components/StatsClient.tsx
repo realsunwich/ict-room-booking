@@ -1,16 +1,15 @@
-// File: StatsPage.tsx
 "use client";
 
+import React from "react";
+import { Box, Typography, CircularProgress, Tabs, Tab } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress, Tabs, Tab } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Header from "@/components/header";
 import ExportRoomStat from "@/components/ExportExcel/ExportRoomStat";
-import MonthlyStats from "@/components/StatTabs/MonthlyStats";
-import YearlyStats from "@/components/StatTabs/YearlyStats";
-import StatusStats from "@/components/StatTabs/StatusStats";
 
+import TimeStats from "@/components/StatTabs/TimeStats";
+import StatusStats from "@/components/StatTabs/StatusStats";
 
 interface MonthlyCount {
     month: string;
@@ -32,6 +31,10 @@ interface CanceledItem {
     SendStatus: string;
     RejectReason?: string | null;
     CancelReason?: string | null;
+}
+
+function TabPanel({ children, value, index }: { children: React.ReactNode; value: number; index: number }) {
+    return value === index ? <Box sx={{ px: 2 }}>{children}</Box> : null;
 }
 
 export default function StatsPage() {
@@ -104,32 +107,34 @@ export default function StatsPage() {
                     <Box textAlign="center" mt={4}>
                         <CircularProgress />
                     </Box>
+                ) : stats.length === 0 ? (
+                    <Typography>ไม่มีข้อมูลสถิติการใช้งาน</Typography>
                 ) : (
-                    <>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(_, val) => setTabIndex(val)}
-                            centered
-                            sx={{ mb: 3 }}
-                        >
-                            <Tab label="รายเดือน" />
-                            <Tab label="รายปี" />
-                            <Tab label="สถานะและเหตุผล" />
-                        </Tabs>
+                    stats.map((stat, index) => (
+                        <Box key={index}>
+                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, position: "relative" }}>
+                                <Typography variant="h6" fontWeight="bold" sx={{ textAlign: "center", flex: 1 }}>
+                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
+                                </Typography>
+                                <Box sx={{ position: "absolute", right: 0 }}>
+                                    <ExportRoomStat data={[stat]} filename={`สถิติ${stat.RoomName}.xlsx`} />
+                                </Box>
+                            </Box>
 
-                        {tabIndex === 0 && (
-                            <MonthlyStats usageByMonth={stats[0]?.usageByMonth} />
-                        )}
-                        {tabIndex === 1 && (
-                            <YearlyStats usageByYear={stats[0]?.usageByYear} />
-                        )}
-                        {tabIndex === 2 && (
-                            <StatusStats
-                                statusCounts={stats[0]?.statusCounts}
-                                canceledOrRejected={canceledOrRejected}
-                            />
-                        )}
-                    </>
+                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)} centered sx={{ mb: 3 }}>
+                                <Tab label="การใช้งานตามช่วงเวลา" />
+                                <Tab label="สถานะและเหตุผล" />
+                            </Tabs>
+
+                            <TabPanel value={tabIndex} index={0}>
+                                <TimeStats usageByMonth={stat.usageByMonth} usageByYear={stat.usageByYear} />
+                            </TabPanel>
+
+                            <TabPanel value={tabIndex} index={1}>
+                                <StatusStats statusCounts={stat.statusCounts} canceledOrRejected={canceledOrRejected.filter(item => item.RoomName === stat.RoomName)} />
+                            </TabPanel>
+                        </Box>
+                    ))
                 )}
             </Box>
         </Box>
