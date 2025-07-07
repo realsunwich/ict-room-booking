@@ -10,6 +10,7 @@ const CheckUserPage = () => {
     const router = useRouter();
 
     useEffect(() => {
+        document.title = "กำลังตรวจสอบสิทธิ์ผู้ใช้งาน...";
         if (status === "authenticated") {
             fetch(`/api/login?userEmail=${session?.user?.email}`)
                 .then(res => res.json())
@@ -25,7 +26,7 @@ const CheckUserPage = () => {
         }
     }, [session, status, router]);
 
-    return <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={2}>กำลังตรวจสอบสิทธิ์ผู้ใช้งาน...</Box>;
+    return <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap={2} marginTop={40}>กำลังตรวจสอบสิทธิ์ผู้ใช้งาน...</Box>;
 };
 
 export default CheckUserPage;

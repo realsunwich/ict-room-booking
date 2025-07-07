@@ -3,8 +3,13 @@
 import { Typography, Box } from "@mui/material";
 import LoginButton from "@/components/365buttonlogin";
 import Image from "next/image";
+import { useEffect } from "react";
 
 const LoginClient = () => {
+    useEffect(() => {
+        document.title = "เข้าสู่ระบบ | ระบบจองห้องประชุม ICT";
+    }, []);
+
     return (
         <Box sx={{
             display: "flex",
