@@ -6,9 +6,11 @@ import { Box } from '@mui/material';
 
 export const metadata: Metadata = {
   title: "ICT Room Booking System",
-  icons: {
-    icon: "/favicon.ico",
-  },
+  icons: [
+    { rel: "icon", url: "/favicon-32x32.png" },
+    { rel: "shortcut icon", url: "/favicon-32x32.png" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+  ],
   description: "ระบบจองห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา",
   keywords: "ICT Room Booking System, ระบบจองห้องประชุม, มหาวิทยาลัยพะเยา",
   authors: [
