@@ -35,12 +35,14 @@ function ChartSection({
     title,
     rawData,
     formatLabel,
-    barColor
+    barColor,
+    chartLabel,
 }: {
     title: string;
     rawData: { label: string; value: number }[];
     formatLabel: (label: string) => string;
     barColor: string;
+    chartLabel: string;
 }) {
     const chartData = rawData.map(({ label, value }) => ({
         name: formatLabel(label),
@@ -49,14 +51,14 @@ function ChartSection({
 
     return (
         <Box>
-            <Typography variant="h6" fontWeight="bold" mb={2}>
+            <Typography variant="h6" fontWeight="bold">
                 {title}
             </Typography>
 
             {rawData.length === 0 ? (
                 <Typography variant="body2">ไม่มีข้อมูล</Typography>
             ) : (
-                <Box display="flex" flexDirection={{ xs: "column", md: "row" }} gap={3}>
+                <Box display="flex" flexDirection={{ xs: "column", md: "row" }} >
                     <Box flex={1}>
                         {rawData.map(({ label, value }) => (
                             <Typography key={label} variant="body2" mb={0.5}>
@@ -66,10 +68,9 @@ function ChartSection({
                     </Box>
 
                     <Box flex={2} minWidth={0}>
-                        <ResponsiveContainer width="100%" height={280}>
+                        <ResponsiveContainer width="100%" height={250}>
                             <BarChart
                                 data={chartData}
-                                margin={{ top: 10, right: 30, left: 0, bottom: 50 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
@@ -86,7 +87,7 @@ function ChartSection({
                                 <Bar
                                     dataKey="count"
                                     fill={barColor}
-                                    name="จำนวนการใช้งาน"
+                                    name={chartLabel}
                                     barSize={35}
                                     radius={[4, 4, 0, 0]}
                                 />
@@ -111,18 +112,20 @@ export default function TimeStats({ usageByMonth = [], usageByYear = [] }: Props
     }));
 
     return (
-        <Box display="flex" flexDirection="column" gap={5}>
+        <Box display="flex" flexDirection="column" >
             <ChartSection
                 title="รายเดือน"
                 rawData={monthData}
                 formatLabel={formatThaiMonth}
                 barColor="#1976d2"
+                chartLabel="สถิติการใช้งานรายเดือน"
             />
             <ChartSection
                 title="รายปี"
                 rawData={yearData}
                 formatLabel={formatThaiYear}
                 barColor="#388e3c"
+                chartLabel="สถิติการใช้งานรายปี"
             />
         </Box>
     );

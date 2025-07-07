@@ -121,7 +121,7 @@ export default function StatsPage() {
                                 </Box>
                             </Box>
 
-                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)} centered sx={{ mb: 3 }}>
+                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)} centered>
                                 <Tab label="การใช้งานตามช่วงเวลา" />
                                 <Tab label="สถานะและเหตุผล" />
                             </Tabs>
