@@ -77,6 +77,7 @@ export default function Dashboard() {
     const [selectedRoom, setSelectedRoom] = useState<string>("");
     const [roomDetailOpen, setRoomDetailOpen] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
+    const [hasSignature, setHasSignature] = useState(false);
     const router = useRouter();
 
     const [snackbar, setSnackbar] = useState({
@@ -119,43 +120,56 @@ export default function Dashboard() {
         },
     });
 
+    useEffect(() => {
+        const checkSignature = async () => {
+            if (!session?.user?.email) return;
+
+            const res = await fetch(`/api/signature?email=${session.user.email}`);
+            const data = await res.json();
+
+            setHasSignature(data.hasSignature);
+        };
+
+        checkSignature();
+    }, [session]);
+
     const RoomCard = ({ room }: { room: Room }) => {
         const safeClassName = room.name.replace(/\s/g, "-");
 
         return (
             <Box sx={{ width: 320, borderRadius: 3, boxShadow: 2, bgcolor: "background.paper", overflow: "hidden" }}>
                 <Swiper
-                modules={[Navigation, Pagination, Autoplay]}
-                navigation={{
-                    nextEl: `.swiper-button-next-${safeClassName}`,
-                    prevEl: `.swiper-button-prev-${safeClassName}`,
-                }}
-                pagination={{ clickable: true }}
-                autoplay={{
-                    delay: 3000,
-                    disableOnInteraction: false,
-                }}
-                style={{ width: "100%", height: 180, position: "relative" }}
-            >
-                {[room.image, room.image2, room.image3, room.image4]
-                    .filter(Boolean)
-                    .map((src, index) => (
-                        <SwiperSlide key={index}>
-                            <Box
-                                component="img"
-                                src={src}
-                                alt={`Slide ${index + 1}`}
-                                sx={{ width: "100%", height: 180, objectFit: "cover" }}
-                            />
-                        </SwiperSlide>
-                    ))}
-                <Box className={`swiper-button-prev-${safeClassName}`} sx={navButtonStyle("left")}>
-                    <ArrowBackIosNewIcon fontSize="small" />
-                </Box>
-                <Box className={`swiper-button-next-${safeClassName}`} sx={navButtonStyle("right")}>
-                    <ArrowForwardIosIcon fontSize="small" />
-                </Box>
-            </Swiper>
+                    modules={[Navigation, Pagination, Autoplay]}
+                    navigation={{
+                        nextEl: `.swiper-button-next-${safeClassName}`,
+                        prevEl: `.swiper-button-prev-${safeClassName}`,
+                    }}
+                    pagination={{ clickable: true }}
+                    autoplay={{
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    }}
+                    style={{ width: "100%", height: 180, position: "relative" }}
+                >
+                    {[room.image, room.image2, room.image3, room.image4]
+                        .filter(Boolean)
+                        .map((src, index) => (
+                            <SwiperSlide key={index}>
+                                <Box
+                                    component="img"
+                                    src={src}
+                                    alt={`Slide ${index + 1}`}
+                                    sx={{ width: "100%", height: 180, objectFit: "cover" }}
+                                />
+                            </SwiperSlide>
+                        ))}
+                    <Box className={`swiper-button-prev-${safeClassName}`} sx={navButtonStyle("left")}>
+                        <ArrowBackIosNewIcon fontSize="small" />
+                    </Box>
+                    <Box className={`swiper-button-next-${safeClassName}`} sx={navButtonStyle("right")}>
+                        <ArrowForwardIosIcon fontSize="small" />
+                    </Box>
+                </Swiper>
 
                 <Box sx={{ p: 2 }}>
                     <Typography variant="h6" fontWeight={700}>
@@ -177,9 +191,26 @@ export default function Dashboard() {
                                 <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
                                     รายละเอียดห้องประชุม
                                 </Button>
-                                <Button variant="contained" fullWidth color="primary" sx={{ mb: 1 }} onClick={() => handleOpenBooking(room.name)}>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    color="primary"
+                                    sx={{ mb: 1 }}
+                                    onClick={() => handleOpenBooking(room.name)}
+                                    disabled={!hasSignature}
+                                >
                                     จองห้องประชุม
                                 </Button>
+
+                                {!hasSignature && (
+                                    <Typography
+                                        variant="body2"
+                                        color="error"
+                                        sx={{ fontSize: 13, textAlign: "center", mt: -1.5, mb: 1 }}
+                                    >
+                                        กรุณาอัปโหลดลายเซ็นก่อนทำการจอง
+                                    </Typography>
+                                )}
                             </>
                         )}
                         <Button variant="outlined" fullWidth color="primary" sx={{ mb: 1 }}>
