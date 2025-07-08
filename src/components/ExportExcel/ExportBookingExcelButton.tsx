@@ -49,16 +49,16 @@ export default function ExportBookingExcelButton<T extends { startDate: string; 
                 .replace(/\s+/g, "_")
             || "";
 
-        const roomPart = filterRoom ? `_room-${sanitize(filterRoom)}` : "";
-        const statusPart = filterStatus ? `_status-${sanitize(filterStatus)}` : "";
+        const roomPart = filterRoom ? `_ของ${sanitize(filterRoom)}` : "";
+        const statusPart = filterStatus ? `_ในสถานะ${sanitize(filterStatus)}` : "";
 
 
         const dynamicFilename =
             filename
                 ? filename
                 : (startPart === "NA" || endPart === "NA")
-                    ? `booking_history_invalid_Date${roomPart}${statusPart}.xlsx`
-                    : `booking_history_${startPart}-${endPart}${roomPart}${statusPart}.xlsx`;
+                    ? `ประวัติการจองไม่ทราบวันที่${roomPart}${statusPart}.xlsx`
+                    : `ประวัติการจองช่วง${startPart}-${endPart}${roomPart}${statusPart}.xlsx`;
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Booking History");
