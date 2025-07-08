@@ -33,7 +33,7 @@ interface Booking {
     cfPhone?: string;
 }
 
-export default function BookingHistory() {
+export default function BookingRequest() {
     const { data: session } = useSession();
     const [showContact, setShowContact] = useState(true);
     const [loading, setLoading] = useState(true);
