@@ -19,7 +19,7 @@ interface BookingInfo {
     SendStatus: string;
 }
 
-export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
+export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signatureUrl?: string }) => {
     useEffect(() => {
         registerTHNiramitFont();
     }, []);
@@ -151,6 +151,17 @@ export const FormPDF = ({ booking }: { booking: BookingInfo }) => {
 
                     <View style={{ marginTop: cm(0.5), alignItems: 'flex-end' }}>
                         <View style={{ alignItems: 'center', paddingRight: cm(1), marginBottom: cm(0.5) }}>
+                            {signatureUrl && (
+                                <Image
+                                    src={signatureUrl}
+                                    style={{
+                                        width: cm(4),
+                                        height: cm(2),
+                                        marginBottom: cm(0.2),
+                                        objectFit: 'contain',
+                                    }}
+                                />
+                            )}
                             <Text style={[styles.text]}>
                                 ลงชื่อ..........................................................
                             </Text>

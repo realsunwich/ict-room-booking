@@ -44,6 +44,7 @@ export default function BookingHistory() {
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [userSignatureFileName, setUserSignatureFileName] = useState<string | null>(null);
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
         "success"
     );
@@ -98,6 +99,25 @@ export default function BookingHistory() {
             showSnackbar(err?.error || "เกิดข้อผิดพลาดในการบันทึกสถานะ", "error");
         }
     };
+
+    useEffect(() => {
+        const fetchSignature = async () => {
+            if (!session?.user?.email) return;
+
+            try {
+                const res = await fetch(`/api/signature?email=${session.user.email}`);
+                const data = await res.json();
+
+                if (data?.fileName) {
+                    setUserSignatureFileName(data.fileName);
+                }
+            } catch (err) {
+                console.error("ไม่สามารถโหลดลายเซ็น", err);
+            }
+        };
+
+        fetchSignature();
+    }, [session]);
 
     useEffect(() => {
         document.title = "คำขอใช้บริหาร | ระบบจองห้องประชุม ICT";
@@ -229,6 +249,11 @@ export default function BookingHistory() {
                                                         cfPhone: booking.cfPhone ?? "",
                                                         capacity: String(booking.capacity),
                                                     }}
+                                                    signatureUrl={
+                                                        userSignatureFileName
+                                                            ? `/uploads/signatures/${userSignatureFileName}`
+                                                            : undefined
+                                                    }
                                                 />
                                             </TableCell>
                                             <TableCell align="center" sx={{ width: 20 }}>

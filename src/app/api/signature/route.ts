@@ -15,5 +15,12 @@ export async function GET(request: Request) {
         where: { userEmail: email },
     });
 
-    return NextResponse.json({ hasSignature: !!signature });
+    if (!signature) {
+        return NextResponse.json({ hasSignature: false });
+    }
+
+    return NextResponse.json({
+        hasSignature: true,
+        fileName: signature.fileName,
+    });
 }

@@ -20,10 +20,16 @@ interface BookingInfo {
     SendStatus: string;
 }
 
-function FormPDFButton({ booking }: { booking: BookingInfo }) {
+interface FormPDFButtonProps {
+    booking: BookingInfo;
+    signatureUrl?: string;
+}
+
+function FormPDFButton({ booking, signatureUrl }: FormPDFButtonProps) {
+
     const handleClick = async () => {
         try {
-            const blob = await pdf(<FormPDF booking={booking} />).toBlob();
+            const blob = await pdf(<FormPDF booking={booking} signatureUrl={signatureUrl} />).toBlob();
             const url = URL.createObjectURL(blob);
 
             window.open(url, "_blank");
@@ -46,3 +52,4 @@ function FormPDFButton({ booking }: { booking: BookingInfo }) {
 }
 
 export default FormPDFButton;
+
