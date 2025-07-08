@@ -25,12 +25,15 @@ interface Booking {
 
     sendDate?: string;
     sender?: string;
+    senderEmail?: string;
     jobName?: string;
     phoneIn?: string;
     phoneOut?: string;
     officeLocation?: string;
     cfSender?: string;
     cfPhone?: string;
+
+    signatureFileName?: string | null;
 }
 
 export default function BookingRequest() {
@@ -101,18 +104,22 @@ export default function BookingRequest() {
     };
 
     useEffect(() => {
+        if (!session?.user?.email) return; // ถ้าไม่มี email อย่า fetch
+
         const fetchSignature = async () => {
-            if (!session?.user?.email) return;
-
             try {
-                const res = await fetch(`/api/signature?email=${session.user.email}`);
+                const emailEncoded = encodeURIComponent(session.user.email);
+                const res = await fetch(`/api/signature?email=${emailEncoded}`);
+                if (!res.ok) {
+                    console.error("Failed to fetch signature:", await res.text());
+                    return;
+                }
                 const data = await res.json();
-
-                if (data?.fileName) {
+                if (data.fileName) {
                     setUserSignatureFileName(data.fileName);
                 }
             } catch (err) {
-                console.error("ไม่สามารถโหลดลายเซ็น", err);
+                console.error("Error fetching signature:", err);
             }
         };
 
@@ -250,8 +257,8 @@ export default function BookingRequest() {
                                                         capacity: String(booking.capacity),
                                                     }}
                                                     signatureUrl={
-                                                        userSignatureFileName
-                                                            ? `/uploads/signatures/${userSignatureFileName}`
+                                                        booking.signatureFileName
+                                                            ? `/uploads/signatures/${booking.signatureFileName}`
                                                             : undefined
                                                     }
                                                 />

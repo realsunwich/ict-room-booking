@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const email = searchParams.get("email");
 
     if (!email) {
-        return NextResponse.json({ hasSignature: false, error: "Missing email" }, { status: 400 });
+        return NextResponse.json({ error: "Missing email" }, { status: 400 });
     }
 
     const signature = await prisma.signature.findUnique({
@@ -24,3 +24,4 @@ export async function GET(request: Request) {
         fileName: signature.fileName,
     });
 }
+
