@@ -12,6 +12,7 @@ model BookingInfo {
   RoomName       String?   @db.VarChar(255)
   sendDate       DateTime? @default(now())
   sender         String?   @db.VarChar(255)
+  senderEmail    String?   @db.VarChar(255)
   phoneIn        String?   @db.VarChar(255)
   phoneOut       String?   @db.VarChar(255)
   jobName        String?   @db.VarChar(255)

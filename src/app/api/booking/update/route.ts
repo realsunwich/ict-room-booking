@@ -10,6 +10,7 @@ export async function PUT(request: NextRequest) {
             bookingID,
             RoomName,
             sender,
+            senderEmail,
             phoneIn,
             phoneOut,
             jobName,
@@ -27,6 +28,7 @@ export async function PUT(request: NextRequest) {
             where: { bookingID },
             data: {
                 sender,
+                senderEmail,
                 jobName,
                 phoneIn,
                 phoneOut,

@@ -17,6 +17,7 @@ import ExportBookingExcelButton from "@/components/ExportExcel/ExportBookingExce
 interface Booking {
     bookingID: string;
     sender: string;
+    senderEmail: string;
     phoneIn: string;
     phoneOut: string;
     startDate: string;
@@ -248,7 +249,12 @@ export default function BookingHistory() {
                                                                 }}
                                                                 color="primary"
                                                                 sx={{ minWidth: 0, p: 1 }}
-                                                                disabled={booking.SendStatus.trim() !== "กำลังรอ" && !"ไม่อนุมัติ".includes(booking.SendStatus.trim())}
+                                                                disabled={
+                                                                    session?.user?.role !== "Admin" && (
+                                                                        !["กำลังรอ", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ||
+                                                                        session?.user?.email !== booking.senderEmail
+                                                                    )
+                                                                }
                                                             >
                                                                 <EditIcon />
                                                             </Button>

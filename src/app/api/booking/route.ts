@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/next-auth";
 
 const prisma = new PrismaClient();
 
@@ -11,6 +13,12 @@ const thaiTime = (dateStr: string) => {
 
 export async function POST(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
+
+        if (!session || !session.user?.email) {
+            return NextResponse.json({ message: "ไม่ได้รับอนุญาต" }, { status: 401 });
+        }
+
         const body = await request.json();
         const {
             RoomName,
@@ -31,6 +39,7 @@ export async function POST(request: Request) {
             data: {
                 RoomName,
                 sender,
+                senderEmail: session.user.email,
                 jobName,
                 phoneIn,
                 phoneOut,
@@ -43,7 +52,7 @@ export async function POST(request: Request) {
                 cfPhone,
                 createdAt: thaiTime(new Date().toISOString()),
                 RecordStatus: "N",
-                SendStatus: "กำลังรอ"
+                SendStatus: "กำลังรอ",
             },
         });
 
