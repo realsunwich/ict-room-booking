@@ -217,6 +217,22 @@ const Header = () => {
                                 >
                                     สรุปผลการประเมิน
                                 </Button>
+                                <input
+                                    id="upload-signature"
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    onChange={handleFileChange}
+                                />
+                                <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
+                                    <Button
+                                        startIcon={<BadgeIcon />}
+                                        component="span"
+                                        sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    >
+                                        อัปโหลดลายเซ็น
+                                    </Button>
+                                </label>
                             </Box>
                         )}
                     </Box>

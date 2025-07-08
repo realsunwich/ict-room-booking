@@ -1,98 +1,44 @@
 import { NextResponse } from "next/server";
-import { IncomingForm, Fields, Files } from "formidable";
-import fs from "fs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/next-auth";
+import { PrismaClient } from "@prisma/client";
+import { writeFile } from "fs/promises";
 import path from "path";
-import { Readable } from "stream";
-import { promises as fsPromises, createReadStream, createWriteStream } from "fs";
-import { IncomingMessage } from "http";
 
-export const config = {
-    api: { bodyParser: false },
-};
+const prisma = new PrismaClient();
 
-async function moveFile(source: string, dest: string) {
-    return new Promise<void>((resolve, reject) => {
-        const readStream = createReadStream(source);
-        const writeStream = createWriteStream(dest);
+export async function POST(req: Request) {
+    const session = await getServerSession(authOptions);
 
-        readStream.on("error", reject);
-        writeStream.on("error", reject);
-
-        writeStream.on("finish", async () => {
-            try {
-                await fsPromises.unlink(source);
-                resolve();
-            } catch (err) {
-                reject(err);
-            }
-        });
-
-        readStream.pipe(writeStream);
-    });
-}
-
-class FakeReq extends Readable {
-    headers: Record<string, string>;
-
-    constructor(buffer: Buffer, headers: Record<string, string>) {
-        super();
-        this.headers = headers;
-        this.push(buffer);
-        this.push(null);
-    }
-    _read() { }
-}
-
-export async function POST(request: Request) {
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
+    if (!session || !session.user?.email) {
+        return NextResponse.json({ message: "ไม่ได้รับอนุญาต" }, { status: 401 });
     }
 
-    const buf = Buffer.from(await request.arrayBuffer());
+    const formData = await req.formData();
+    const file: File | null = formData.get("signature") as unknown as File;
 
-    const headers: Record<string, string> = {};
-    request.headers.forEach((value, key) => {
-        headers[key.toLowerCase()] = value;
+    if (!file) {
+        return NextResponse.json({ message: "ไม่พบไฟล์" }, { status: 400 });
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const safeEmail = session.user.email.replace(/[^a-zA-Z0-9]/g, "_");
+    const ext = file.name.split(".").pop();
+    const fileName = `signature_${safeEmail}.${ext}`;
+
+    const filePath = path.join(process.cwd(), "public/uploads/signatures", fileName);
+
+    await writeFile(filePath, buffer);
+
+    await prisma.signature.upsert({
+        where: { userEmail: session.user.email },
+        update: { fileName },
+        create: {
+            userEmail: session.user.email,
+            fileName,
+        },
     });
 
-    const fakeReq = new FakeReq(buf, headers);
-    const form = new IncomingForm();
-
-    try {
-        const { fields, files } = await new Promise<{ fields: Fields; files: Files }>(
-            (resolve, reject) => {
-                form.parse(fakeReq as unknown as IncomingMessage, (err, fields, files) => {
-                    if (err) reject(err);
-                    else resolve({ fields, files });
-                });
-            }
-        );
-
-        const userId = Array.isArray(fields.userId) ? fields.userId[0] : fields.userId;
-        if (!userId) {
-            return NextResponse.json({ message: "Missing userId" }, { status: 400 });
-        }
-
-        const signatureFile = Array.isArray(files.signature) ? files.signature[0] : files.signature;
-        if (!signatureFile) {
-            return NextResponse.json({ message: "No file uploaded" }, { status: 400 });
-        }
-
-        const userDir = path.join(uploadDir, userId);
-        if (!fs.existsSync(userDir)) {
-            fs.mkdirSync(userDir, { recursive: true });
-        }
-
-        const fileName = `signature${path.extname(signatureFile.originalFilename || "")}`;
-        const filePath = path.join(userDir, fileName);
-
-        await moveFile(signatureFile.filepath, filePath);
-
-        return NextResponse.json({ message: "File uploaded successfully" });
-    } catch (error) {
-        console.error("Upload error:", error);
-        return NextResponse.json({ message: "Error processing upload" }, { status: 500 });
-    }
+    return NextResponse.json({ message: "อัปโหลดเรียบร้อย", fileName });
 }

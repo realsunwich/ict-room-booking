@@ -43,6 +43,12 @@ model RoomUsageStats {
   updatedAt  DateTime @updatedAt
 }
 
+model Signature {
+  id        Int    @id @default(autoincrement())
+  userEmail String @unique
+  fileName  String
+}
+
 model users {
   userID         Int       @id @default(autoincrement())
   userEmail      String?   @unique @db.VarChar(255)
