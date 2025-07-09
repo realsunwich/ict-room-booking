@@ -1,21 +1,8 @@
 "use client";
 
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    Stack,
-    Snackbar,
-    Alert,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -47,14 +34,14 @@ const initialFormData = (roomName: string) => ({
 });
 
 export default function BookingDialog({ open, onClose, roomName }: BookingModalProps) {
-    // แยก state วันและเวลา สำหรับ start และ end
+    const { data: session } = useSession();
+
     const [startDay, setStartDay] = useState<Date | null>(null);
     const [startTime, setStartTime] = useState<Date | null>(null);
 
     const [endDay, setEndDay] = useState<Date | null>(null);
     const [endTime, setEndTime] = useState<Date | null>(null);
 
-    // เก็บ form data อื่น ๆ
     const [formData, setFormData] = useState(initialFormData(roomName));
 
     const [snackbar, setSnackbar] = useState({
@@ -66,7 +53,6 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
     useEffect(() => {
         if (open) {
             setFormData((prev) => ({ ...prev, RoomName: roomName }));
-            // เคลียร์วันที่และเวลาใหม่ทุกครั้งที่เปิด dialog
             setStartDay(null);
             setStartTime(null);
             setEndDay(null);
@@ -74,7 +60,6 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         }
     }, [open, roomName]);
 
-    // รวมวันที่และเวลาเป็น Date object เดียว
     function combineDateTime(date: Date | null, time: Date | null): Date | null {
         if (!date || !time) return null;
         const combined = new Date(date);
@@ -82,19 +67,16 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         return combined;
     }
 
-    // ฟังก์ชันตรวจสอบเวลาว่าอยู่ในช่วง 08:00 - 17:00 หรือไม่
     const isWithinBookingHours = (date: Date | null) => {
         if (!date) return false;
         const hour = date.getHours();
         return hour >= minBookingHour && hour < maxBookingHour;
     };
 
-    // Handle change ฟิลด์ทั่วไป
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // ตรวจสอบและอัปเดต startDate ใน formData
     useEffect(() => {
         const combined = combineDateTime(startDay, startTime);
         if (combined) {
@@ -113,7 +95,6 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         }
     }, [startDay, startTime]);
 
-    // ตรวจสอบและอัปเดต endDate ใน formData
     useEffect(() => {
         const combined = combineDateTime(endDay, endTime);
         if (combined) {
@@ -126,7 +107,6 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                 setFormData((prev) => ({ ...prev, endDate: "" }));
                 return;
             }
-            // เช็คว่า endDate ต้องหลัง startDate
             if (formData.startDate) {
                 const start = new Date(formData.startDate);
                 if (combined <= start) {
@@ -147,11 +127,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
 
     const handleSubmit = async () => {
         if (!formData.startDate || !formData.endDate) {
-            setSnackbar({
-                open: true,
-                message: "กรุณาเลือกวันและเวลาเริ่มต้น-สิ้นสุดให้ครบถ้วน",
-                severity: "error",
-            });
+            setSnackbar({ open: true, message: "กรุณาเลือกวันและเวลาเริ่มต้น-สิ้นสุดให้ครบถ้วน", severity: "error" });
             return;
         }
 
@@ -165,12 +141,24 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
             });
 
             if (res.ok) {
+                if (session?.accessToken) {
+                    await fetch("/api/calendar/add-event", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            accessToken: session.accessToken,
+                            booking: bookingData,
+                        }),
+                    });
+                }
+
                 setSnackbar({ open: true, message: "จองห้องสำเร็จ", severity: "success" });
                 setFormData(initialFormData(roomName));
                 setStartDay(null);
                 setStartTime(null);
                 setEndDay(null);
                 setEndTime(null);
+
                 setTimeout(() => {
                     setSnackbar((prev) => ({ ...prev, open: false }));
                     onClose();
@@ -217,13 +205,12 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                         <TextField label="วัตถุประสงค์ในการใช้งาน (รายละเอียด)" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
 
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
-                            {/* เริ่มวันที่ */}
                             <DatePicker
                                 label="เลือกวันเริ่ม"
                                 value={startDay}
                                 onChange={(newDate) => setStartDay(newDate)}
                                 slotProps={{ textField: { ...textFieldProps } }}
-                                minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // เลือกวันตั้งแต่พรุ่งนี้
+                                minDate={new Date(new Date().setDate(new Date().getDate() + 1))}
                             />
                             <TimePicker
                                 label="เลือกเวลาเริ่ม"
@@ -236,13 +223,12 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                                 slotProps={{ textField: { ...textFieldProps } }}
                             />
 
-                            {/* สิ้นสุดวันที่ */}
                             <DatePicker
                                 label="เลือกวันสิ้นสุด"
                                 value={endDay}
                                 onChange={(newDate) => setEndDay(newDate)}
-                                minDate={startDay || new Date(new Date().setDate(new Date().getDate() + 1))} // ต้องไม่ก่อนวันเริ่ม
-                                disabled={!startDay} // ปิดจนกว่าจะเลือกวันเริ่มก่อน
+                                minDate={startDay || new Date(new Date().setDate(new Date().getDate() + 1))}
+                                disabled={!startDay}
                                 slotProps={{ textField: { ...textFieldProps } }}
                             />
                             <TimePicker
@@ -253,7 +239,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                                 ampm={false}
                                 minTime={new Date(0, 0, 0, minBookingHour, 0)}
                                 maxTime={new Date(0, 0, 0, maxBookingHour, 0)}
-                                disabled={!endDay} // ปิดจนกว่าจะเลือกวันสิ้นสุดก่อน
+                                disabled={!endDay}
                                 slotProps={{ textField: { ...textFieldProps } }}
                             />
                         </LocalizationProvider>

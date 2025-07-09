@@ -213,9 +213,27 @@ export default function Dashboard() {
                                 )}
                             </>
                         )}
-                        <Button variant="outlined" fullWidth color="primary" sx={{ mb: 1 }}>
+                        <Button
+                            variant="outlined"
+                            fullWidth
+                            color="primary"
+                            sx={{ mb: 1 }}
+                            onClick={() => {
+                                const calendarMap: Record<string, string> = {
+                                    "ห้องประชุมคณะ ICT": "c_e1dd4b1b64e4e05076472f39b630df6d809a3ee6b7514663cd7e9172b0bd0268@group.calendar.google.com",
+                                    "ห้องประชุมแม่กา": "c_8f3cb3dc7ac30369b6993c93eb9e28208dfc86ff39646babf97bd6e72b244579@group.calendar.google.com",
+                                    "ห้องบัณฑิตศึกษา ICT1318": "c_bb07d69b9b55b95c06b227efc733624525fb4fa3e150245a8b8f4e1250d4bfbf@group.calendar.google.com",
+                                    "ลานกิจกรรมใต้ถุนอาคาร ICT": "c_353cd6e59378ddf27d7b1ebfd1e552d7fb4565e2cc923dc3c5469c50c3eddd23@group.calendar.google.com",
+                                };
+
+                                const calendarId = calendarMap[room.name];
+                                const url = `https://calendar.google.com/calendar/embed?src=${calendarId}&ctz=Asia/Bangkok`;
+                                window.open(url, "_blank");
+                            }}
+                        >
                             ปฏิทินห้องประชุม
                         </Button>
+
                         {session?.user?.role === "Admin" && (
                             <Button
                                 variant="contained"

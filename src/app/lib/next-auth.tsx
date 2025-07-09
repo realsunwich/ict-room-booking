@@ -1,4 +1,5 @@
 import AzureADProvider from "next-auth/providers/azure-ad";
+import GoogleProvider from "next-auth/providers/google";
 import { NextAuthOptions } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 
@@ -22,23 +23,41 @@ export const authOptions: NextAuthOptions = {
             },
             httpOptions: { timeout: 10000 },
         }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            authorization: {
+                params: {
+                    scope: "openid email profile https://www.googleapis.com/auth/calendar",
+                    access_type: "offline",
+                    prompt: "consent",
+                },
+            },
+        }),
     ],
     callbacks: {
-        jwt: async ({ token, account }) => {
+        jwt: async ({ token, account, profile }) => {
             try {
                 console.log("⚙️ jwt callback called, account:", account);
 
                 if (account) {
                     token.accessToken = account.access_token;
 
-                    const response = await fetch("https://graph.microsoft.com/v1.0/me", {
-                        headers: { Authorization: `Bearer ${account.access_token}` },
-                    });
-                    const user = await response.json();
+                    if (account.provider === "google") {
+                        token.name = profile?.name;
+                        token.email = profile?.email;
+                    }
 
-                    token.name = user.displayName;
-                    token.email = user.mail ?? user.userPrincipalName;
-                    token.officeLocation = user.officeLocation;
+                    if (account.provider === "azure-ad") {
+                        const response = await fetch("https://graph.microsoft.com/v1.0/me", {
+                            headers: { Authorization: `Bearer ${account.access_token}` },
+                        });
+                        const user = await response.json();
+
+                        token.name = user.displayName;
+                        token.email = user.mail ?? user.userPrincipalName;
+                        token.officeLocation = user.officeLocation;
+                    }
 
                     if (token.email) {
                         let dbUser = await prisma.users.findUnique({
@@ -76,6 +95,8 @@ export const authOptions: NextAuthOptions = {
             session.user.email = token.email;
             session.user.officeLocation = typeof token.officeLocation === "string" ? token.officeLocation : null;
             (session.user).role = typeof token.role === "string" ? token.role : null;
+
+            (session as any).accessToken = token.accessToken;
 
             return session;
         },
