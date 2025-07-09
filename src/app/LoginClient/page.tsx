@@ -10,58 +10,60 @@ const LoginClient = () => {
         document.title = "เข้าสู่ระบบ | ระบบจองห้องประชุม ICT";
     }, []);
 
-    return (<>
-        <Box
-            sx={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage: "url('/images/up.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                filter: "blur(2px)",
-            }}
-        />
-
-        <Box
-            sx={{
-                position: "relative",
-                zIndex: 2,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                px: 2,
-            }}
-        >
+    return (
+        <>
             <Box
                 sx={{
-                    p: 4,
-                    borderRadius: 3,
-                    boxShadow: 6,
-                    maxWidth: 420,
+                    position: "absolute",
+                    inset: 0,
+                    height: "100vh",
+                    backgroundImage: "url('/images/up.jpg')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    filter: "blur(2px)",
+                }}
+            />
+
+            <Box
+                sx={{
+                    position: "relative",
+                    zIndex: 2,
                     width: "100%",
-                    bgcolor: "white",
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    px: 2,
                 }}
             >
-                <Typography variant="h5" gutterBottom sx={{ textAlign: "center", mb: 2 }}>
-                    เข้าสู่ระบบจองห้องประชุม ICT
-                </Typography>
+                <Box
+                    sx={{
+                        p: 4,
+                        borderRadius: 3,
+                        boxShadow: 6,
+                        maxWidth: 420,
+                        width: "100%",
+                        bgcolor: "white",
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom sx={{ textAlign: "center", mb: 2 }}>
+                        เข้าสู่ระบบจองห้องประชุม ICT
+                    </Typography>
 
-                <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-                    <LoginButton />
-                    <Image
-                        src="/images/University-of-Phayao-logo.jpg"
-                        alt="Login with Microsoft 365"
-                        width={200}
-                        height={50}
-                        style={{ marginTop: "10px" }}
-                    />
+                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={2}>
+                        <LoginButton />
+                        <Image
+                            src="/images/University-of-Phayao-logo.jpg"
+                            alt="Login with Microsoft 365"
+                            width={200}
+                            height={50}
+                            style={{ marginTop: "10px" }}
+                        />
+                    </Box>
                 </Box>
             </Box>
-        </Box>
-    </>
+        </>
     );
 };
 
