@@ -1,16 +1,23 @@
+import { google } from "googleapis";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/lib/next-auth";
 import { PrismaClient } from "@prisma/client";
+import { readFileSync } from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
+const credentials = JSON.parse(
+    readFileSync(path.join(process.cwd(), "src/app/lib/google-service-account.json"), "utf-8")
+);
+
+const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ["https://www.googleapis.com/auth/calendar"],
+});
+
+const calendar = google.calendar({ version: "v3", auth });
+
 export async function POST() {
-    const session = await getServerSession(authOptions);
-    const accessToken = session?.accessToken;
-
-    if (!accessToken) return NextResponse.json({ error: "No access token" }, { status: 401 });
-
     const bookings = await prisma.bookingInfo.findMany();
 
     const calendarIdsByRoom: Record<string, string> = {
@@ -21,57 +28,31 @@ export async function POST() {
     };
 
     for (const booking of bookings) {
-        const roomName = booking.RoomName;
-        if (typeof roomName !== "string") {
-            console.warn("Booking missing valid RoomName : ", booking.bookingID);
-            continue;
-        }
-        const calendarId = calendarIdsByRoom[roomName];
-        if (!calendarId) {
-            console.warn(`No calendar ID for room : ${roomName}`);
-            continue;
-        }
+        const calendarId = calendarIdsByRoom[booking.RoomName ?? ""];
+        if (!calendarId) continue;
 
-        console.log("---- Booking to sync ----");
-        console.log("AccessToken:", accessToken?.slice(0, 20) + "...");
-        console.log("Room:", roomName);
-        console.log("CalendarId:", calendarId);
-        console.log("Start:", booking.startDate);
-        console.log("End:", booking.endDate);
-        console.log("Purpose:", booking.purpose);
-
-        const session = await getServerSession(authOptions);
-        console.log("Token", session?.accessToken);
-
-        const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                summary: booking.purpose,
-                location: roomName,
-                description: `ผู้จอง: ${booking.sender} เบอร์ ${booking.phoneOut}`,
-                start: {
-                    dateTime: booking.startDate,
-                    timeZone: "Asia/Bangkok",
+        try {
+            const res = await calendar.events.insert({
+                calendarId,
+                requestBody: {
+                    summary: booking.purpose ?? "ไม่ระบุวัตถุประสงค์",
+                    location: booking.RoomName ?? "",
+                    description: `ผู้จอง: ${booking.sender ?? ""}, เบอร์: ${booking.phoneOut ?? ""}`,
+                    start: {
+                        dateTime: new Date(booking.startDate!).toISOString(),
+                        timeZone: "Asia/Bangkok",
+                    },
+                    end: {
+                        dateTime: new Date(booking.endDate!).toISOString(),
+                        timeZone: "Asia/Bangkok",
+                    },
                 },
-                end: {
-                    dateTime: booking.endDate,
-                    timeZone: "Asia/Bangkok",
-                },
-            }),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("❌ Google Calendar API error:", result);
-        } else {
-            console.log("✅ Event created:", result.id);
+            });
+            console.log("✅ Event created:", res.data.id);
+        } catch (err) {
+            console.error("❌ Failed to create event:", err);
         }
     }
 
-    return NextResponse.json({ status: "Synced" });
+    return NextResponse.json({ status: "Synced via service account" });
 }

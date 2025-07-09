@@ -2,17 +2,17 @@
 
 import { signIn } from 'next-auth/react';
 import { Button } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
+import MicrosoftIcon from '@mui/icons-material/Microsoft';
 
 export default function LoginButton() {
     return (
         <Button
             variant="contained"
-            startIcon={<GoogleIcon />}
-            onClick={() => signIn('google')}
+            startIcon={<MicrosoftIcon />}
+            onClick={() => signIn('azure-ad')}
             sx={{ textTransform: 'none' }}
         >
-            Sign in with Google
+            Sign in with Microsoft 365
         </Button>
     );
 }
