@@ -148,9 +148,9 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                             จึงเรียนมาเพื่อโปรดพิจารณาอนุญาต
                         </Text>
                     </View>
-
                     <View style={{ marginTop: cm(0.5), alignItems: 'flex-end' }}>
                         <View style={{ alignItems: 'center', paddingRight: cm(1), marginBottom: cm(0.5) }}>
+                            {/* eslint-disable jsx-a11y/alt-text */}
                             {signatureUrl && (
                                 <Image
                                     src={signatureUrl}
@@ -162,6 +162,7 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                                     }}
                                 />
                             )}
+
                             <Text style={[styles.text]}>
                                 ลงชื่อ..........................................................
                             </Text>

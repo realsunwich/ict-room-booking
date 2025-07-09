@@ -80,9 +80,7 @@ function ChartSection({
                                     tickFormatter={(label) => label.replace("เดือน", "").replace("ปี ", "")}
                                 />
                                 <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                                <Tooltip
-                                    formatter={(value: any) => [`${value} ครั้ง`, "จำนวนการใช้งาน"]}
-                                />
+                                <Tooltip formatter={(value: number | string): [string, string] => [`${value} ครั้ง`, "จำนวนคำขอ"]} />
                                 <Legend wrapperStyle={{ fontSize: 12 }} />
                                 <Bar
                                     dataKey="count"

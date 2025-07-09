@@ -259,7 +259,9 @@ export default function BookingRequest() {
                                                     signatureUrl={
                                                         booking.signatureFileName
                                                             ? `/uploads/signatures/${booking.signatureFileName}`
-                                                            : undefined
+                                                            : userSignatureFileName
+                                                                ? `/uploads/signatures/${userSignatureFileName}`
+                                                                : undefined
                                                     }
                                                 />
                                             </TableCell>
