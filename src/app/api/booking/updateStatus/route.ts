@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-const prisma = new PrismaClient();
+import prisma from "@/app/lib/prisma";
 
 interface UpdateBookingPayload {
     bookingId: number;
