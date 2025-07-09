@@ -5,8 +5,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-console.log("NEXTAUTH_SECRET :", process.env.NEXTAUTH_SECRET);
-
 export const authOptions: NextAuthOptions = {
     session: {
         strategy: "jwt",
@@ -38,8 +36,6 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         jwt: async ({ token, account, profile }) => {
             try {
-                console.log("⚙️ jwt callback called, account:", account);
-
                 if (account) {
                     token.accessToken = account.access_token;
 
