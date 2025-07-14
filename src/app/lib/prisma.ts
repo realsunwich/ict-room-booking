@@ -36,6 +36,7 @@ prisma.$use(async (params, next) => {
 
             await calendar.events.insert({
                 calendarId,
+                
                 requestBody: {
                     summary: updated.purpose ?? "ไม่ระบุวัตถุประสงค์",
                     location: updated.RoomName ?? "",
