@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model BookingInfo {
+  bookingID      Int       @id @default(autoincrement())
+  RoomName       String?   @db.VarChar(255)
+  sendDate       DateTime? @default(now())
+  sender         String?   @db.VarChar(255)
+  senderEmail    String?   @db.VarChar(255)
+  phoneIn        String?   @db.VarChar(255)
+  phoneOut       String?   @db.VarChar(255)
+  jobName        String?   @db.VarChar(255)
+  officeLocation String?   @db.VarChar(255)
+  purpose        String?   @db.VarChar(255)
+  startDate      DateTime? @default(now())
+  endDate        DateTime? @default(now())
+  capacity       Int?
+  cfSender       String?   @db.VarChar(255)
+  cfPhone        String?   @db.VarChar(255)
+  SendStatus     String?   @db.VarChar(255)
+  RejectReason   String?   @db.VarChar(255)
+  CancelReason   String?   @db.VarChar(255)
+
+  clearStatus  String? @db.VarChar(50)
+  damageAction String? @db.VarChar(100)
+  remark       String? @db.Text
+
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  RecordStatus String?   @db.VarChar(1)
+
+  calendarEventId String? @db.VarChar(255)
+}
+
+model RoomUsageStats {
+  id         Int      @id @default(autoincrement())
+  RoomName   String   @unique
+  totalUsage Int
+  updatedAt  DateTime @updatedAt
+}
+
+model Signature {
+  id        Int    @id @default(autoincrement())
+  userEmail String @unique
+  fileName  String
+}
+
+model users {
+  userID         Int       @id @default(autoincrement())
+  userEmail      String?   @unique @db.VarChar(255)
+  officeLocation String?   @db.VarChar(255)
+  role           String?   @db.VarChar(255)
+  createDate     DateTime? @default(now())
+  lastEdit       DateTime? @updatedAt
+  RecordStatus   String?   @db.VarChar(1)
+}
+
+model Assessment {
+  id          Int      @id @default(autoincrement())
+  meetingRoom String?  @db.VarChar(255)
+  gender      String?  @db.VarChar(255)
+  role        String?  @db.VarChar(255)
+  responses   Json
+  comment     String?
+  createdAt   DateTime @default(now())
+}
+
+// npx prisma migrate dev --name new-migration
+// npx prisma db push
+// npx prisma migrate reset
