@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
 export async function POST(req: NextRequest) {
-    console.log("📥 API /api/calendar/add-event ถูกเรียกใช้แล้ว");
-
     try {
         const body = await req.json();
         const booking = body.booking?.updated || body.booking;

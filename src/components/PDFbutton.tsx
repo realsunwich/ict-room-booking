@@ -30,8 +30,6 @@ function FormPDFButton({ booking, signatureUrl }: FormPDFButtonProps) {
         try {
             const blob = await pdf(<FormPDF booking={booking} signatureUrl={signatureUrl} />).toBlob();
             const url = URL.createObjectURL(blob);
-            console.log("Sender : ",booking.sender)
-            console.log("signature : ",signatureUrl)
             window.open(url, "_blank");
 
             setTimeout(() => {

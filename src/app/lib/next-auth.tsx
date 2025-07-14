@@ -26,8 +26,6 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         jwt: async ({ token, account }) => {
             try {
-                console.log("⚙️ jwt callback called, account:", account);
-
                 if (account) {
                     token.accessToken = account.access_token;
 

@@ -29,10 +29,6 @@ const Header = () => {
     };
 
     useEffect(() => {
-        console.log("Role:", session?.user?.role);
-    }, [session]);
-
-    useEffect(() => {
         if (status === "unauthenticated") {
             router.replace("/login");
         }
