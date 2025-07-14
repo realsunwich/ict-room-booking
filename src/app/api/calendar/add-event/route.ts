@@ -7,8 +7,6 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const booking = body.booking?.updated || body.booking;
 
-        console.log("📦 ข้อมูล booking ที่รับมา:", booking);
-
         const auth = new google.auth.GoogleAuth({
             keyFile: path.join(process.cwd(), "src/app/lib/google-service-account.json"),
             scopes: ["https://www.googleapis.com/auth/calendar"],
@@ -17,7 +15,7 @@ export async function POST(req: NextRequest) {
         const authClient = await auth.getClient();
         const calendar = google.calendar({
             version: "v3",
-            auth: authClient as any,
+            auth: authClient as unknown as Parameters<typeof google.calendar>[0]["auth"],
         });
 
         const calendarIdsByRoom: Record<string, string> = {

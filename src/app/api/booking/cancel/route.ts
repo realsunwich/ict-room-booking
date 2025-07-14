@@ -44,7 +44,10 @@ export async function PUT(req: NextRequest) {
             if (calendarId) {
                 try {
                     const authClient = await auth.getClient();
-                    const calendar = google.calendar({ version: "v3", auth: authClient as any });
+                    const calendar = google.calendar({
+                        version: "v3",
+                        auth: authClient as unknown as Parameters<typeof google.calendar>[0]["auth"],
+                    });
 
                     await calendar.events.delete({
                         calendarId,
