@@ -99,12 +99,18 @@ export default function StatsPage() {
                     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                <Typography variant="h5" align="center" fontWeight={600} mb={2}>
+                <Typography
+                    variant="h5"
+                    align="center"
+                    fontWeight={600}
+                    mb={2}
+                    fontSize={{ xs: "1.25rem", sm: "1.5rem" }}
+                >
                     {room ? `สถิติการใช้งาน${room}` : "สถิติการใช้งานห้องประชุม"}
                 </Typography>
 
                 {loading ? (
-                    <Box textAlign="center" mt={4}>
+                    <Box textAlign="center">
                         <CircularProgress />
                     </Box>
                 ) : stats.length === 0 ? (
@@ -112,12 +118,30 @@ export default function StatsPage() {
                 ) : (
                     stats.map((stat, index) => (
                         <Box key={index}>
-                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, position: "relative" }}>
-                                <Typography variant="h6" fontWeight="bold" sx={{ textAlign: "center", flex: 1 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: { xs: "column", sm: "row" },
+                                    justifyContent: { xs: "center", sm: "space-between" },
+                                    alignItems: "center",
+                                    textAlign: { xs: "center", sm: "left" },
+                                    width: "100%",
+                                }}
+                            >
+                                <Typography
+                                    variant="h6"
+                                    fontWeight="bold"
+                                    fontSize={{ xs: "1rem", sm: "1.25rem" }}
+                                    sx={{ flex: 1 }}
+                                >
                                     {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
                                 </Typography>
-                                <Box sx={{ position: "absolute", right: 0 }}>
-                                    <ExportRoomStat data={[stat]} filename={`สถิติ${stat.RoomName}.xlsx`} />
+
+                                <Box>
+                                    <ExportRoomStat
+                                        data={[stat]}
+                                        filename={`สถิติ${stat.RoomName}.xlsx`}
+                                    />
                                 </Box>
                             </Box>
 

@@ -51,10 +51,9 @@ function ChartSection({
 
     return (
         <Box>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h6" fontWeight="bold" marginTop={2} >
                 {title}
             </Typography>
-
             {rawData.length === 0 ? (
                 <Typography variant="body2">ไม่มีข้อมูล</Typography>
             ) : (
