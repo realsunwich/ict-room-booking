@@ -83,30 +83,6 @@ export default function BookingHistory() {
         );
     });
 
-    const handleSyncCalendar = async () => {
-        try {
-            const res = await fetch("/api/calendar/sync-events", { method: "POST" });
-            const data = await res.json();
-
-            if (res.ok) {
-                console.log("Sync success:", data);
-                setSnackbarMessage("ซิงค์ข้อมูลไปยัง Google Calendar สำเร็จ");
-                setSnackbarSeverity("success");
-                setSnackbarOpen(true);
-            } else {
-                console.error("Sync failed:", data);
-                setSnackbarMessage("เกิดข้อผิดพลาดในการซิงค์");
-                setSnackbarSeverity("error");
-                setSnackbarOpen(true);
-            }
-        } catch (error) {
-            console.error("Error syncing calendar:", error);
-            setSnackbarMessage("เชื่อมต่อ server ไม่สำเร็จ");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
-        }
-    };
-
     useEffect(() => {
         const fetchBookings = async () => {
             try {
@@ -182,16 +158,7 @@ export default function BookingHistory() {
                         availableRooms={availableRooms}
                     />
                     {session?.user?.role === "Admin" && (
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, mt: 3 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSyncCalendar}
-                                sx={{ minWidth: 240 }}
-                            >
-                                ซิงค์ข้อมูลไปยัง Google Calendar
-                            </Button>
-
+                        <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', flexWrap: 'wrap', gap: 2, mt: 3 }}>
                             <ExportBookingExcelButton
                                 data={filteredBookings}
                                 columns={[

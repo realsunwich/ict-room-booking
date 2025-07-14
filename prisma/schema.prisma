@@ -34,6 +34,8 @@ model BookingInfo {
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
   RecordStatus String?   @db.VarChar(1)
+
+  calendarEventId String? @db.VarChar(255)
 }
 
 model RoomUsageStats {

@@ -48,6 +48,7 @@ export default function BookingRequest() {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [userSignatureFileName, setUserSignatureFileName] = useState<string | null>(null);
+
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
         "success"
     );
@@ -93,7 +94,23 @@ export default function BookingRequest() {
         });
 
         if (res.ok) {
-            await res.json();
+            const updatedBooking = await res.json();
+
+            if (status === "อนุมัติ") {
+                try {
+                    await fetch("/api/calendar/add-event", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ booking: updatedBooking }),
+                    });
+                } catch (error) {
+                    console.error("❌ ไม่สามารถซิงค์ Google Calendar ได้:", error);
+                    showSnackbar("❌ ไม่สามารถซิงค์ Google Calendar ได้", "error");
+                }
+            }
+
             fetchBookings();
             setManageDialogOpen(false);
             showSnackbar("บันทึกข้อมูลสำเร็จแล้ว", "success");

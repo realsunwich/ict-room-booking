@@ -1,18 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { google } from "googleapis";
-import { readFileSync } from "fs";
 import path from "path";
 
-const credentials = JSON.parse(
-    readFileSync(path.join(process.cwd(), "src/app/lib/google-service-account.json"), "utf8")
-);
-
 const auth = new google.auth.GoogleAuth({
-    credentials,
+    keyFile: path.join(process.cwd(), "src/app/lib/google-service-account.json"),
     scopes: ["https://www.googleapis.com/auth/calendar"],
 });
-
-const calendar = google.calendar({ version: "v3", auth });
 
 const prisma = new PrismaClient();
 
@@ -32,29 +25,35 @@ prisma.$use(async (params, next) => {
         };
 
         const calendarId = calendarIdsByRoom[updated.RoomName ?? ""];
+        if (!calendarId) return updated;
 
-        if (calendarId) {
-            try {
-                await calendar.events.insert({
-                    calendarId,
-                    requestBody: {
-                        summary: updated.purpose ?? "ไม่ระบุวัตถุประสงค์",
-                        location: updated.RoomName ?? "",
-                        description: `ผู้จอง: ${updated.sender ?? ""}, เบอร์: ${updated.phoneOut ?? ""}`,
-                        start: {
-                            dateTime: new Date(updated.startDate!).toISOString(),
-                            timeZone: "Asia/Bangkok",
-                        },
-                        end: {
-                            dateTime: new Date(updated.endDate!).toISOString(),
-                            timeZone: "Asia/Bangkok",
-                        },
+        try {
+            const authClient = await auth.getClient();
+            const calendar = google.calendar({
+                version: "v3",
+                auth: authClient as any,
+            });
+
+            await calendar.events.insert({
+                calendarId,
+                requestBody: {
+                    summary: updated.purpose ?? "ไม่ระบุวัตถุประสงค์",
+                    location: updated.RoomName ?? "",
+                    description: `ผู้จอง: ${updated.sender ?? ""}, เบอร์: ${updated.phoneOut ?? ""}`,
+                    start: {
+                        dateTime: new Date(updated.startDate!).toISOString(),
+                        timeZone: "Asia/Bangkok",
                     },
-                });
-                console.log("✅ Event created for", updated.RoomName);
-            } catch (err) {
-                console.error("❌ Failed to create event:", err);
-            }
+                    end: {
+                        dateTime: new Date(updated.endDate!).toISOString(),
+                        timeZone: "Asia/Bangkok",
+                    },
+                },
+            });
+
+            console.log("✅ Event created for", updated.RoomName);
+        } catch (err) {
+            console.error("❌ Failed to create event:", err);
         }
 
         return updated;
