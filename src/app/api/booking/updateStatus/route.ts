@@ -30,7 +30,6 @@ export async function POST(req: Request) {
             data: updateData,
         });
 
-        // ✅ Sync กับ Google Calendar เฉพาะเมื่อ "อนุมัติ"
         if (status === "อนุมัติ") {
             const auth = new google.auth.GoogleAuth({
                 keyFile: path.join(process.cwd(), "src/app/lib/google-service-account.json"),
@@ -45,37 +44,43 @@ export async function POST(req: Request) {
             };
 
             const calendarId = calendarIdsByRoom[updated.RoomName ?? ""];
-            if (calendarId) {
-                try {
-                    const authClient = await auth.getClient();
-                    const calendar = google.calendar({
-                        version: "v3",
-                        auth: authClient as any,
-                    });
-
-                    await calendar.events.insert({
-                        calendarId,
-                        requestBody: {
-                            summary: updated.purpose ?? "ไม่ระบุวัตถุประสงค์",
-                            location: updated.RoomName ?? "",
-                            description: `ผู้จอง: ${updated.sender ?? ""}, เบอร์: ${updated.phoneOut ?? ""}`,
-                            start: {
-                                dateTime: new Date(updated.startDate!).toISOString(),
-                                timeZone: "Asia/Bangkok",
-                            },
-                            end: {
-                                dateTime: new Date(updated.endDate!).toISOString(),
-                                timeZone: "Asia/Bangkok",
-                            },
-                        },
-                    });
-
-                    console.log("✅ Google Calendar synced for", updated.RoomName);
-                } catch (calendarErr) {
-                    console.error("❌ Failed to sync calendar:", calendarErr);
-                }
-            } else {
+            if (!calendarId) {
                 console.warn("⚠️ ไม่พบ calendarId สำหรับห้อง:", updated.RoomName);
+                return NextResponse.json({ success: true, updated });
+            }
+
+            try {
+                const authClient = await auth.getClient();
+                const calendar = google.calendar({
+                    version: "v3",
+                    auth: authClient as any,
+                });
+                const event = await calendar.events.insert({
+                    calendarId,
+                    requestBody: {
+                        summary: updated.purpose ?? "ไม่ระบุวัตถุประสงค์",
+                        location: updated.RoomName ?? "",
+                        description: `ผู้จอง: ${updated.sender ?? ""}, เบอร์: ${updated.phoneOut ?? ""}`,
+                        start: {
+                            dateTime: new Date(updated.startDate!).toISOString(),
+                            timeZone: "Asia/Bangkok",
+                        },
+                        end: {
+                            dateTime: new Date(updated.endDate!).toISOString(),
+                            timeZone: "Asia/Bangkok",
+                        },
+                    },
+                });
+
+                if (event?.data?.id) {
+                    await prisma.bookingInfo.update({
+                        where: { bookingID: updated.bookingID },
+                        data: { calendarEventId: event.data.id },
+                    });
+                    console.log("✅ Synced and saved calendarEventId:", event.data.id);
+                }
+            } catch (error) {
+                console.error("❌ Failed to sync calendar:", error);
             }
         }
 

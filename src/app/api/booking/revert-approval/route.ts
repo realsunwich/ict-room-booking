@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { google } from "googleapis";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -26,14 +28,51 @@ export async function PUT(req: NextRequest) {
             );
         }
 
+        if (booking.calendarEventId) {
+            const auth = new google.auth.GoogleAuth({
+                keyFile: path.join(process.cwd(), "src/app/lib/google-service-account.json"),
+                scopes: ["https://www.googleapis.com/auth/calendar"],
+            });
+
+            const calendarIdsByRoom: Record<string, string> = {
+                "ห้องประชุมคณะ ICT": "c_e1dd4b1b64e4e05076472f39b630df6d809a3ee6b7514663cd7e9172b0bd0268@group.calendar.google.com",
+                "ห้องประชุมแม่กา": "c_8f3cb3dc7ac30369b6993c93eb9e28208dfc86ff39646babf97bd6e72b244579@group.calendar.google.com",
+                "ห้องบัณฑิตศึกษา ICT1318": "c_bb07d69b9b55b95c06b227efc733624525fb4fa3e150245a8b8f4e1250d4bfbf@group.calendar.google.com",
+                "ลานกิจกรรมใต้ถุนอาคาร ICT": "c_353cd6e59378ddf27d7b1ebfd1e552d7fb4565e2cc923dc3c5469c50c3eddd23@group.calendar.google.com",
+            };
+
+            const calendarId = calendarIdsByRoom[booking.RoomName ?? ""];
+
+            if (calendarId) {
+                try {
+                    const authClient = await auth.getClient();
+                    const calendar = google.calendar({
+                        version: "v3",
+                        auth: authClient as any,
+                    });
+
+                    await calendar.events.delete({
+                        calendarId,
+                        eventId: booking.calendarEventId,
+                    });
+
+                    console.log("✅ Event deleted from Google Calendar:", booking.calendarEventId);
+                } catch (error) {
+                    console.error("❌ Failed to delete event from calendar:", error);
+                }
+            } else {
+                console.warn("⚠️ ไม่พบ calendarId สำหรับห้อง:", booking.RoomName);
+            }
+        }
+
         await prisma.bookingInfo.update({
             where: { bookingID },
-            data: { SendStatus: "กำลังรอ" },
+            data: { SendStatus: "กำลังรอ", calendarEventId: null },
         });
 
-        return NextResponse.json({ message: "เปลี่ยนกลับเป็น 'กำลังรอ' สำเร็จ" }, { status: 200 });
-    } catch (err) {
-        console.error("Revert approval error:", err);
+        return NextResponse.json({ message: "ยกเลิกคำขอจองสำเร็จ" }, { status: 200 });
+    } catch (error) {
+        console.error("Revert approval error:", error);
         return NextResponse.json({ error: "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์" }, { status: 500 });
     }
 }
