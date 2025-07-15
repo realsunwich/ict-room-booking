@@ -204,9 +204,16 @@ export default function AssessmentSum() {
                             </Typography>
                         )}
 
-                        <Tabs value={tab} onChange={(e, newVal) => setTab(newVal)} sx={{ mb: 2 }}>
-                            <Tab label="รายการประเมิน" />
-                            <Tab label="กราฟสรุป" />
+                        <Tabs value={tab} onChange={(_, newVal) => setTab(newVal)}
+                            sx={{
+                                mb: 2,
+                                "& .MuiTabs-flexContainer": {
+                                    justifyContent: { xs: "center", sm: "flex-start" },
+                                },
+                            }}
+                        >
+                            <Tab label="รายการการประเมิน" />
+                            <Tab label="กราฟสรุปผลการประเมิน" />
                         </Tabs>
 
                         {tab === 0 && <AssessmentList data={filteredAssessments} />}

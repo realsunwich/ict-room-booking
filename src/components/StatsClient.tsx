@@ -145,7 +145,14 @@ export default function StatsPage() {
                                 </Box>
                             </Box>
 
-                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)} centered>
+                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)}
+                                sx={{
+                                    mb: 2,
+                                    "& .MuiTabs-flexContainer": {
+                                        justifyContent: { xs: "center", sm: "flex-start" },
+                                    },
+                                }}
+                            >
                                 <Tab label="การใช้งานตามช่วงเวลา" />
                                 <Tab label="สถานะและเหตุผล" />
                             </Tabs>
