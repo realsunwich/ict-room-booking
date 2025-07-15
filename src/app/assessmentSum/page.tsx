@@ -59,8 +59,11 @@ export default function AssessmentSum() {
             }
         };
         fetchSummary();
-        document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
     }, []);
+
+    useEffect(() => {
+        document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
+    })
 
     const rooms = summary ? [...new Set(summary.assessments.map((a) => a.room))].filter(Boolean) : [];
     const roles = summary ? [...new Set(summary.assessments.map((a) => a.role))].filter(Boolean) : [];
@@ -119,28 +122,17 @@ export default function AssessmentSum() {
                     </Box>
                 ) : summary ? (
                     <>
-                        <Typography variant="h6" gutterBottom fontWeight={600}>
-                            ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
-                            {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
-                        </Typography>
-
                         {filteredAssessments.length > 0 && (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    flexWrap: "wrap",
-                                    gap: 2,
-                                    mb: 2,
-                                }}
-                            >
-                                <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+                                <Typography variant="h6" gutterBottom fontWeight={600}>
+                                    ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
+                                    {filteredAssessments.length !== summary.total && `จากทั้งหมด ${summary.total} ครั้ง`}
+                                </Typography>
+                                <Box>
+                                    <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
+                                </Box>
                             </Box>
                         )}
-
-                        <Divider sx={{ my: 2 }} />
-
                         {summary.assessments?.length === 0 && (
                             <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}>
                                 ไม่มีข้อมูลการประเมิน

@@ -1,7 +1,9 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+
+const COLORS = ["#1976d2", "#dc004e", "#388e3c", "#fbc02d", "#7b1fa2", "#ffa726", "#00838f", "#d32f2f"];
 
 interface AssessmentDetail {
     id: string;
@@ -61,18 +63,22 @@ export default function AssessmentChart({
 
     return (
         <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
-                กราฟแสดงคะแนนเฉลี่ยรายห้อง (%)
-            </Typography>
             <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="room" />
                     <YAxis unit="%" domain={[0, 100]} />
                     <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
-                    <Bar dataKey="average" fill="#1976d2" />
+                    <Bar dataKey="average">
+                        {chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                    </Bar>
                 </BarChart>
             </ResponsiveContainer>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 2, textAlign: "center" }}>
+                กราฟแสดงคะแนนเฉลี่ยรายห้อง (%)
+            </Typography>
         </Box>
     );
 }
