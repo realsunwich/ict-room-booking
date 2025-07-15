@@ -78,6 +78,49 @@ export default function AssessmentSum() {
         )
         : [];
 
+    function calculateRoomAveragePercentages(assessments: AssessmentDetail[]) {
+        const roomMap: Record<string, { totalScore: number; maxScore: number }> = {};
+
+        assessments.forEach(({ room, responses }) => {
+            let totalScore = 0;
+            let maxScore = 0;
+
+            const responsesArray = Array.isArray(responses)
+                ? responses
+                : Object.entries(responses).map(([title, resp]) => ({
+                    title,
+                    responses: Object.fromEntries(
+                        Object.entries(resp as Record<string, ResponseInit | number>).map(([key, value]) =>
+                            typeof value === "object" && value !== null && "score" in value
+                                ? [key, value.score]
+                                : [key, value as number]
+                        )
+                    ),
+                }));
+
+            responsesArray.forEach(({ responses: questions }) => {
+                Object.values(questions).forEach((score) => {
+                    const numericScore = typeof score === "number"
+                        ? score
+                        : (typeof score === "object" && score !== null && "score" in score)
+                            ? (score as { score: number }).score
+                            : 0;
+                    totalScore += numericScore;
+                    maxScore += 5;
+                });
+            });
+
+            if (!roomMap[room]) roomMap[room] = { totalScore: 0, maxScore: 0 };
+            roomMap[room].totalScore += totalScore;
+            roomMap[room].maxScore += maxScore;
+        });
+
+        return Object.entries(roomMap).map(([room, { totalScore, maxScore }]) => ({
+            room,
+            average: maxScore > 0 ? (totalScore / maxScore) * 100 : 0,
+        }));
+    }
+
     return (
         <Box
             sx={{
@@ -122,17 +165,39 @@ export default function AssessmentSum() {
                     </Box>
                 ) : summary ? (
                     <>
+                        <Typography variant="h6" gutterBottom fontWeight={600}>
+                            ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
+                        </Typography>
+                        {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
                         {filteredAssessments.length > 0 && (
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
-                                <Typography variant="h6" gutterBottom fontWeight={600}>
-                                    ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
-                                    {filteredAssessments.length !== summary.total && `จากทั้งหมด ${summary.total} ครั้ง`}
-                                </Typography>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
+                                <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+                                    <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
+                                        คะแนนเฉลี่ยรายห้อง
+                                    </Typography>
+                                    {calculateRoomAveragePercentages(filteredAssessments)
+                                        .sort((a, b) => a.room.localeCompare(b.room))
+                                        .map((room, idx) => (
+                                            <Typography
+                                                key={room.room}
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                                                    whiteSpace: "nowrap",
+                                                    mr: idx !== calculateRoomAveragePercentages(filteredAssessments).length - 1 ? 2 : 0,
+                                                }}
+                                            >
+                                                {room.room} {room.average.toFixed(2)}%
+                                            </Typography>
+                                        ))
+                                    }
+                                </Box>
                                 <Box>
                                     <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
                                 </Box>
                             </Box>
                         )}
+
                         {summary.assessments?.length === 0 && (
                             <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}>
                                 ไม่มีข้อมูลการประเมิน
