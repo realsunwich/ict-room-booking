@@ -19,7 +19,8 @@ interface BookingInfo {
     SendStatus: string;
 }
 
-export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signatureUrl?: string }) => {
+export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = false, approvalDate
+}: { booking: BookingInfo, signatureUrl?: string; includeApprovalSignature?: boolean; approvalDate?: string }) => {
     useEffect(() => {
         registerTHNiramitFont();
     }, []);
@@ -62,7 +63,7 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
         },
         text: {
             fontSize: 10,
-            marginBottom: 10,
+            marginBottom: 8,
             lineHeight: 1.5,
             wordBreak: 'break-word',
         },
@@ -149,7 +150,7 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                         </Text>
                     </View>
                     <View style={{ marginTop: cm(0.5), alignItems: 'flex-end' }}>
-                        <View style={{ alignItems: 'center', paddingRight: cm(1), marginBottom: cm(0.5) }}>
+                        <View style={{ alignItems: 'center', paddingRight: cm(1) }}>
                             {/* eslint-disable jsx-a11y/alt-text */}
                             {signatureUrl && (
                                 <Image
@@ -157,28 +158,46 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                                     style={{
                                         width: cm(3),
                                         height: cm(1.5),
-                                        marginBottom: -cm(0.5),
+                                        marginBottom: -cm(0.55),
                                         marginLeft: cm(1),
                                         objectFit: 'contain',
                                     }}
                                 />
                             )}
+                            <Text style={[styles.text]}>
+                                ลงชื่อ..........................................................
+                            </Text>
 
-                            <Text style={[styles.text]}>
-                                ลงชื่อ..........................................................
-                            </Text>
-                            <Text style={[styles.text]}>
-                                ผู้ขอใช้บริการ
-                            </Text>
-                            <Text style={[styles.text]}>
-                                ลงชื่อ..........................................................
-                            </Text>
-                            <Text style={[styles.text]}>
-                                นักวิชาการโสตทัศนศึกษา
-                            </Text>
-                            <Text style={[styles.text]}>
-                                วันที่.................../.................../...................
-                            </Text>
+                            {includeApprovalSignature ? (
+                                <>
+                                    <Text style={[styles.text, { marginBottom: -cm(0.2) }]} >
+                                        ผู้ขอใช้บริการ
+                                    </Text>
+                                    <Image
+                                        src="/uploads/signatures/signature_64021193_up_ac_th.png"
+                                        style={{
+                                            width: cm(4),
+                                            height: cm(2),
+                                            marginBottom: -cm(0.5),
+                                            marginLeft: cm(1),
+                                            objectFit: "contain",
+                                        }}
+                                    />
+                                    <Text style={[styles.text]}>ลงชื่อ..........................................................</Text>
+                                    <Text style={[styles.text]}>{` นายอนุวัฒน์ โลมากุล `}</Text>
+                                    <Text style={[styles.text]}>นักวิชาการโสตทัศนศึกษา</Text>
+                                    <Text style={[styles.text]}>
+                                        วันที่ {approvalDate}
+                                    </Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={[styles.text]}>ผู้ขอใช้บริการ</Text>
+                                    <Text style={[styles.text]}>ลงชื่อ..........................................................</Text>
+                                    <Text style={[styles.text]}>นักวิชาการโสตทัศนศึกษา</Text>
+                                    <Text style={[styles.text]}>วันที่.................../.................../...................</Text>
+                                </>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -186,7 +205,7 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                     <Text style={[styles.text]}>
                         เสนอ      [  ] อนุมัติ            [  ] ไม่อนุมัติ
                     </Text>
-                    <Text style={[styles.text, { marginBottom: cm(0.5) }]}>
+                    <Text style={[styles.text]}>
                         ลงชื่อ..........................................................
                     </Text>
                     <Text style={[styles.text]}>
@@ -195,6 +214,7 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                     <Text style={[styles.text]}>
                         รองคณบดีฝ่ายยุทธศาสตร์และพัฒนาองค์กร
                     </Text>
+                    <Text style={[styles.text]}>วันที่.................../.................../...................</Text>
                 </View>
             </Page>
         </Document>

@@ -280,6 +280,12 @@ export default function BookingRequest() {
                                                                 ? `/uploads/signatures/${userSignatureFileName}`
                                                                 : undefined
                                                     }
+                                                    includeApprovalSignature={booking.SendStatus.trim() === "อนุมัติ"}
+                                                    approvalDate={
+                                                        booking.SendStatus.trim() === "อนุมัติ"
+                                                            ? new Date().toLocaleDateString("th-TH", { day: "2-digit", month: "long", year: "numeric" })
+                                                            : undefined
+                                                    }
                                                 />
                                             </TableCell>
                                             <TableCell align="center" sx={{ width: 20 }}>

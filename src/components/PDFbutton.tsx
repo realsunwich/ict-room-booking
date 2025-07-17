@@ -23,12 +23,22 @@ interface BookingInfo {
 interface FormPDFButtonProps {
     booking: BookingInfo;
     signatureUrl?: string;
+    includeApprovalSignature?: boolean;
+    approvalDate?: string;
 }
 
-function FormPDFButton({ booking, signatureUrl }: FormPDFButtonProps) {
+function FormPDFButton({ booking, signatureUrl, includeApprovalSignature, approvalDate }: FormPDFButtonProps) {
     const handleClick = async () => {
         try {
-            const blob = await pdf(<FormPDF booking={booking} signatureUrl={signatureUrl} />).toBlob();
+            const blob = await pdf(
+                <FormPDF
+                    booking={booking}
+                    signatureUrl={signatureUrl}
+                    includeApprovalSignature={includeApprovalSignature}
+                    approvalDate={includeApprovalSignature ? approvalDate : undefined}
+                />
+            ).toBlob();
+
             const url = URL.createObjectURL(blob);
             window.open(url, "_blank");
 
@@ -50,4 +60,3 @@ function FormPDFButton({ booking, signatureUrl }: FormPDFButtonProps) {
 }
 
 export default FormPDFButton;
-
