@@ -1,6 +1,9 @@
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
     try {
@@ -61,6 +64,15 @@ export async function POST(req: NextRequest) {
             calendarId,
             requestBody: event,
         });
+
+        const eventId = response.data.id;
+
+        if (eventId && booking.bookingID) {
+            await prisma.bookingInfo.update({
+                where: { bookingID: Number(booking.bookingID) },
+                data: { calendarEventId: eventId },
+            });
+        }
 
         return NextResponse.json({ eventId: response.data.id }, { status: 200 });
     } catch (error) {

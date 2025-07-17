@@ -60,8 +60,8 @@ export async function POST(req: Request) {
                     });
 
                     console.log("✅ ลบ event สำเร็จ:", booking.calendarEventId);
-                } catch (err) {
-                    console.error("❌ ลบ event ล้มเหลว:", err);
+                } catch (error) {
+                    console.error("❌ ลบ event ล้มเหลว:", error);
                 }
             } else {
                 console.warn("⚠️ ไม่พบ calendarId สำหรับห้อง:", booking.RoomName);
