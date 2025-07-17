@@ -194,8 +194,26 @@ export default function BookingRequest() {
                         <CircularProgress />
                     </Box>
                 ) : (
-                    <TableContainer component={Paper} sx={{ mt: 2 }}>
-                        <Table size="small">
+                    <TableContainer
+                        component={Paper}
+                        sx={{
+                            width: { xs: "100%", sm: "100%" },
+                            maxWidth: { xs: 400, sm: "100%" },
+                            overflowX: "auto",
+                            mx: "auto",
+                        }}
+                    >
+                        <Table
+                            size="small"
+                            sx={{
+                                "& .MuiTableCell-root": {
+                                    fontSize: { xs: "0.65rem", sm: "0.95rem" },
+                                    px: { xs: 0.3, sm: 1 },
+                                    py: { xs: 0.5, sm: 1 },
+                                    whiteSpace: "nowrap",
+                                },
+                            }}
+                        >
                             <TableHead>
                                 <TableRow
                                     sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}
@@ -384,57 +402,6 @@ export default function BookingRequest() {
                         </Table>
                     </TableContainer>
                 )}
-
-                <Box
-                    sx={{
-                        position: "fixed",
-                        bottom: 24,
-                        right: 24,
-                        zIndex: 1000,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-end",
-                        gap: 1,
-                    }}
-                >
-                    {showContact && (
-                        <Box
-                            sx={{
-                                bgcolor: "background.paper",
-                                p: 2,
-                                borderRadius: 2,
-                                boxShadow: 2,
-                                minWidth: 250,
-                            }}
-                        >
-                            <Typography variant="body2" gutterBottom>
-                                ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                ตำแหน่ง : นักวิชาการโสตทัศนศึกษา
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                เบอร์โทรติดต่อ : 098-9562398
-                            </Typography>
-                        </Box>
-                    )}
-                    <Tooltip title={showContact ? "ซ่อนข้อมูลติดต่อ" : "แสดงข้อมูลติดต่อ"}>
-                        <Button
-                            onClick={() => setShowContact((prev) => !prev)}
-                            sx={{
-                                minWidth: 0,
-                                width: 30,
-                                height: 30,
-                                borderRadius: "50%",
-                                bgcolor: "primary.main",
-                                color: "white",
-                                "&:hover": { bgcolor: "primary.dark" },
-                            }}
-                        >
-                            {showContact ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        </Button>
-                    </Tooltip>
-                </Box>
             </Box>
 
             <Snackbar
