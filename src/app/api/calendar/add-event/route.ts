@@ -34,17 +34,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Calendar ID not found" }, { status: 400 });
         }
 
-        const toThaiDatetimeString = (date: string) =>
-            new Date(date).toLocaleString("th-TH", {
-                timeZone: "Asia/Bangkok",
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-            });
-
         const event = {
             summary: `📝 ${booking.purpose}`,
             location: `📌 ${booking.RoomName ?? ""}`,

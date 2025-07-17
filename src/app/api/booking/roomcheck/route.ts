@@ -51,7 +51,7 @@ export async function POST(req: Request) {
                     const authClient = await auth.getClient();
                     const calendar = google.calendar({
                         version: "v3",
-                        auth: authClient as any,
+                        auth: authClient as unknown as Parameters<typeof google.calendar>[0]["auth"],
                     });
 
                     await calendar.events.delete({

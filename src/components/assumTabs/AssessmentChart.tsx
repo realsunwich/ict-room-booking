@@ -24,6 +24,8 @@ export default function AssessmentChart({
 }) {
     const calculateAveragePercentages = () => {
         const roomMap: Record<string, { totalScore: number; maxScore: number }> = {};
+        let totalScore = 0;
+        let maxScore = 0;
 
         data.forEach(({ room, responses }) => {
             const responsesArray = Array.isArray(responses)
@@ -31,22 +33,25 @@ export default function AssessmentChart({
                 : Object.entries(responses).map(([title, resp]) => ({
                     title,
                     responses: Object.fromEntries(
-                        Object.entries(resp as Record<string, any>).map(([key, value]) =>
+                        Object.entries(resp as Record<string, ResponseInit | number>).map(([key, value]) =>
                             typeof value === "object" && value !== null && "score" in value
                                 ? [key, value.score]
                                 : [key, value as number]
-                        )
+                        ),
                     ),
                 }));
 
-            const totalScore = responsesArray.reduce((sumResponses, { responses: questions }) => {
-                const sumScores = Object.values(questions).reduce((s, score) => s + score, 0);
-                return sumResponses + sumScores;
-            }, 0);
-
-            const maxScore = responsesArray.reduce((sumMax, { responses: questions }) => {
-                return sumMax + Object.keys(questions).length * 5;
-            }, 0);
+            responsesArray.forEach(({ responses: questions }) => {
+                Object.values(questions).forEach((score) => {
+                    const numericScore = typeof score === "number"
+                        ? score
+                        : (typeof score === "object" && score !== null && "score" in score)
+                            ? (score as { score: number }).score
+                            : 0;
+                    totalScore += numericScore;
+                    maxScore += 5;
+                });
+            });
 
             if (!roomMap[room]) roomMap[room] = { totalScore: 0, maxScore: 0 };
             roomMap[room].totalScore += totalScore;
