@@ -43,20 +43,16 @@ export async function POST(req: NextRequest) {
             });
 
         const event = {
-            summary: `📌 จองห้อง ${booking.RoomName}`,
-            description: `🧑‍💼 ผู้จอง ${booking.sender}
-📞 โทรศัพท์ ${booking.phoneOut || "ไม่ระบุ"}
-📝 วัตถุประสงค์ ${booking.purpose}
-👥 จำนวนคน ${booking.capacity} คน
-📅 เริ่ม ${toThaiDatetimeString(booking.startDate)}
-🕓 สิ้นสุด ${toThaiDatetimeString(booking.endDate)}`,
-
+            summary: `📝 ${booking.purpose}`,
+            location: `📌 ${booking.RoomName ?? ""}`,
+            description: `🧑‍💼 ผู้จอง ${booking.sender ?? ""} 📞 โทรศัพท์ ${booking.phoneOut || "ไม่ระบุ"}
+👥 จำนวนคน ${booking.capacity} คน`,
             start: {
-                dateTime: booking.startDate,
+                dateTime: new Date(booking.startDate!).toISOString(),
                 timeZone: "Asia/Bangkok",
             },
             end: {
-                dateTime: booking.endDate,
+                dateTime: new Date(booking.endDate!).toISOString(),
                 timeZone: "Asia/Bangkok",
             },
         };

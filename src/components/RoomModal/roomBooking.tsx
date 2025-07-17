@@ -141,17 +141,6 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
             });
 
             if (res.ok) {
-                if (session?.accessToken) {
-                    await fetch("/api/calendar/add-event", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            accessToken: session.accessToken,
-                            booking: bookingData,
-                        }),
-                    });
-                }
-
                 setSnackbar({ open: true, message: "จองห้องสำเร็จ", severity: "success" });
                 setFormData(initialFormData(roomName));
                 setStartDay(null);
