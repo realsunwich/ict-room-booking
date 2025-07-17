@@ -155,9 +155,10 @@ export const FormPDF = ({ booking, signatureUrl }: { booking: BookingInfo, signa
                                 <Image
                                     src={signatureUrl}
                                     style={{
-                                        width: cm(4),
-                                        height: cm(2),
-                                        marginBottom: cm(0.2),
+                                        width: cm(3),
+                                        height: cm(1.5),
+                                        marginBottom: -cm(0.5),
+                                        marginLeft: cm(1),
                                         objectFit: 'contain',
                                     }}
                                 />

@@ -149,7 +149,7 @@ export default function AssessmentSum() {
                 </Box>
                 <Divider sx={{ my: 2 }} />
 
-                <Box sx={{ mt: 5, mb: 3, px: { xs: 1, sm: 2 } }}>
+                <Box sx={{ mt: 5, mb: 1, px: { xs: 1, sm: 2 } }}>
                     <AssessmentFilter
                         filter={filter}
                         setFilter={setFilter}
@@ -170,7 +170,7 @@ export default function AssessmentSum() {
                         </Typography>
                         {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
                         {filteredAssessments.length > 0 && (
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
                                 <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
                                     <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
                                         คะแนนเฉลี่ยรายห้อง

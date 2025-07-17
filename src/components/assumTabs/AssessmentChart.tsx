@@ -62,7 +62,7 @@ export default function AssessmentChart({
     const chartData = calculateAveragePercentages();
 
     return (
-        <Box sx={{ mt: 2 }}>
+        <Box>
             <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -70,7 +70,7 @@ export default function AssessmentChart({
                     <YAxis unit="%" domain={[0, 100]} />
                     <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
                     <Bar dataKey="average">
-                        {chartData.map((entry, index) => (
+                        {chartData.map((_entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Bar>
