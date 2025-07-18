@@ -38,14 +38,6 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
 
     const cm = (value: number) => value * 28.35;
 
-    function toThaiNumber(num: number | string) {
-        const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
-        return num.toString().split('').map(d => {
-            const digit = Number(d);
-            return isNaN(digit) ? d : thaiDigits[digit];
-        }).join('');
-    }
-
     const styles = StyleSheet.create({
         page: {
             fontFamily: 'Th Niramit',
