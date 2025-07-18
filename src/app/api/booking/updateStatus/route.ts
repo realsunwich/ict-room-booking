@@ -41,6 +41,7 @@ export async function POST(req: Request) {
             data: updateData,
         });
 
+        // ✅ Only handle approvedNumber for approved or completed
         if (["อนุมัติ", "เสร็จสิ้น"].includes(status)) {
             const current = await prisma.bookingInfo.findUnique({
                 where: { bookingID: Number(bookingId) },
@@ -49,12 +50,12 @@ export async function POST(req: Request) {
 
             if (!current?.approvedNumber) {
                 const buddhistYear = new Date().getFullYear() + 543;
-                const yearStr = toThaiNumber(buddhistYear);
+                const currentYearStr = toThaiNumber(buddhistYear);
 
                 const existing = await prisma.bookingInfo.findMany({
                     where: {
                         approvedNumber: {
-                            endsWith: `/${yearStr}`,
+                            endsWith: `/${currentYearStr}`,
                         },
                     },
                     select: {
@@ -62,14 +63,18 @@ export async function POST(req: Request) {
                     },
                 });
 
-                const maxRunning = existing
-                    .map(b => b.approvedNumber?.split('/')[0] || '')
-                    .map(thai => toArabicNumber(thai))
-                    .reduce((max, curr) => (curr > max ? curr : max), 0);
+                let nextNumber = 1;
 
-                const nextNumber = maxRunning + 1;
+                if (existing.length > 0) {
+                    const maxRunning = existing
+                        .map(b => b.approvedNumber?.split('/')[0] || '')
+                        .map(thai => toArabicNumber(thai))
+                        .reduce((max, curr) => (curr > max ? curr : max), 0);
 
-                const approvedNumber = `${toThaiNumber(nextNumber.toString().padStart(4, '0'))}/${yearStr}`;
+                    nextNumber = maxRunning + 1;
+                }
+
+                const approvedNumber = `${toThaiNumber(nextNumber.toString().padStart(4, '0'))}/${currentYearStr}`;
 
                 await prisma.bookingInfo.update({
                     where: { bookingID: Number(bookingId) },
