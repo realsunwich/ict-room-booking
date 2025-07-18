@@ -17,10 +17,11 @@ interface BookingInfo {
     cfSender: string;
     cfPhone: string;
     SendStatus: string;
+    approvedNumber: string;
 }
 
 export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = false, approvalDate
-}: { booking: BookingInfo, signatureUrl?: string; includeApprovalSignature?: boolean; approvalDate?: string }) => {
+}: { booking: BookingInfo, signatureUrl?: string; includeApprovalSignature?: boolean; approvalDate?: string; }) => {
     useEffect(() => {
         registerTHNiramitFont();
     }, []);
@@ -35,8 +36,15 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
         return phone;
     };
 
-
     const cm = (value: number) => value * 28.35;
+
+    function toThaiNumber(num: number | string) {
+        const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
+        return num.toString().split('').map(d => {
+            const digit = Number(d);
+            return isNaN(digit) ? d : thaiDigits[digit];
+        }).join('');
+    }
 
     const styles = StyleSheet.create({
         page: {
@@ -92,7 +100,11 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
         <Document>
             <Page size="A4" style={styles.page}>
                 <View style={styles.noteBox1}>
-                    <Text>งานโสตทัศนศึกษา-๐๑ เลขที่............../..............</Text>
+                    <Text>
+                        งานโสตทัศนศึกษา-๐๑ เลขที่ {booking.approvedNumber
+                            ? ` ${booking.approvedNumber}`
+                            : '............../..............'}
+                    </Text>
                 </View>
 
                 {/* eslint-disable-next-line jsx-a11y/alt-text */}

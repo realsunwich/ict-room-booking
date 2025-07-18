@@ -24,6 +24,7 @@ model BookingInfo {
   cfSender       String?   @db.VarChar(255)
   cfPhone        String?   @db.VarChar(255)
   SendStatus     String?   @db.VarChar(255)
+  approvedNumber String?   @db.VarChar(10)
   RejectReason   String?   @db.VarChar(255)
   CancelReason   String?   @db.VarChar(255)
 

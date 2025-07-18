@@ -2,9 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip, } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip, } from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
@@ -22,6 +20,7 @@ interface Booking {
     purpose: string;
     capacity: number;
     SendStatus: string;
+    approvedNumber: string;
 
     sendDate?: string;
     sender?: string;
@@ -38,7 +37,6 @@ interface Booking {
 
 export default function BookingRequest() {
     const { data: session } = useSession();
-    const [showContact, setShowContact] = useState(true);
     const [loading, setLoading] = useState(true);
     const [manageDialogOpen, setManageDialogOpen] = useState(false);
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
@@ -290,6 +288,7 @@ export default function BookingRequest() {
                                                         cfSender: booking.cfSender ?? "",
                                                         cfPhone: booking.cfPhone ?? "",
                                                         capacity: String(booking.capacity),
+                                                        approvedNumber: booking.approvedNumber !== undefined ? String(booking.approvedNumber) : ""
                                                     }}
                                                     signatureUrl={
                                                         booking.signatureFileName
@@ -298,9 +297,9 @@ export default function BookingRequest() {
                                                                 ? `/uploads/signatures/${userSignatureFileName}`
                                                                 : undefined
                                                     }
-                                                    includeApprovalSignature={booking.SendStatus.trim() === "อนุมัติ"}
+                                                    includeApprovalSignature={["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())}
                                                     approvalDate={
-                                                        booking.SendStatus.trim() === "อนุมัติ"
+                                                        ["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())
                                                             ? new Date().toLocaleDateString("th-TH", { day: "2-digit", month: "long", year: "numeric" })
                                                             : undefined
                                                     }
