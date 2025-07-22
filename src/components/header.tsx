@@ -12,6 +12,7 @@ import AssessmentModal from "@/components/AssessmentModal";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import FeedbackIcon from '@mui/icons-material/Feedback';
+import WebIcon from '@mui/icons-material/Web';
 
 const Header = () => {
     const { data: session, status } = useSession();
@@ -161,6 +162,13 @@ const Header = () => {
                                 >
                                     แบบประเมินห้องประชุม
                                 </Button>
+                                <Button
+                                    startIcon={<WebIcon />}
+                                    onClick={() => router.push("/WebProgress")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    ขั้นตอนการขอใช้บริการ
+                                </Button>
                                 <input
                                     id="upload-signature"
                                     type="file"
@@ -212,6 +220,13 @@ const Header = () => {
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
                                     สรุปผลการประเมิน
+                                </Button>
+                                <Button
+                                    startIcon={<WebIcon />}
+                                    onClick={() => router.push("/WebProgress")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    ขั้นตอนการขอใช้บริการ
                                 </Button>
                                 <input
                                     id="upload-signature"
