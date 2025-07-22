@@ -14,52 +14,6 @@ export default function AssessmentSum() {
     const [currentImg, setCurrentImg] = useState("");
 
     useEffect(() => {
-        if (!open) return;
-
-        const container = document.getElementById("zoom-container");
-        const image = document.getElementById("zoom-image") as HTMLElement;
-
-        let scale = 1;
-        let lastScale = 1;
-        let startX = 0;
-        let startY = 0;
-        let currentX = 0;
-        let currentY = 0;
-
-        const onTouchStart = (e: TouchEvent) => {
-            if (e.touches.length === 2) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                lastScale = scale;
-                startX = dx * dx + dy * dy;
-            } else if (e.touches.length === 1) {
-                currentX = e.touches[0].clientX;
-                currentY = e.touches[0].clientY;
-            }
-        };
-
-        const onTouchMove = (e: TouchEvent) => {
-            e.preventDefault();
-            if (e.touches.length === 2) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                const dist = dx * dx + dy * dy;
-                const newScale = Math.min(3, Math.max(1, (dist / startX) * lastScale));
-                scale = newScale;
-                image.style.transform = `scale(${scale})`;
-            }
-        };
-
-        container?.addEventListener("touchstart", onTouchStart, { passive: false });
-        container?.addEventListener("touchmove", onTouchMove, { passive: false });
-
-        return () => {
-            container?.removeEventListener("touchstart", onTouchStart);
-            container?.removeEventListener("touchmove", onTouchMove);
-        };
-    }, [open]);
-
-    useEffect(() => {
         document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
     }, []);
 
@@ -90,7 +44,7 @@ export default function AssessmentSum() {
             >
                 <Box sx={{ textAlign: "center", mb: 3 }}>
                     <Typography variant="h5" fontWeight={600}>
-                        ขั้นตอนการขอใช้บริการห้องประชุมและโสตทัศนูปกรณ์
+                        สรุปผลการประเมินห้องประชุม
                     </Typography>
                     <Typography variant="subtitle1" sx={{ mt: 1 }}>
                         คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
@@ -98,6 +52,7 @@ export default function AssessmentSum() {
                 </Box>
                 <Divider sx={{ my: 2 }} />
 
+                {/* รูปภาพสองรูปข้างกัน */}
                 <Box
                     sx={{
                         display: "flex",
@@ -114,9 +69,8 @@ export default function AssessmentSum() {
                             sx={{
                                 width: "100%",
                                 maxWidth: 380,
-                                mx: "auto", // center ในจอเล็ก
                                 cursor: "zoom-in",
-                                "&:hover": { opacity: 0.85 },
+                                "&:hover": { opacity: 0.85 }
                             }}
                             onClick={() => handleOpen(src)}
                         >
@@ -137,47 +91,33 @@ export default function AssessmentSum() {
                     <Box
                         onClick={handleClose}
                         sx={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            width: "100vw",
-                            height: "100vh",
-                            bgcolor: "rgba(0,0,0,0.9)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            overflow: "hidden",
-                            zIndex: 9999,
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: { xs: "90vw", sm: "80vw", md: "70vw" },
+                            maxHeight: "90vh",
+                            bgcolor: "background.paper",
+                            boxShadow: 24,
+                            borderRadius: 2,
+                            overflow: "auto",
+                            p: 2,
+                            cursor: "zoom-out"
                         }}
                     >
-                        <Box
-                            id="zoom-container"
-                            sx={{
-                                touchAction: "none",
+                        <Image
+                            src={currentImg}
+                            alt="Zoomed Image"
+                            width={1600}
+                            height={1200}
+                            style={{
                                 width: "100%",
-                                maxWidth: 800,
-                                height: "100%",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
+                                height: "auto",
+                                borderRadius: 8,
+                                display: "block",
+                                objectFit: "contain",
                             }}
-                        >
-                            <Image
-                                id="zoom-image"
-                                src={currentImg}
-                                alt="Zoomed"
-                                width={1600}
-                                height={1200}
-                                style={{
-                                    width: "100%",
-                                    height: "auto",
-                                    maxHeight: "100%",
-                                    borderRadius: 8,
-                                    transformOrigin: "center center",
-                                    transition: "transform 0.1s ease-out",
-                                }}
-                            />
-                        </Box>
+                        />
                     </Box>
                 </Modal>
             </Box>
