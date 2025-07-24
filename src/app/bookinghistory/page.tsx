@@ -55,10 +55,10 @@ export default function BookingHistory() {
         const today = new Date();
 
         const fifteenDaysAgo = new Date();
-        fifteenDaysAgo.setDate(today.getDate() - 15);
+        fifteenDaysAgo.setDate(today.getDate() - 30);
 
         const fifteenDaysLater = new Date();
-        fifteenDaysLater.setDate(today.getDate() + 15);
+        fifteenDaysLater.setDate(today.getDate() + 30);
 
         const formatDate = (date: Date) => {
             const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
