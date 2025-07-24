@@ -146,7 +146,7 @@ const Header = () => {
                                     onClick={() => router.push("/dashboard")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    ตัวอย่างห้องประชุม
+                                    ห้องประชุม
                                 </Button>
                                 <Button
                                     startIcon={<FolderCopyIcon />}
@@ -160,14 +160,14 @@ const Header = () => {
                                     onClick={() => setOpenModal(true)}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    แบบประเมินห้องประชุม
+                                    แบบประเมิน
                                 </Button>
                                 <Button
                                     startIcon={<WebIcon />}
                                     onClick={() => router.push("/WebProgress")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    ขั้นตอนการขอใช้บริการ
+                                    การขอใช้บริการ
                                 </Button>
                                 <input
                                     id="upload-signature"
@@ -226,7 +226,7 @@ const Header = () => {
                                     onClick={() => router.push("/WebProgress")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    ขั้นตอนการขอใช้บริการ
+                                    การขอใช้บริการ
                                 </Button>
                                 <input
                                     id="upload-signature"

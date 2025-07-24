@@ -64,8 +64,8 @@ const rooms: Room[] = [
         image2: "/images/ลานกิจกรรมใต้ถุนอาคาร2.jpg",
         image3: "/images/ลานกิจกรรมใต้ถุนอาคาร3.jpg",
         image4: "/images/ลานกิจกรรมใต้ถุนอาคาร4.jpg",
-        detailImage_1: "/images/detail_ict.jpg",
-        detailImage_2: "/images/detail_ict.jpg",
+        detailImage_1: "/images/ลานกิจกรรมใต้ถุนอาคาร.jpg",
+        detailImage_2: "/images/ผังลานกิจกรรมใต้ถุนอาคาร.jpg",
         description: "รองรับได้ 300 ที่นั่ง",
     },
 ];
@@ -288,7 +288,7 @@ export default function Dashboard() {
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         {session?.user?.role === "User"
-                            ? "ตัวอย่างห้องประชุม"
+                            ? "ห้องประชุม"
                             : "ปฏิทินห้องประชุม"}
                     </Typography>
                     <Typography variant="subtitle1" sx={{ mt: 1 }}>

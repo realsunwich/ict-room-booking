@@ -44,7 +44,7 @@ export default function AssessmentSum() {
             >
                 <Box sx={{ textAlign: "center", mb: 3 }}>
                     <Typography variant="h5" fontWeight={600}>
-                        สรุปผลการประเมินห้องประชุม
+                        ขั้นตอนการขอใช้บริการห้องประชุมและโสตทัศนูปกรณ์
                     </Typography>
                     <Typography variant="subtitle1" sx={{ mt: 1 }}>
                         คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
@@ -52,7 +52,6 @@ export default function AssessmentSum() {
                 </Box>
                 <Divider sx={{ my: 2 }} />
 
-                {/* รูปภาพสองรูปข้างกัน */}
                 <Box
                     sx={{
                         display: "flex",
@@ -68,7 +67,7 @@ export default function AssessmentSum() {
                             key={index}
                             sx={{
                                 width: "100%",
-                                maxWidth: 380,
+                                maxWidth: 800,
                                 cursor: "zoom-in",
                                 "&:hover": { opacity: 0.85 }
                             }}
