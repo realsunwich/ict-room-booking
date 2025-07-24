@@ -51,6 +51,24 @@ export default function BookingHistory() {
         document.title = "ประวัติการจอง | ระบบจองห้องประชุม ICT";
     }, []);
 
+    useEffect(() => {
+        const today = new Date();
+
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(today.getDate() - 15);
+
+        const fifteenDaysLater = new Date();
+        fifteenDaysLater.setDate(today.getDate() + 15);
+
+        const formatDate = (date: Date) => {
+            const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+            return offsetDate.toISOString().split("T")[0];
+        };
+
+        setFilterStartDate(formatDate(fifteenDaysAgo));
+        setFilterEndDate(formatDate(fifteenDaysLater));
+    }, []);
+
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
