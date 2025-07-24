@@ -89,7 +89,10 @@ export default function BookingHistory() {
         const matchStartDate = !filterStartDate || startDate >= new Date(new Date(filterStartDate).setHours(0, 0, 0, 0));
         const matchEndDate = !filterEndDate || endDate <= new Date(new Date(filterEndDate).setHours(23, 59, 59, 999));
 
+        const isUserOwner = session?.user?.role === "Admin" || session?.user?.email === booking.senderEmail;
+
         return (
+            isUserOwner &&
             matchRoom &&
             matchStatus &&
             matchStartDate &&
