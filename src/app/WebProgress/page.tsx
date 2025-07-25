@@ -7,15 +7,13 @@ import Image from "next/image";
 
 import Header from "@/components/header";
 
-export default function AssessmentSum() {
+export default function WebProgress() {
     const { data: session } = useSession();
 
     const [open, setOpen] = useState(false);
     const [currentImg, setCurrentImg] = useState("");
 
-    useEffect(() => {
-        document.title = "สรุปผลการประเมิน | ระบบจองห้องประชุม ICT";
-    }, []);
+
 
     const handleOpen = (src: string) => {
         setCurrentImg(src);
@@ -24,10 +22,17 @@ export default function AssessmentSum() {
 
     const handleClose = () => setOpen(false);
 
+    useEffect(() => {
+        document.title = "การขอใช้บริการ | ระบบจองห้องประชุม ICT";
+    }, []);
+
     return (
         <Box
             sx={{
-                marginTop: session?.user?.role === "User" ? { xs: 23, sm: 15 } : { xs: 19, sm: 15 },
+                marginTop:
+                    session?.user?.role === "User"
+                        ? { xs: 28, sm: 15 }
+                        : { xs: 23, sm: 15 },
             }}
         >
             <Header />

@@ -337,6 +337,14 @@ const Header = () => {
                                 แบบประเมินห้องประชุม
                             </Button>
 
+                            <Button
+                                startIcon={<WebIcon />}
+                                onClick={() => router.push("/WebProgress")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                การขอใช้บริการ
+                            </Button>
+
                             <input
                                 id="upload-signature"
                                 type="file"
@@ -400,6 +408,30 @@ const Header = () => {
                             >
                                 สรุปผลการประเมิน
                             </Button>
+                            <Button
+                                startIcon={<WebIcon />}
+                                onClick={() => router.push("/WebProgress")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                            >
+                                การขอใช้บริการ
+                            </Button>
+
+                            <input
+                                id="upload-signature"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleFileChange}
+                            />
+                            <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
+                                <Button
+                                    startIcon={<BadgeIcon />}
+                                    component="span"
+                                    sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    อัปโหลดลายเซ็น
+                                </Button>
+                            </label>
                         </Box>
                     </Box>
                 )}

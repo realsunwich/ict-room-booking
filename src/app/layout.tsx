@@ -8,7 +8,6 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export const metadata: Metadata = {
-  title: "ICT Room Booking System",
   icons: [
     { rel: "icon", url: "/favicon.ico" },
     { rel: "shortcut icon", url: "/favicon.ico" },

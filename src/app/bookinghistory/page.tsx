@@ -125,8 +125,8 @@ export default function BookingHistory() {
             sx={{
                 marginTop:
                     session?.user?.role === "User"
-                        ? { xs: 23, sm: 15 }
-                        : { xs: 19, sm: 15 },
+                        ? { xs: 28, sm: 15 }
+                        : { xs: 23, sm: 15 },
             }}
         >
             <Header />

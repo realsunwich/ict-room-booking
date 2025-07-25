@@ -117,7 +117,10 @@ export default function AssessmentSum() {
     return (
         <Box
             sx={{
-                marginTop: session?.user?.role === "User" ? { xs: 23, sm: 15 } : { xs: 19, sm: 15 },
+                marginTop:
+                    session?.user?.role === "User"
+                        ? { xs: 28, sm: 15 }
+                        : { xs: 23, sm: 15 },
             }}
         >
             <Header />

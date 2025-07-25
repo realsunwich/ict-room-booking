@@ -87,7 +87,7 @@ export default function Dashboard() {
     });
 
     useEffect(() => {
-        document.title = "ระบบจองห้องประชุม ICT | ระบบจองห้องประชุม ICT";
+        document.title = "ระบบจองห้องประชุม ICT";
     }, []);
 
     const handleOpenRoomDetail = (room: Room) => {
@@ -256,8 +256,8 @@ export default function Dashboard() {
             sx={{
                 marginTop:
                     session?.user?.role === "User"
-                        ? { xs: 23, sm: 15 }
-                        : { xs: 19, sm: 15 },
+                        ? { xs: 28, sm: 15 }
+                        : { xs: 23, sm: 15 },
             }}
         >
             <Header />

@@ -119,7 +119,11 @@ export default function BookingRequest() {
     };
 
     useEffect(() => {
-        if (!session?.user?.email) return; // ถ้าไม่มี email อย่า fetch
+        document.title = "คำขอใช้บริการ | ระบบจองห้องประชุม ICT";
+    }, []);
+
+    useEffect(() => {
+        if (!session?.user?.email) return;
 
         const fetchSignature = async () => {
             try {
@@ -141,17 +145,13 @@ export default function BookingRequest() {
         fetchSignature();
     }, [session]);
 
-    useEffect(() => {
-        document.title = "คำขอใช้บริหาร | ระบบจองห้องประชุม ICT";
-    }, []);
-
     return (
         <Box
             sx={{
                 marginTop:
                     session?.user?.role === "User"
-                        ? { xs: 23, sm: 15 }
-                        : { xs: 19, sm: 15 },
+                        ? { xs: 28, sm: 15 }
+                        : { xs: 23, sm: 15 },
             }}
         >
             <Header />
