@@ -29,7 +29,7 @@ interface Summary {
 }
 
 export default function AssessmentSum() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<FilterOptions>({
@@ -114,111 +114,125 @@ export default function AssessmentSum() {
         }));
     }
 
-    return (
-        <Box
-            sx={{
-                marginTop:
-                    session?.user?.role === "User"
-                        ? { xs: 28, sm: 15 }
-                        : { xs: 23, sm: 15 },
-            }}
-        >
-            <Header />
-            <Box
-                sx={{
-                    bgcolor: "white",
-                    px: { xs: 2, sm: 4 },
-                    pt: { xs: 2, sm: 4 },
-                    pb: 4,
-                    mt: 10,
-                    borderRadius: 7,
-                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                }}
-            >
-                <Box sx={{ textAlign: "center", mb: 3 }}>
-                    <Typography variant="h5" fontWeight={600}>
-                        สรุปผลการประเมินห้องประชุม
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ mt: 1 }}>
-                        คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
-                    </Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-
-                <Box sx={{ mt: 5, mb: 1, px: { xs: 1, sm: 2 } }}>
-                    <AssessmentFilter
-                        filter={filter}
-                        setFilter={setFilter}
-                        availableRooms={rooms}
-                        availableRoles={roles}
-                        availableGenders={genders}
-                    />
-                </Box>
-
-                {loading ? (
-                    <Box display="flex" justifyContent="center">
-                        <CircularProgress />
-                    </Box>
-                ) : summary ? (
-                    <>
-                        <Typography variant="h6" gutterBottom fontWeight={600}>
-                            ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
-                        </Typography>
-                        {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
-                        {filteredAssessments.length > 0 && (
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
-                                <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
-                                    <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
-                                        คะแนนเฉลี่ยรายห้อง
-                                    </Typography>
-                                    {calculateRoomAveragePercentages(filteredAssessments)
-                                        .sort((a, b) => a.room.localeCompare(b.room))
-                                        .map((room, idx) => (
-                                            <Typography
-                                                key={room.room}
-                                                variant="body2"
-                                                sx={{
-                                                    fontSize: { xs: "0.9rem", sm: "1rem" },
-                                                    whiteSpace: "nowrap",
-                                                    mr: idx !== calculateRoomAveragePercentages(filteredAssessments).length - 1 ? 2 : 0,
-                                                }}
-                                            >
-                                                {room.room} {room.average.toFixed(2)}%
-                                            </Typography>
-                                        ))
-                                    }
-                                </Box>
-                                <Box>
-                                    <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
-                                </Box>
-                            </Box>
-                        )}
-
-                        {summary.assessments?.length === 0 && (
-                            <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}>
-                                ไม่มีข้อมูลการประเมิน
-                            </Typography>
-                        )}
-
-                        <Tabs value={tab} onChange={(_, newVal) => setTab(newVal)}
-                            sx={{
-                                mb: 2,
-                                "& .MuiTabs-flexContainer": {
-                                    justifyContent: { xs: "center", sm: "flex-start" },
-                                },
-                            }}
-                        >
-                            <Tab label="รายการการประเมิน" />
-                            <Tab label="กราฟสรุปผลการประเมิน" />
-                        </Tabs>
-
-                        {tab === 0 && <AssessmentList data={filteredAssessments} />}
-                        {tab === 1 && <AssessmentChart data={filteredAssessments} />}
-                    </>
-                ) : (
-                    <Typography color="error">ไม่พบข้อมูลสรุป</Typography>
-                )}
+    if (status === "loading") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <CircularProgress />
+                <Typography mt={2}>กำลังโหลดข้อมูลผู้ใช้...</Typography>
             </Box>
-        </Box>
-    );
+        );
+    }
+
+    if (session?.user?.role !== "Admin") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <Typography variant="h6" color="error">
+                    คุณไม่มีสิทธิ์เข้าถึงหน้านี้ (สำหรับผู้ดูแลระบบเท่านั้น)
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (session?.user?.role == "Admin") {
+        return (
+            <Box sx={{ marginTop: { xs: 23, sm: 15 } }}>
+                <Header />
+                <Box
+                    sx={{
+                        bgcolor: "white",
+                        px: { xs: 2, sm: 4 },
+                        pt: { xs: 2, sm: 4 },
+                        pb: 4,
+                        mt: 10,
+                        borderRadius: 7,
+                        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+                    }}
+                >
+                    <Box sx={{ textAlign: "center", mb: 3 }}>
+                        <Typography variant="h5" fontWeight={600}>
+                            สรุปผลการประเมินห้องประชุม
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                            คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                        </Typography>
+                    </Box>
+                    <Divider sx={{ my: 2 }} />
+
+                    <Box sx={{ mt: 5, mb: 1, px: { xs: 1, sm: 2 } }}>
+                        <AssessmentFilter
+                            filter={filter}
+                            setFilter={setFilter}
+                            availableRooms={rooms}
+                            availableRoles={roles}
+                            availableGenders={genders}
+                        />
+                    </Box>
+
+                    {loading ? (
+                        <Box display="flex" justifyContent="center">
+                            <CircularProgress />
+                        </Box>
+                    ) : summary ? (
+                        <>
+                            <Typography variant="h6" gutterBottom fontWeight={600}>
+                                ผลการประเมินทั้งหมด {filteredAssessments.length} ครั้ง
+                            </Typography>
+                            {filteredAssessments.length !== summary.total && ` จากทั้งหมด ${summary.total} ครั้ง`}
+                            {filteredAssessments.length > 0 && (
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+                                        <Typography variant="body1" fontWeight={600} sx={{ minWidth: "fit-content" }}>
+                                            คะแนนเฉลี่ยรายห้อง
+                                        </Typography>
+                                        {calculateRoomAveragePercentages(filteredAssessments)
+                                            .sort((a, b) => a.room.localeCompare(b.room))
+                                            .map((room, idx) => (
+                                                <Typography
+                                                    key={room.room}
+                                                    variant="body2"
+                                                    sx={{
+                                                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                                                        whiteSpace: "nowrap",
+                                                        mr: idx !== calculateRoomAveragePercentages(filteredAssessments).length - 1 ? 2 : 0,
+                                                    }}
+                                                >
+                                                    {room.room} {room.average.toFixed(2)}%
+                                                </Typography>
+                                            ))
+                                        }
+                                    </Box>
+                                    <Box>
+                                        <ExportAssessmentExcel data={filteredAssessments} filter={filter} />
+                                    </Box>
+                                </Box>
+                            )}
+
+                            {summary.assessments?.length === 0 && (
+                                <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary", mt: 2 }}>
+                                    ไม่มีข้อมูลการประเมิน
+                                </Typography>
+                            )}
+
+                            <Tabs value={tab} onChange={(_, newVal) => setTab(newVal)}
+                                sx={{
+                                    mb: 2,
+                                    "& .MuiTabs-flexContainer": {
+                                        justifyContent: { xs: "center", sm: "flex-start" },
+                                    },
+                                }}
+                            >
+                                <Tab label="รายการการประเมิน" />
+                                <Tab label="กราฟสรุปผลการประเมิน" />
+                            </Tabs>
+
+                            {tab === 0 && <AssessmentList data={filteredAssessments} />}
+                            {tab === 1 && <AssessmentChart data={filteredAssessments} />}
+                        </>
+                    ) : (
+                        <Typography color="error">ไม่พบข้อมูลสรุป</Typography>
+                    )}
+                </Box>
+            </Box>
+        );
+    }
 }

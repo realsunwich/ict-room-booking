@@ -13,6 +13,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import WebIcon from '@mui/icons-material/Web';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const Header = () => {
     const { data: session, status } = useSession();
@@ -45,7 +46,7 @@ const Header = () => {
     };
 
     const handleSnackbarClose = (
-        event?: React.SyntheticEvent | Event,
+        _event?: React.SyntheticEvent | Event,
         reason?: string
     ) => {
         if (reason === "clickaway") return;
@@ -201,6 +202,13 @@ const Header = () => {
                                 }}
                             >
                                 <Button
+                                    startIcon={<CalendarMonthIcon />}
+                                    onClick={() => router.push("/dashboard")}
+                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                >
+                                    ปฏิทินห้องประชุม
+                                </Button>
+                                <Button
                                     startIcon={<FeedbackIcon />}
                                     onClick={() => router.push("/bookingrequest")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
@@ -318,7 +326,7 @@ const Header = () => {
                                 onClick={() => router.push("/dashboard")}
                                 sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                             >
-                                ตัวอย่างห้องประชุม
+                                ห้องประชุม
                             </Button>
 
                             <Button
@@ -385,6 +393,12 @@ const Header = () => {
                                 top: 0,
                             }}
                         >
+                            <Button
+                                startIcon={<CalendarMonthIcon />}
+                                onClick={() => router.push("/dashboard")}
+                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}                            >
+                                ปฏิทินห้องประชุม
+                            </Button>
                             <Button
                                 startIcon={<FeedbackIcon />}
                                 onClick={() => router.push("/bookingrequest")}
