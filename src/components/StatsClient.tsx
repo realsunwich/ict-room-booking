@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, CircularProgress, Tabs, Tab } from "@mui/material";
+import { Box, Typography, CircularProgress, Tabs, Tab, Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -41,6 +43,7 @@ export default function StatsPage() {
     const searchParams = useSearchParams();
     const room = searchParams.get("room");
     const { data: session } = useSession();
+    const router = useRouter();
 
     const [stats, setStats] = useState<RoomStat[]>([]);
     const [canceledOrRejected, setCanceledOrRejected] = useState<CanceledItem[]>([]);
@@ -125,17 +128,29 @@ export default function StatsPage() {
                                 sx={{
                                     display: "flex",
                                     flexDirection: { xs: "column", sm: "row" },
-                                    justifyContent: { xs: "center", sm: "space-between" },
+                                    justifyContent: "space-between",
                                     alignItems: "center",
+                                    gap: 2,
                                     textAlign: { xs: "center", sm: "left" },
                                     width: "100%",
+                                    mb: 2,
                                 }}
                             >
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => router.push("/dashboard")}
+                                    startIcon={<ArrowBackIcon />}
+                                    sx={{ whiteSpace: "nowrap" }}
+                                >
+                                    กลับไปยังหน้าปฏิทิน
+                                </Button>
+
                                 <Typography
                                     variant="h6"
                                     fontWeight="bold"
                                     fontSize={{ xs: "1rem", sm: "1.25rem" }}
-                                    sx={{ flex: 1 }}
+                                    sx={{ flexGrow: 1, textAlign: { xs: "center", sm: "left" } }}
                                 >
                                     {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
                                 </Typography>

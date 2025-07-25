@@ -244,7 +244,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             onClick={onClose}
                             sx={{
                                 color: "error.main",
-                                borderColor: "white",
+                                borderColor: "error.main",
                                 "&:hover": { backgroundColor: "error.main", color: "white" },
                             }}
                         >
@@ -255,7 +255,7 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             onClick={handleSubmit}
                             sx={{
                                 color: "success.main",
-                                borderColor: "white",
+                                borderColor: "success.main",
                                 "&:hover": { backgroundColor: "success.main", color: "white" },
                             }}
                         >
