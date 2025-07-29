@@ -256,7 +256,7 @@ export default function Dashboard() {
             sx={{
                 marginTop:
                     session?.user?.role === "User"
-                        ? { xs: 28, sm: 15 }
+                        ? { xs: 23, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}
         >

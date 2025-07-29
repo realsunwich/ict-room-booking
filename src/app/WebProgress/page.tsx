@@ -13,8 +13,6 @@ export default function WebProgress() {
     const [open, setOpen] = useState(false);
     const [currentImg, setCurrentImg] = useState("");
 
-
-
     const handleOpen = (src: string) => {
         setCurrentImg(src);
         setOpen(true);
@@ -31,7 +29,7 @@ export default function WebProgress() {
             sx={{
                 marginTop:
                     session?.user?.role === "User"
-                        ? { xs: 28, sm: 15 }
+                        ? { xs: 23, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}
         >
