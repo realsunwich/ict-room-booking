@@ -120,7 +120,9 @@ export default function StatsPage() {
                         <CircularProgress />
                     </Box>
                 ) : stats.length === 0 ? (
-                    <Typography>ไม่มีข้อมูลสถิติการใช้งาน</Typography>
+                    <Typography variant="body1" textAlign="center" mt={4}>
+                        ไม่มีข้อมูลสถิติการใช้งาน
+                    </Typography>
                 ) : (
                     stats.map((stat, index) => (
                         <Box key={index}>

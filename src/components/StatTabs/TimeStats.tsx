@@ -9,9 +9,16 @@ interface YearlyCount {
     year: string;
     count: number;
 }
+
+interface RoomWorkHours {
+    RoomName: string;
+    totalWorkHours: number;
+}
+
 interface Props {
     usageByMonth?: MonthlyCount[];
     usageByYear?: YearlyCount[];
+    workHours?: RoomWorkHours[];
 }
 
 const thaiMonths = [
@@ -37,12 +44,14 @@ function ChartSection({
     formatLabel,
     barColor,
     chartLabel,
+    totalWorkHours,
 }: {
     title: string;
     rawData: { label: string; value: number }[];
     formatLabel: (label: string) => string;
     barColor: string;
     chartLabel: string;
+    totalWorkHours?: number;
 }) {
     const chartData = rawData.map(({ label, value }) => ({
         name: formatLabel(label),
@@ -54,45 +63,46 @@ function ChartSection({
             <Typography variant="h6" fontWeight="bold" marginTop={2} >
                 {title}
             </Typography>
-            {rawData.length === 0 ? (
-                <Typography variant="body2">ไม่มีข้อมูล</Typography>
-            ) : (
-                <Box display="flex" flexDirection={{ xs: "column", md: "row" }} >
-                    <Box flex={1}>
-                        {rawData.map(({ label, value }) => (
-                            <Typography key={label} variant="body2" mb={0.5}>
-                                {formatLabel(label)} จำนวน {value} ครั้ง
-                            </Typography>
-                        ))}
-                    </Box>
-
-                    <Box flex={2} minWidth={0}>
-                        <ResponsiveContainer width="100%" height={250}>
-                            <BarChart
-                                data={chartData}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    dataKey="name"
-                                    interval={0}
-                                    tick={{ fontSize: 12 }}
-                                    tickFormatter={(label) => label.replace("เดือน", "").replace("ปี ", "")}
-                                />
-                                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                                <Tooltip formatter={(value: number | string): [string, string] => [`${value} ครั้ง`, "จำนวนคำขอ"]} />
-                                <Legend wrapperStyle={{ fontSize: 12 }} />
-                                <Bar
-                                    dataKey="count"
-                                    fill={barColor}
-                                    name={chartLabel}
-                                    barSize={35}
-                                    radius={[4, 4, 0, 0]}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Box>
+            <Box display="flex" flexDirection={{ xs: "column", md: "row" }} >
+                <Box flex={1}>
+                    {totalWorkHours !== undefined && (
+                        <Typography variant="body2" mb={1} fontWeight="bold">
+                            ชั่วโมงการใช้งานรวม {totalWorkHours.toFixed(2)} ชั่วโมง
+                        </Typography>
+                    )}
+                    {rawData.map(({ label, value }) => (
+                        <Typography key={label} variant="body2" mb={0.5}>
+                            {formatLabel(label)} จำนวน {value} ครั้ง
+                        </Typography>
+                    ))}
                 </Box>
-            )}
+
+                <Box flex={2} minWidth={0}>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart
+                            data={chartData}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="name"
+                                interval={0}
+                                tick={{ fontSize: 12 }}
+                                tickFormatter={(label) => label.replace("เดือน", "").replace("ปี ", "")}
+                            />
+                            <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                            <Tooltip formatter={(value: number | string): [string, string] => [`${value} ครั้ง`, "จำนวนคำขอ"]} />
+                            <Legend wrapperStyle={{ fontSize: 12 }} />
+                            <Bar
+                                dataKey="count"
+                                fill={barColor}
+                                name={chartLabel}
+                                barSize={35}
+                                radius={[4, 4, 0, 0]}
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Box>
+            </Box>
         </Box>
     );
 }

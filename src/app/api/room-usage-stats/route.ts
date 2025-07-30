@@ -3,6 +3,32 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
+function getWorkingHours(start: Date, end: Date): number {
+    let totalHours = 0;
+    const current = new Date(start);
+
+    while (current < end) {
+        const workStart = new Date(current);
+        workStart.setHours(8, 30, 0, 0);
+
+        const workEnd = new Date(current);
+        workEnd.setHours(16, 30, 0, 0);
+
+        const dayStart = current > workStart ? current : workStart;
+        const dayEnd = end < workEnd ? end : workEnd;
+
+        if (dayStart < dayEnd) {
+            totalHours += (dayEnd.getTime() - dayStart.getTime()) / (1000 * 60 * 60);
+        }
+
+        // ไปวันถัดไป
+        current.setDate(current.getDate() + 1);
+        current.setHours(0, 0, 0, 0);
+    }
+
+    return totalHours;
+}
+
 export async function GET() {
     try {
         const bookings = await prisma.bookingInfo.findMany({
@@ -12,11 +38,14 @@ export async function GET() {
                 CancelReason: true,
                 RejectReason: true,
                 createdAt: true,
+                startDate: true,
+                endDate: true,
             },
         });
 
         const roomStatsMap: Record<string, {
             totalUsage: number;
+            totalWorkHours: number;
             statusCounts: Record<string, number>;
             usageByMonth: Record<string, number>;
             usageByYear: Record<string, number>;
@@ -40,6 +69,7 @@ export async function GET() {
             if (!roomStatsMap[room]) {
                 roomStatsMap[room] = {
                     totalUsage: 0,
+                    totalWorkHours: 0,
                     statusCounts: {},
                     usageByMonth: {},
                     usageByYear: {},
@@ -49,6 +79,11 @@ export async function GET() {
             const stats = roomStatsMap[room];
 
             stats.totalUsage += 1;
+
+            // คำนวณชั่วโมงในเวลาราชการ
+            if (b.startDate && b.endDate) {
+                stats.totalWorkHours += getWorkingHours(new Date(b.startDate), new Date(b.endDate));
+            }
 
             // สถานะ
             stats.statusCounts[status] = (stats.statusCounts[status] || 0) + 1;
@@ -73,6 +108,7 @@ export async function GET() {
         const stats = Object.entries(roomStatsMap).map(([RoomName, data]) => ({
             RoomName,
             totalUsage: data.totalUsage,
+            totalWorkHours: parseFloat(data.totalWorkHours.toFixed(2)),
             statusCounts: data.statusCounts,
             usageByMonth: Object.entries(data.usageByMonth).map(([month, count]) => ({ month, count })),
             usageByYear: Object.entries(data.usageByYear).map(([year, count]) => ({ year, count })),
