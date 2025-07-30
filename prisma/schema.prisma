@@ -1,10 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/db1"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_DB1")
 }
 
 model BookingInfo {
@@ -76,3 +77,19 @@ model Assessment {
 // npx prisma migrate dev --name new-migration
 // npx prisma db push
 // npx prisma migrate reset
+
+// ใช้ DB1
+// import { PrismaClient as PrismaClientDB1 } from '@/generated/db1';
+// const db1 = new PrismaClientDB1();
+
+// ใช้ DB2
+// import { PrismaClient as PrismaClientDB2 } from '@/generated/db2';
+// const db2 = new PrismaClientDB2();
+
+// async function example() {
+//   const bookings = await db1.bookingInfo.findMany();
+//   const users = await db2.user.findMany();
+
+//   console.log("Bookings from DB1:", bookings);
+//   console.log("Users from DB2:", users);
+// }

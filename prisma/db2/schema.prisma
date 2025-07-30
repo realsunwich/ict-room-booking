@@ -1,0 +1,42 @@
+generator client_db2 {
+  provider = "prisma-client-js"
+  output   = "../../generated/db2"
+}
+
+datasource db2 {
+  provider = "mysql"
+  url      = env("DATABASE_URL_DB2")
+}
+
+model user {
+  U_id          Int     @id @default(autoincrement())
+  U_name        String? 
+  U_email       String? 
+  U_tel         String?
+  U_job         String? 
+  U_branch      String? 
+  U_van         Int?
+  U_projectday  Int?
+  U_checkin     Int?
+  U_meetingroom Int?
+}
+
+// npx prisma migrate dev --name new-migration
+// npx prisma db push
+// npx prisma migrate reset
+
+// ใช้ DB1
+// import { PrismaClient as PrismaClientDB1 } from '@/generated/db1';
+// const db1 = new PrismaClientDB1();
+
+// ใช้ DB2
+// import { PrismaClient as PrismaClientDB2 } from '@/generated/db2';
+// const db2 = new PrismaClientDB2();
+
+// async function example() {
+//   const bookings = await db1.bookingInfo.findMany();
+//   const users = await db2.user.findMany();
+
+//   console.log("Bookings from DB1:", bookings);
+//   console.log("Users from DB2:", users);
+// }
