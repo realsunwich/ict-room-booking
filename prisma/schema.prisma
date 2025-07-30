@@ -10,34 +10,34 @@ datasource db {
 
 model BookingInfo {
   bookingID      Int       @id @default(autoincrement())
-  RoomName       String?   @db.VarChar(255)
+  RoomName       String?
   sendDate       DateTime? @default(now())
-  sender         String?   @db.VarChar(255)
-  senderEmail    String?   @db.VarChar(255)
-  phoneIn        String?   @db.VarChar(255)
-  phoneOut       String?   @db.VarChar(255)
-  jobName        String?   @db.VarChar(255)
-  officeLocation String?   @db.VarChar(255)
-  purpose        String?   @db.VarChar(255)
+  sender         String?
+  senderEmail    String?
+  phoneIn        String?
+  phoneOut       String?
+  jobName        String?
+  officeLocation String?
+  purpose        String?
   startDate      DateTime? @default(now())
   endDate        DateTime? @default(now())
   capacity       Int?
-  cfSender       String?   @db.VarChar(255)
-  cfPhone        String?   @db.VarChar(255)
-  SendStatus     String?   @db.VarChar(255)
-  approvedNumber String?   @db.VarChar(10)
-  RejectReason   String?   @db.VarChar(255)
-  CancelReason   String?   @db.VarChar(255)
+  cfSender       String?
+  cfPhone        String?
+  SendStatus     String?
+  approvedNumber String?
+  RejectReason   String?
+  CancelReason   String?
 
-  clearStatus  String? @db.VarChar(50)
-  damageAction String? @db.VarChar(100)
-  remark       String? @db.Text
+  clearStatus  String?
+  damageAction String?
+  remark       String?
 
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
-  RecordStatus String?   @db.VarChar(1)
+  RecordStatus String?
 
-  calendarEventId String? @db.VarChar(255)
+  calendarEventId String?
 }
 
 model RoomUsageStats {
@@ -56,19 +56,19 @@ model Signature {
 
 model users {
   userID         Int       @id @default(autoincrement())
-  userEmail      String?   @unique @db.VarChar(255)
-  officeLocation String?   @db.VarChar(255)
-  role           String?   @db.VarChar(255)
+  userEmail      String?   @unique
+  officeLocation String?
+  role           String?
   createDate     DateTime? @default(now())
   lastEdit       DateTime? @updatedAt
-  RecordStatus   String?   @db.VarChar(1)
+  RecordStatus   String?
 }
 
 model Assessment {
   id          Int      @id @default(autoincrement())
-  meetingRoom String?  @db.VarChar(255)
-  gender      String?  @db.VarChar(255)
-  role        String?  @db.VarChar(255)
+  meetingRoom String?
+  gender      String?
+  role        String?
   responses   Json
   comment     String?
   createdAt   DateTime @default(now())
