@@ -1966,11 +1966,11 @@ export namespace Prisma {
 
   export type userWhereUniqueInput = Prisma.AtLeast<{
     U_id?: number
+    U_email?: string
     AND?: userWhereInput | userWhereInput[]
     OR?: userWhereInput[]
     NOT?: userWhereInput | userWhereInput[]
     U_name?: StringNullableFilter<"user"> | string | null
-    U_email?: StringNullableFilter<"user"> | string | null
     U_tel?: StringNullableFilter<"user"> | string | null
     U_job?: StringNullableFilter<"user"> | string | null
     U_branch?: StringNullableFilter<"user"> | string | null
@@ -1978,7 +1978,7 @@ export namespace Prisma {
     U_projectday?: IntNullableFilter<"user"> | number | null
     U_checkin?: IntNullableFilter<"user"> | number | null
     U_meetingroom?: IntNullableFilter<"user"> | number | null
-  }, "U_id">
+  }, "U_id" | "U_email">
 
   export type userOrderByWithAggregationInput = {
     U_id?: SortOrder

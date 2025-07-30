@@ -1,8 +1,8 @@
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { NextAuthOptions } from "next-auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB2 } from '@/../generated/db2';
 
-const prisma = new PrismaClient();
+const db2 = new PrismaClientDB2();
 
 console.log("NEXTAUTH_SECRET :", process.env.NEXTAUTH_SECRET);
 
@@ -39,34 +39,36 @@ export const authOptions: NextAuthOptions = {
                     token.officeLocation = user.officeLocation;
 
                     if (token.email) {
-                        let dbUser = await prisma.users.findUnique({
-                            where: { userEmail: token.email },
+                        let dbUser = await db2.user.findUnique({
+                            where: { U_email: token.email },
                         });
 
                         if (!dbUser) {
-                            dbUser = await prisma.users.create({
+                            dbUser = await db2.user.create({
                                 data: {
-                                    userEmail: token.email,
-                                    officeLocation: typeof token.officeLocation === "string" ? token.officeLocation : null,
-                                    role: "User",
+                                    U_email: token.email,
+                                    U_name: token.name,
+                                    U_branch: typeof token.officeLocation === "string" ? token.officeLocation : null,
+                                    U_job: "User", // กำหนด role เดิมเป็น U_job
                                 },
                             });
                         }
 
-                        token.role = dbUser?.role ?? "User";
+                        token.role = dbUser?.U_job ?? "User";
                     }
                 } else {
                     if (token.email && !token.role) {
-                        const dbUser = await prisma.users.findUnique({
-                            where: { userEmail: token.email },
+                        const dbUser = await db2.user.findUnique({
+                            where: { U_email: token.email },
                         });
-                        token.role = dbUser?.role ?? token.role;
+                        token.role = dbUser?.U_job ?? token.role;
                     }
                 }
             } catch (error) {
                 console.error("Error in jwt callback:", error);
                 throw new Error("Failed to process authentication");
             }
+
             return token;
         },
         async session({ session, token }) {

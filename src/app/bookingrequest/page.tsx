@@ -154,7 +154,7 @@ export default function BookingRequest() {
         );
     }
 
-    if (session?.user?.role !== "Admin") {
+    if (session?.user?.role !== "99") {
         return (
             <Box textAlign="center" mt={10}>
                 <Typography variant="h6" color="error">
@@ -164,7 +164,7 @@ export default function BookingRequest() {
         );
     }
 
-    if (session?.user?.role == "Admin") {
+    if (session?.user?.role == "99") {
 
         return (
             <Box

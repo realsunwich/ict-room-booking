@@ -186,7 +186,7 @@ export default function Dashboard() {
                         {room.description}
                     </Typography>
                     <Box sx={{ gap: 1 }}>
-                        {session?.user?.role === "User" && (
+                        {session?.user?.role === "1" && (
                             <>
                                 <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
                                     รายละเอียดห้องประชุม
@@ -234,7 +234,7 @@ export default function Dashboard() {
                             ปฏิทินห้องประชุม
                         </Button>
 
-                        {session?.user?.role === "Admin" && (
+                        {session?.user?.role === "99" && (
                             <Button
                                 variant="contained"
                                 fullWidth
@@ -255,7 +255,7 @@ export default function Dashboard() {
         <Box
             sx={{
                 marginTop:
-                    session?.user?.role === "User"
+                    session?.user?.role === "1"
                         ? { xs: 23, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}
@@ -287,7 +287,7 @@ export default function Dashboard() {
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        {session?.user?.role === "User"
+                        {session?.user?.role === "1"
                             ? "ห้องประชุม"
                             : "ปฏิทินห้องประชุม"}
                     </Typography>

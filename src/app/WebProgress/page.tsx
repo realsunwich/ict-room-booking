@@ -28,7 +28,7 @@ export default function WebProgress() {
         <Box
             sx={{
                 marginTop:
-                    session?.user?.role === "User"
+                    session?.user?.role === "1"
                         ? { xs: 23, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}

@@ -89,7 +89,7 @@ export default function BookingHistory() {
         const matchStartDate = !filterStartDate || startDate >= new Date(new Date(filterStartDate).setHours(0, 0, 0, 0));
         const matchEndDate = !filterEndDate || endDate <= new Date(new Date(filterEndDate).setHours(23, 59, 59, 999));
 
-        const isUserOwner = session?.user?.role === "Admin" || session?.user?.email === booking.senderEmail;
+        const isUserOwner = session?.user?.role === "99" || session?.user?.email === booking.senderEmail;
 
         return (
             isUserOwner &&
@@ -124,7 +124,7 @@ export default function BookingHistory() {
         <Box
             sx={{
                 marginTop:
-                    session?.user?.role === "User"
+                    session?.user?.role === "1"
                         ? { xs: 23, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}
@@ -175,7 +175,7 @@ export default function BookingHistory() {
                         setFilterEndDate={setFilterEndDate}
                         availableRooms={availableRooms}
                     />
-                    {session?.user?.role === "Admin" && (
+                    {session?.user?.role === "99" && (
                         <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', flexWrap: 'wrap', gap: 2, mt: 3 }}>
                             <ExportBookingExcelButton
                                 data={filteredBookings}
@@ -286,7 +286,7 @@ export default function BookingHistory() {
                                                                 color="primary"
                                                                 sx={{ minWidth: 0, p: 1 }}
                                                                 disabled={
-                                                                    session?.user?.role !== "Admin" && (
+                                                                    session?.user?.role !== "99" && (
                                                                         !["กำลังรอ", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ||
                                                                         session?.user?.email !== booking.senderEmail
                                                                     )

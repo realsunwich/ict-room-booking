@@ -130,7 +130,7 @@ const Header = () => {
                             ระบบขอจองใช้บริการห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                         </Typography>
 
-                        {session?.user?.role === "User" && (
+                        {session?.user?.role === "1" && (
                             <Box
                                 sx={{
                                     display: "flex",
@@ -189,7 +189,7 @@ const Header = () => {
                             </Box>
                         )}
 
-                        {session?.user?.role === "Admin" && (
+                        {session?.user?.role === "99" && (
                             <Box
                                 sx={{
                                     display: "flex",
@@ -301,7 +301,7 @@ const Header = () => {
                 </Toolbar>
 
                 {/* สำหรับมือถือ */}
-                {session?.user?.role === "User" && (
+                {session?.user?.role === "1" && (
                     <Box
                         sx={{
                             fontWeight: "bold",
@@ -373,7 +373,7 @@ const Header = () => {
                     </Box>
                 )}
 
-                {session?.user?.role === "Admin" && (
+                {session?.user?.role === "99" && (
                     <Box
                         sx={{
                             fontWeight: "bold",

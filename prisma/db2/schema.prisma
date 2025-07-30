@@ -11,7 +11,7 @@ datasource db2 {
 model user {
   U_id          Int     @id @default(autoincrement())
   U_name        String? 
-  U_email       String? 
+  U_email       String? @unique
   U_tel         String?
   U_job         String? 
   U_branch      String? 

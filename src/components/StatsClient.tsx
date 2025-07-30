@@ -85,7 +85,7 @@ export default function StatsPage() {
         <Box
             sx={{
                 marginTop:
-                    session?.user?.role === "User"
+                    session?.user?.role === "1"
                         ? { xs: 28, sm: 15 }
                         : { xs: 23, sm: 15 },
             }}
