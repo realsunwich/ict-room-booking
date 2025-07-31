@@ -40,3 +40,6 @@ model user {
 //   console.log("Bookings from DB1:", bookings);
 //   console.log("Users from DB2:", users);
 // }
+
+// npx prisma studio
+// npx prisma studio --schema=prisma/db2/schema.prisma

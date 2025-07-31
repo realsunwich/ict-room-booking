@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Missing email" }, { status: 400 });
     }
 
-    const signature = await prisma.signature.findUnique({
+    const signature = await db1.signature.findUnique({
         where: { userEmail: email },
     });
 

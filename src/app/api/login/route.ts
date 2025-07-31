@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB2 } from '@/../generated/db2';
 
-const prisma = new PrismaClient();
+const db2 = new PrismaClientDB2();
 
 export async function GET(req: NextRequest) {
     const userEmail = req.nextUrl.searchParams.get("userEmail");
@@ -11,15 +11,14 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const user = await prisma.users.findUnique({
-            where: { userEmail: userEmail },
-            select: { userEmail: true , RecordStatus: true },
+        const user = await db2.user.findUnique({
+            where: { U_email: userEmail },
+            select: { U_email: true },
         });
 
-        console.log("Received Email: ", userEmail);
+        console.log("Received Email:", userEmail);
 
-
-        if (!user || user.RecordStatus !== 'N') {
+        if (!user) {
             return NextResponse.json({ result: "F" }, { status: 404 });
         }
 

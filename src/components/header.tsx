@@ -81,6 +81,10 @@ const Header = () => {
         }
     };
 
+    const role = String(session?.user?.role ?? "");
+
+    console.log("Role : ",role)
+
     return (
         <>
             <AppBar
@@ -130,7 +134,7 @@ const Header = () => {
                             ระบบขอจองใช้บริการห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                         </Typography>
 
-                        {session?.user?.role === "1" && (
+                        {role === "1" && (
                             <Box
                                 sx={{
                                     display: "flex",
@@ -189,7 +193,7 @@ const Header = () => {
                             </Box>
                         )}
 
-                        {session?.user?.role === "99" && (
+                        {role === "99" && (
                             <Box
                                 sx={{
                                     display: "flex",
@@ -301,7 +305,7 @@ const Header = () => {
                 </Toolbar>
 
                 {/* สำหรับมือถือ */}
-                {session?.user?.role === "1" && (
+                {role === "1" && (
                     <Box
                         sx={{
                             fontWeight: "bold",
@@ -373,7 +377,7 @@ const Header = () => {
                     </Box>
                 )}
 
-                {session?.user?.role === "99" && (
+                {role === "99" && (
                     <Box
                         sx={{
                             fontWeight: "bold",

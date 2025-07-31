@@ -49,19 +49,18 @@ export const authOptions: NextAuthOptions = {
                                     U_email: token.email,
                                     U_name: token.name,
                                     U_branch: typeof token.officeLocation === "string" ? token.officeLocation : null,
-                                    U_job: "User", // กำหนด role เดิมเป็น U_job
+                                    U_meetingroom: 1,
                                 },
                             });
                         }
-
-                        token.role = dbUser?.U_job ?? "User";
+                        token.role = dbUser.U_meetingroom === 99 ? "99" : "1"
                     }
                 } else {
                     if (token.email && !token.role) {
                         const dbUser = await db2.user.findUnique({
                             where: { U_email: token.email },
                         });
-                        token.role = dbUser?.U_job ?? token.role;
+                        token.role = String(dbUser?.U_meetingroom ?? token.role);
                     }
                 }
             } catch (error) {
