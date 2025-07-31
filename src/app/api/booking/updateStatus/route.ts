@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 interface UpdateBookingPayload {
     bookingId: number;
@@ -36,14 +36,14 @@ export async function POST(req: Request) {
             RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : null,
         };
 
-        const updated = await prisma.bookingInfo.update({
+        const updated = await db1.bookingInfo.update({
             where: { bookingID: Number(bookingId) },
             data: updateData,
         });
 
         // ✅ Only handle approvedNumber for approved or completed
         if (["อนุมัติ", "เสร็จสิ้น"].includes(status)) {
-            const current = await prisma.bookingInfo.findUnique({
+            const current = await db1.bookingInfo.findUnique({
                 where: { bookingID: Number(bookingId) },
                 select: { approvedNumber: true },
             });
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
                 const buddhistYear = new Date().getFullYear() + 543;
                 const currentYearStr = toThaiNumber(buddhistYear);
 
-                const existing = await prisma.bookingInfo.findMany({
+                const existing = await db1.bookingInfo.findMany({
                     where: {
                         approvedNumber: {
                             endsWith: `/${currentYearStr}`,
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 
                 const approvedNumber = `${toThaiNumber(nextNumber.toString().padStart(4, '0'))}/${currentYearStr}`;
 
-                await prisma.bookingInfo.update({
+                await db1.bookingInfo.update({
                     where: { bookingID: Number(bookingId) },
                     data: { approvedNumber },
                 });
