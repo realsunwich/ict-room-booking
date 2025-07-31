@@ -163,16 +163,6 @@ exports.Prisma.SignatureScalarFieldEnum = {
   fileName: 'fileName'
 };
 
-exports.Prisma.UsersScalarFieldEnum = {
-  userID: 'userID',
-  userEmail: 'userEmail',
-  officeLocation: 'officeLocation',
-  role: 'role',
-  createDate: 'createDate',
-  lastEdit: 'lastEdit',
-  RecordStatus: 'RecordStatus'
-};
-
 exports.Prisma.AssessmentScalarFieldEnum = {
   id: 'id',
   meetingRoom: 'meetingRoom',
@@ -228,13 +218,6 @@ exports.Prisma.SignatureOrderByRelevanceFieldEnum = {
   fileName: 'fileName'
 };
 
-exports.Prisma.usersOrderByRelevanceFieldEnum = {
-  userEmail: 'userEmail',
-  officeLocation: 'officeLocation',
-  role: 'role',
-  RecordStatus: 'RecordStatus'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
@@ -258,7 +241,6 @@ exports.Prisma.ModelName = {
   BookingInfo: 'BookingInfo',
   RoomUsageStats: 'RoomUsageStats',
   Signature: 'Signature',
-  users: 'users',
   Assessment: 'Assessment'
 };
 

@@ -54,16 +54,6 @@ model Signature {
   fileName  String
 }
 
-model users {
-  userID         Int       @id @default(autoincrement())
-  userEmail      String?   @unique
-  officeLocation String?
-  role           String?
-  createDate     DateTime? @default(now())
-  lastEdit       DateTime? @updatedAt
-  RecordStatus   String?
-}
-
 model Assessment {
   id          Int      @id @default(autoincrement())
   meetingRoom String?
