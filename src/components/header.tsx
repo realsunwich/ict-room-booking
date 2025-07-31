@@ -298,7 +298,7 @@ const Header = () => {
                                     maxWidth: { xs: "none", sm: "none" },
                                 }}
                             >
-                                สวัสดี! {session.user.name}
+                                สวัสดี ! {session.user.name}
                             </Typography>
                         )}
                     </Box>

@@ -2,6 +2,7 @@
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -33,6 +34,7 @@ const initialFormData = (roomName: string) => ({
 });
 
 export default function BookingDialog({ open, onClose, roomName }: BookingModalProps) {
+    const { data: session } = useSession();
 
     const [startDay, setStartDay] = useState<Date | null>(null);
     const [startTime, setStartTime] = useState<Date | null>(null);
@@ -50,13 +52,24 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
 
     useEffect(() => {
         if (open) {
-            setFormData((prev) => ({ ...prev, RoomName: roomName }));
+            const userName = session?.user?.name || "";
+            const officeLocation = session?.user?.officeLocation || "";
+            const phoneIn = session?.user?.tel || "";
+
+            setFormData((prev) => ({
+                ...prev,
+                RoomName: roomName,
+                sender: userName,
+                cfSender: userName,
+                officeLocation: officeLocation,
+                phoneIn: phoneIn,
+            }));
             setStartDay(null);
             setStartTime(null);
             setEndDay(null);
             setEndTime(null);
         }
-    }, [open, roomName]);
+    }, [open, roomName, session]);
 
     function combineDateTime(date: Date | null, time: Date | null): Date | null {
         if (!date || !time) return null;

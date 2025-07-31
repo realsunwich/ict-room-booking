@@ -37,6 +37,7 @@ export const authOptions: NextAuthOptions = {
                     token.name = user.displayName;
                     token.email = user.mail ?? user.userPrincipalName;
                     token.officeLocation = user.officeLocation;
+                    token.tel = user.mobilePhone || (Array.isArray(user.businessPhones) && user.businessPhones[0]) || null;
 
                     if (token.email) {
                         let dbUser = await db2.user.findUnique({
@@ -48,11 +49,16 @@ export const authOptions: NextAuthOptions = {
                                 data: {
                                     U_email: token.email,
                                     U_name: token.name,
+                                    U_tel: typeof token.tel === "string" ? token.tel : null,
                                     U_branch: typeof token.officeLocation === "string" ? token.officeLocation : null,
                                     U_meetingroom: 1,
                                 },
                             });
                         }
+                        token.name = dbUser.U_name;
+                        token.email = dbUser.U_email;
+                        token.tel = dbUser.U_tel;
+                        token.officeLocation = dbUser.U_branch;
                         token.role = dbUser.U_meetingroom === 99 ? "99" : "1"
                     }
                 } else {
@@ -75,6 +81,7 @@ export const authOptions: NextAuthOptions = {
             session.user.email = token.email;
             session.user.officeLocation = typeof token.officeLocation === "string" ? token.officeLocation : null;
             (session.user).role = typeof token.role === "string" ? token.role : null;
+            (session.user).tel = typeof token.tel === "string" ? token.tel : null;
 
             return session;
         },
