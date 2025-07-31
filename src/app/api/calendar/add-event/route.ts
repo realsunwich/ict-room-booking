@@ -1,9 +1,9 @@
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 export async function POST(req: NextRequest) {
     try {
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         const eventId = response.data.id;
 
         if (eventId && booking.bookingID) {
-            await prisma.bookingInfo.update({
+            await db1.bookingInfo.update({
                 where: { bookingID: Number(booking.bookingID) },
                 data: { calendarEventId: eventId },
             });

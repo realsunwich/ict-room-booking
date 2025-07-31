@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
+const db1 = new PrismaClientDB1();
 import { google } from "googleapis";
 import path from "path";
-
-const prisma = new PrismaClient();
 
 export async function PUT(req: NextRequest) {
     try {
@@ -14,7 +13,7 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: 'Missing booking id' }, { status: 400 });
         }
 
-        const booking = await prisma.bookingInfo.findUnique({
+        const booking = await db1.bookingInfo.findUnique({
             where: { bookingID },
         });
 
@@ -63,7 +62,7 @@ export async function PUT(req: NextRequest) {
             }
         }
 
-        await prisma.bookingInfo.update({
+        await db1.bookingInfo.update({
             where: { bookingID },
             data: {
                 SendStatus: 'ถูกยกเลิก',

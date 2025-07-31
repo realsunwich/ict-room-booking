@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
+
+const db1 = new PrismaClientDB1();
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/next-auth";
 
-const prisma = new PrismaClient();
 
 const thaiTime = (dateStr: string) => {
     const utc = new Date(dateStr);
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
             cfPhone,
         } = body;
 
-        const booking = await prisma.bookingInfo.create({
+        const booking = await db1.bookingInfo.create({
             data: {
                 RoomName,
                 sender,

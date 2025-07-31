@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
+
+const db1 = new PrismaClientDB1();
 import { google } from "googleapis";
 import path from "path";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "ข้อมูลไม่ครบถ้วน" }, { status: 400 });
         }
 
-        const booking = await prisma.bookingInfo.findUnique({
+        const booking = await db1.bookingInfo.findUnique({
             where: { bookingID: Number(bookingID) },
         });
 
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
             }
         }
 
-        await prisma.bookingInfo.update({
+        await db1.bookingInfo.update({
             where: { bookingID: Number(bookingID) },
             data: {
                 clearStatus,

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/next-auth";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
+
+const db1 = new PrismaClientDB1();
 import { writeFile } from "fs/promises";
 import path from "path";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     await writeFile(filePath, buffer);
 
-    await prisma.signature.upsert({
+    await db1.signature.upsert({
         where: { userEmail: session.user.email },
         update: { fileName },
         create: {

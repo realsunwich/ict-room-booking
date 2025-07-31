@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 export async function GET() {
     try {
-        const assessments = await prisma.assessment.findMany({
+        const assessments = await db1.assessment.findMany({
             orderBy: {
                 createdAt: "desc", // เรียงจากล่าสุดไปเก่าสุด
             },

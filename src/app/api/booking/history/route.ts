@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 export async function GET() {
     try {
-        const bookings = await prisma.bookingInfo.findMany({
+        const bookings = await db1.bookingInfo.findMany({
             where: { RecordStatus: "N" },
             orderBy: { sendDate: "desc" },
         });
@@ -14,7 +14,7 @@ export async function GET() {
             .map((b) => b.senderEmail)
             .filter((e): e is string => typeof e === "string" && e.trim() !== "");
 
-        const signatures = await prisma.signature.findMany({
+        const signatures = await db1.signature.findMany({
             where: {
                 userEmail: { in: emails },
             },

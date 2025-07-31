@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 export async function PUT(request: NextRequest) {
     try {
@@ -24,7 +24,7 @@ export async function PUT(request: NextRequest) {
             updatedAt
         } = body;
 
-        const updated = await prisma.bookingInfo.update({
+        const updated = await db1.bookingInfo.update({
             where: { bookingID },
             data: {
                 sender,

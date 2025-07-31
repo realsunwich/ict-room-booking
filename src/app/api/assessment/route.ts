@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
-const prisma = new PrismaClient();
+const db1 = new PrismaClientDB1();
 
 interface UserInfo {
     meetingRoom?: string;
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         }
 
         // สร้างเรคอร์ดใหม่
-        const assessment = await prisma.assessment.create({
+        const assessment = await db1.assessment.create({
             data: {
                 meetingRoom,
                 gender,
