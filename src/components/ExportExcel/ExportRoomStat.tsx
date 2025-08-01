@@ -13,6 +13,8 @@ interface YearlyCount {
 interface RoomStat {
     RoomName: string;
     totalUsage: number;
+    totalWorkHours: number;
+    totalWorkHoursText?: string;
     usageByMonth?: MonthlyCount[];
     usageByYear?: YearlyCount[];
     statusCounts?: Record<string, number>;
@@ -58,7 +60,7 @@ export default function ExportRoomStat({ data, }: ExportProps) {
         };
 
         const headers = [
-            "ห้อง", "จำนวนใช้งานรวม", "เดือน", "จำนวน (เดือน)", "ปี", "จำนวน (ปี)", "สถานะ", "จำนวน (สถานะ)"
+            "ห้อง", "จำนวนใช้งานรวม", "จำนวนชั่วโมงการใช้งาน", "เดือน", "จำนวน (เดือน)", "ปี", "จำนวน (ปี)", "สถานะ", "จำนวน (สถานะ)"
         ];
 
         sheet.columns = headers.map((header, idx) => ({
@@ -100,14 +102,15 @@ export default function ExportRoomStat({ data, }: ExportProps) {
 
                 row.getCell(1).value = i === 0 ? stat.RoomName : "";
                 row.getCell(2).value = i === 0 ? stat.totalUsage : "";
-                row.getCell(3).value = stat.usageByMonth?.[i]?.month ? formatThaiMonth(stat.usageByMonth[i].month) : "";
-                row.getCell(4).value = stat.usageByMonth?.[i]?.count || "";
-                row.getCell(5).value = stat.usageByYear?.[i]?.year ? formatThaiYear(stat.usageByYear[i].year) : "";
-                row.getCell(6).value = stat.usageByYear?.[i]?.count || "";
+                row.getCell(3).value = i === 0 ? stat.totalWorkHoursText : "";
+                row.getCell(4).value = stat.usageByMonth?.[i]?.month ? formatThaiMonth(stat.usageByMonth[i].month) : "";
+                row.getCell(5).value = stat.usageByMonth?.[i]?.count || "";
+                row.getCell(6).value = stat.usageByYear?.[i]?.year ? formatThaiYear(stat.usageByYear[i].year) : "";
+                row.getCell(7).value = stat.usageByYear?.[i]?.count || "";
 
                 const statusEntries = Object.entries(stat.statusCounts || {});
-                row.getCell(7).value = statusEntries[i]?.[0] || "";
-                row.getCell(8).value = statusEntries[i]?.[1] || "";
+                row.getCell(8).value = statusEntries[i]?.[0] || "";
+                row.getCell(9).value = statusEntries[i]?.[1] || "";
 
                 row.eachCell((cell, colNumber) => {
                     cell.font = { name: FONT_NAME, size: FONT_SIZE };
@@ -125,6 +128,7 @@ export default function ExportRoomStat({ data, }: ExportProps) {
                     };
                 });
             }
+
 
             currentRow++;
         });

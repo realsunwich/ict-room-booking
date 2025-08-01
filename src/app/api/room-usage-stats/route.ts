@@ -80,9 +80,12 @@ export async function GET() {
 
             stats.totalUsage += 1;
 
-            // คำนวณชั่วโมงในเวลาราชการ
-            if (b.startDate && b.endDate) {
-                stats.totalWorkHours += getWorkingHours(new Date(b.startDate), new Date(b.endDate));
+            if (status === "เสร็จสิ้น") {
+                stats.totalUsage += 1;
+
+                if (b.startDate && b.endDate) {
+                    stats.totalWorkHours += getWorkingHours(new Date(b.startDate), new Date(b.endDate));
+                }
             }
 
             // สถานะ
@@ -105,14 +108,20 @@ export async function GET() {
             }
         });
 
-        const stats = Object.entries(roomStatsMap).map(([RoomName, data]) => ({
-            RoomName,
-            totalUsage: data.totalUsage,
-            totalWorkHours: parseFloat(data.totalWorkHours.toFixed(2)),
-            statusCounts: data.statusCounts,
-            usageByMonth: Object.entries(data.usageByMonth).map(([month, count]) => ({ month, count })),
-            usageByYear: Object.entries(data.usageByYear).map(([year, count]) => ({ year, count })),
-        }));
+        const stats = Object.entries(roomStatsMap).map(([RoomName, data]) => {
+            const totalHours = Math.floor(data.totalWorkHours);
+            const totalMinutes = Math.round((data.totalWorkHours - totalHours) * 60);
+
+            return {
+                RoomName,
+                totalUsage: data.totalUsage,
+                totalWorkHoursText: `${totalHours} ชั่วโมง${totalMinutes > 0 ? ` ${totalMinutes} นาที` : ""}`,
+                totalWorkHoursRaw: parseFloat(data.totalWorkHours.toFixed(2)), // เผื่อใช้แบบตัวเลขจริง
+                statusCounts: data.statusCounts,
+                usageByMonth: Object.entries(data.usageByMonth).map(([month, count]) => ({ month, count })),
+                usageByYear: Object.entries(data.usageByYear).map(([year, count]) => ({ year, count })),
+            };
+        });
 
         return NextResponse.json({
             stats,

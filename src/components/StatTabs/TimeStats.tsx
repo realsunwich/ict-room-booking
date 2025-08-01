@@ -12,7 +12,6 @@ interface YearlyCount {
 
 interface RoomWorkHours {
     RoomName: string;
-    totalWorkHours: number;
 }
 
 interface Props {
@@ -65,11 +64,6 @@ function ChartSection({
             </Typography>
             <Box display="flex" flexDirection={{ xs: "column", md: "row" }} >
                 <Box flex={1}>
-                    {totalWorkHours !== undefined && (
-                        <Typography variant="body2" mb={1} fontWeight="bold">
-                            ชั่วโมงการใช้งานรวม {totalWorkHours.toFixed(2)} ชั่วโมง
-                        </Typography>
-                    )}
                     {rawData.map(({ label, value }) => (
                         <Typography key={label} variant="body2" mb={0.5}>
                             {formatLabel(label)} จำนวน {value} ครั้ง

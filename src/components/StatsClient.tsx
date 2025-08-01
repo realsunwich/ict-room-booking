@@ -24,6 +24,8 @@ interface YearlyCount {
 interface RoomStat {
     RoomName: string;
     totalUsage: number;
+    totalWorkHours: number;
+    totalWorkHoursText?: string;
     usageByMonth?: MonthlyCount[];
     usageByYear?: YearlyCount[];
     statusCounts?: Record<string, number>;
@@ -154,7 +156,7 @@ export default function StatsPage() {
                                     fontSize={{ xs: "1rem", sm: "1.25rem" }}
                                     sx={{ flexGrow: 1, textAlign: { xs: "center", sm: "left" } }}
                                 >
-                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง
+                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง และมีชั่วโมงการใช้งานรวม {stat.totalWorkHoursText}
                                 </Typography>
 
                                 <Box>
