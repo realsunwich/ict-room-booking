@@ -36,6 +36,10 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
         return phone;
     };
 
+    const isValidPhone = (phone: string | null | undefined) => {
+        return phone && !["-", " ", "", "ไม่มี", "n/a", "null", "undefined"].includes(phone.trim().toLowerCase());
+    };
+
     const cm = (value: number) => value * 28.35;
 
     const styles = StyleSheet.create({
@@ -63,9 +67,11 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
         },
         text: {
             fontSize: 10,
-            marginBottom: 8,
+            marginBottom: 1,
             lineHeight: 1.5,
+            textAlign: 'justify',
             wordBreak: 'break-word',
+            lineBreak: 'anywhere',
         },
         noteBox1: {
             position: 'absolute',
@@ -114,32 +120,29 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
                 </View>
 
                 <View style={styles.section}>
-
                     <View>
-                        <Text
-                            style={[
-                                styles.text,
-                                {
-                                    textAlign: 'justify',
-                                    textIndent: cm(1),
-                                },
-                            ]}
-                        >
-                            {`ด้วยข้าพเจ้า ${booking.sender} ตำแหน่ง ${booking.jobName} หมายเลขโทรศัพท์ติดต่อ ${formatPhoneNumber(
-                                booking.phoneOut
-                            )} หมายเลขโทรศัพท์ภายใน ${booking.phoneIn ? formatPhoneNumber(booking.phoneIn) : 'ไม่มีหมายเลขภายใน'
-                                } สังกัดหน่วยงาน ${booking.officeLocation} มีความประสงค์จะขอใช้ห้องและโสตทัศนูปกรณ์เพื่อ ${booking.purpose
-                                } ณ ${booking.RoomName} ในวันที่ ${booking.startDate.toLocaleDateString('th-TH', {
-                                    dateStyle: 'long',
-                                })} เวลา ${booking.startDate.toLocaleTimeString('th-TH', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })} น. ถึงวันที่ ${booking.endDate.toLocaleDateString('th-TH', {
-                                    dateStyle: 'long',
-                                })} เวลา ${booking.endDate.toLocaleTimeString('th-TH', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                })} น. รวมจำนวนผู้เข้าร่วมทั้งสิ้น ${booking.capacity} คน    `}
+                        <Text style={[styles.text, { textIndent: cm(1) }]}>
+                            {`ด้วยข้าพเจ้า ${booking.sender} ตำแหน่ง ${booking.jobName} หมายเลขโทรศัพท์ติดต่อ ${isValidPhone(booking.phoneOut) ? formatPhoneNumber(booking.phoneOut) : "ไม่มีหมายเลข"} `}
+                        </Text>
+
+                        {/* บรรทัด 2: phoneIn + officeLocation */}
+                        <Text style={styles.text}>
+                            {`หมายเลขโทรศัพท์ภายใน ${booking.phoneIn && isValidPhone(booking.phoneIn) ? formatPhoneNumber(booking.phoneIn) : "ไม่มีหมายเลขภายใน"} สังกัดหน่วยงาน ${booking.officeLocation} `}
+                        </Text>
+
+                        {/* บรรทัด 3: purpose + RoomName + วันที่/เวลา */}
+                        <Text style={styles.text}>
+                            {`มีความประสงค์จะขอใช้ห้องและโสตทัศนูปกรณ์เพื่อ ${booking.purpose} ณ ${booking.RoomName} ในวันที่ ${booking.startDate.toLocaleDateString("th-TH", {
+                                dateStyle: "long",
+                            })} เวลา ${booking.startDate.toLocaleTimeString("th-TH", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })} น. ถึงวันที่ ${booking.endDate.toLocaleDateString("th-TH", {
+                                dateStyle: "long",
+                            })} เวลา ${booking.endDate.toLocaleTimeString("th-TH", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })} น. รวมจำนวนผู้เข้าร่วมทั้งสิ้น ${booking.capacity} คน  `}
                         </Text>
                     </View>
 
@@ -221,6 +224,6 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
                     <Text style={[styles.text]}>วันที่.................../.................../...................</Text>
                 </View>
             </Page>
-        </Document>
+        </Document >
     );
 };
