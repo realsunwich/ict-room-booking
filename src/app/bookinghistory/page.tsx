@@ -101,24 +101,31 @@ export default function BookingHistory() {
         );
     });
 
-    useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const res = await fetch("/api/booking/history");
-                const data = await res.json();
-                setBookings(data);
-            } catch (err) {
-                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
-                setSnackbarMessage("โหลดข้อมูลล้มเหลว");
-                setSnackbarSeverity("error");
-                setSnackbarOpen(true);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/booking/history");
+            const data = await res.json();
+            setBookings(data);
+        } catch (err) {
+            console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
+            setSnackbarMessage("โหลดข้อมูลล้มเหลว");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchBookings();
     }, []);
+
+    useEffect(() => {
+        if (!editDialogOpen) {
+            fetchBookings();
+        }
+    }, [editDialogOpen]);
 
     return (
         <Box
@@ -297,17 +304,7 @@ export default function BookingHistory() {
                                                         </span>
                                                     </Tooltip>
                                                 </TableCell>
-                                                {selectedBooking && (
-                                                    <EditBookingDialog
-                                                        open={editDialogOpen}
-                                                        onClose={() => setEditDialogOpen(false)}
-                                                        roomName={selectedBooking.RoomName}
-                                                        defaultData={{
-                                                            ...selectedBooking,
-                                                            capacity: selectedBooking.capacity.toString(),
-                                                        }}
-                                                    />
-                                                )}
+
                                                 <TableCell align="center" sx={{ width: 20 }}>
                                                     <Tooltip
                                                         title={
@@ -355,6 +352,17 @@ export default function BookingHistory() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        {selectedBooking && (
+                            <EditBookingDialog
+                                open={editDialogOpen}
+                                onClose={() => setEditDialogOpen(false)}
+                                roomName={selectedBooking.RoomName}
+                                defaultData={{
+                                    ...selectedBooking,
+                                    capacity: selectedBooking.capacity.toString(),
+                                }}
+                            />
+                        )}
                     </>
                 )}
             </Box>
