@@ -44,7 +44,7 @@ function TabPanel({ children, value, index }: { children: React.ReactNode; value
 export default function StatsPage() {
     const searchParams = useSearchParams();
     const room = searchParams.get("room");
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const router = useRouter();
 
     const [stats, setStats] = useState<RoomStat[]>([]);
@@ -83,113 +83,128 @@ export default function StatsPage() {
             : "สถิติการใช้งานห้องประชุม | ระบบจองห้องประชุม ICT";
     }, [room]);
 
-    return (
-        <Box
-            sx={{
-                marginTop:
-                    session?.user?.role === "1"
-                        ? { xs: 28, sm: 15 }
-                        : { xs: 23, sm: 15 },
-            }}
-        >
-            <Header />
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    minHeight: "auto",
-                    bgcolor: "white",
-                    px: { xs: 2, sm: 4 },
-                    pt: { xs: 2, sm: 4 },
-                    pb: 4,
-                    mt: 10,
-                    borderRadius: 7,
-                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                }}
-            >
-                <Typography
-                    variant="h5"
-                    align="center"
-                    fontWeight={600}
-                    mb={2}
-                    fontSize={{ xs: "1.25rem", sm: "1.5rem" }}
-                >
-                    {room ? `สถิติการใช้งาน${room}` : "สถิติการใช้งานห้องประชุม"}
-                </Typography>
-
-                {loading ? (
-                    <Box textAlign="center">
-                        <CircularProgress />
-                    </Box>
-                ) : stats.length === 0 ? (
-                    <Typography variant="body1" textAlign="center" mt={4}>
-                        ไม่มีข้อมูลสถิติการใช้งาน
-                    </Typography>
-                ) : (
-                    stats.map((stat, index) => (
-                        <Box key={index}>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: { xs: "column", sm: "row" },
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    gap: 2,
-                                    textAlign: { xs: "center", sm: "left" },
-                                    width: "100%",
-                                    mb: 2,
-                                }}
-                            >
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={() => router.push("/dashboard")}
-                                    startIcon={<ArrowBackIcon />}
-                                    sx={{ whiteSpace: "nowrap" }}
-                                >
-                                    กลับไปยังหน้าปฏิทิน
-                                </Button>
-
-                                <Typography
-                                    variant="h6"
-                                    fontWeight="bold"
-                                    fontSize={{ xs: "1rem", sm: "1.25rem" }}
-                                    sx={{ flexGrow: 1, textAlign: { xs: "center", sm: "left" } }}
-                                >
-                                    {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง และมีชั่วโมงการใช้งานรวม {stat.totalWorkHoursText}
-                                </Typography>
-
-                                <Box>
-                                    <ExportRoomStat
-                                        data={[stat]}
-                                        filename={`สถิติ${stat.RoomName}.xlsx`}
-                                    />
-                                </Box>
-                            </Box>
-
-                            <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)}
-                                sx={{
-                                    mb: 2,
-                                    "& .MuiTabs-flexContainer": {
-                                        justifyContent: { xs: "center", sm: "flex-start" },
-                                    },
-                                }}
-                            >
-                                <Tab label="การใช้งานตามช่วงเวลา" />
-                                <Tab label="สถานะและเหตุผล" />
-                            </Tabs>
-
-                            <TabPanel value={tabIndex} index={0}>
-                                <TimeStats usageByMonth={stat.usageByMonth} usageByYear={stat.usageByYear} />
-                            </TabPanel>
-
-                            <TabPanel value={tabIndex} index={1}>
-                                <StatusStats statusCounts={stat.statusCounts} canceledOrRejected={canceledOrRejected.filter(item => item.RoomName === stat.RoomName)} />
-                            </TabPanel>
-                        </Box>
-                    ))
-                )}
+    if (status === "loading") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <CircularProgress />
+                <Typography mt={2}>กำลังโหลดข้อมูลผู้ใช้...</Typography>
             </Box>
-        </Box>
-    );
+        );
+    }
+
+    if (session?.user?.role !== "99") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <Typography variant="h6" color="error">
+                    คุณไม่มีสิทธิ์เข้าถึงหน้านี้ (สำหรับผู้ดูแลระบบเท่านั้น)
+                </Typography>
+            </Box>
+        );
+    }
+
+    if (session?.user?.role == "99") {
+
+        return (
+            <Box sx={{ marginTop: { xs: 23, sm: 15 } }}>
+                <Header />
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        minHeight: "auto",
+                        bgcolor: "white",
+                        px: { xs: 2, sm: 4 },
+                        pt: { xs: 2, sm: 4 },
+                        pb: 4,
+                        mt: 10,
+                        borderRadius: 7,
+                        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+                    }}
+                >
+                    <Typography
+                        variant="h5"
+                        align="center"
+                        fontWeight={600}
+                        mb={2}
+                        fontSize={{ xs: "1.25rem", sm: "1.5rem" }}
+                    >
+                        {room ? `สถิติการใช้งาน${room}` : "สถิติการใช้งานห้องประชุม"}
+                    </Typography>
+
+                    {loading ? (
+                        <Box textAlign="center">
+                            <CircularProgress />
+                        </Box>
+                    ) : stats.length === 0 ? (
+                        <Typography variant="body1" textAlign="center" mt={4}>
+                            ไม่มีข้อมูลสถิติการใช้งาน
+                        </Typography>
+                    ) : (
+                        stats.map((stat, index) => (
+                            <Box key={index}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: { xs: "column", sm: "row" },
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        gap: 2,
+                                        textAlign: { xs: "center", sm: "left" },
+                                        width: "100%",
+                                        mb: 2,
+                                    }}
+                                >
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={() => router.push("/dashboard")}
+                                        startIcon={<ArrowBackIcon />}
+                                        sx={{ whiteSpace: "nowrap" }}
+                                    >
+                                        กลับไปยังหน้าปฏิทิน
+                                    </Button>
+
+                                    <Typography
+                                        variant="h6"
+                                        fontWeight="bold"
+                                        fontSize={{ xs: "1rem", sm: "1.25rem" }}
+                                        sx={{ flexGrow: 1, textAlign: { xs: "center", sm: "left" } }}
+                                    >
+                                        {stat.RoomName} ถูกใช้งาน {stat.totalUsage} ครั้ง และมีชั่วโมงการใช้งานรวม {stat.totalWorkHoursText}
+                                    </Typography>
+
+                                    <Box>
+                                        <ExportRoomStat
+                                            data={[stat]}
+                                            filename={`สถิติ${stat.RoomName}.xlsx`}
+                                        />
+                                    </Box>
+                                </Box>
+
+                                <Tabs value={tabIndex} onChange={(_, val) => setTabIndex(val)}
+                                    sx={{
+                                        mb: 2,
+                                        "& .MuiTabs-flexContainer": {
+                                            justifyContent: { xs: "center", sm: "flex-start" },
+                                        },
+                                    }}
+                                >
+                                    <Tab label="การใช้งานตามช่วงเวลา" />
+                                    <Tab label="สถานะและเหตุผล" />
+                                </Tabs>
+
+                                <TabPanel value={tabIndex} index={0}>
+                                    <TimeStats usageByMonth={stat.usageByMonth} usageByYear={stat.usageByYear} />
+                                </TabPanel>
+
+                                <TabPanel value={tabIndex} index={1}>
+                                    <StatusStats statusCounts={stat.statusCounts} canceledOrRejected={canceledOrRejected.filter(item => item.RoomName === stat.RoomName)} />
+                                </TabPanel>
+                            </Box>
+                        ))
+                    )}
+                </Box>
+            </Box>
+        )
+    };
 }

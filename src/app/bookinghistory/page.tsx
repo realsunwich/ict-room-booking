@@ -32,7 +32,7 @@ interface Booking {
 }
 
 export default function BookingHistory() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -126,6 +126,15 @@ export default function BookingHistory() {
             fetchBookings();
         }
     }, [editDialogOpen]);
+
+    if (status === "loading") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <CircularProgress />
+                <Typography mt={2}>กำลังโหลดข้อมูลผู้ใช้...</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box

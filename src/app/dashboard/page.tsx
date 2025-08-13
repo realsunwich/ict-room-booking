@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Box, Typography, Button, Tooltip, Snackbar, Alert, } from "@mui/material";
+import { Box, Typography, Button, Tooltip, Snackbar, Alert, CircularProgress, } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -71,7 +71,7 @@ const rooms: Room[] = [
 ];
 
 export default function Dashboard() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [showContact, setShowContact] = useState(true);
     const [openBooking, setOpenBooking] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<string>("");
@@ -250,6 +250,15 @@ export default function Dashboard() {
             </Box>
         )
     };
+
+    if (status === "loading") {
+        return (
+            <Box textAlign="center" mt={10}>
+                <CircularProgress />
+                <Typography mt={2}>กำลังโหลดข้อมูลผู้ใช้...</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box
