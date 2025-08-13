@@ -71,9 +71,9 @@ const Header = () => {
             const data = await res.json();
 
             if (res.ok) {
-                showSnackbar("อัปโหลดลายเซ็นสำเร็จ: " + data.message, "success");
+                showSnackbar("อัปโหลดลายเซ็นสำเร็จ : " + data.message, "success");
             } else {
-                showSnackbar("เกิดข้อผิดพลาดในการอัปโหลด: " + data.message, "error");
+                showSnackbar("เกิดข้อผิดพลาดในการอัปโหลด : " + data.message, "error");
             }
         } catch (error) {
             console.error("Fetch error:", error);
@@ -82,8 +82,6 @@ const Header = () => {
     };
 
     const role = String(session?.user?.role ?? "");
-
-    console.log("Role : ",role)
 
     return (
         <>
@@ -457,12 +455,11 @@ const Header = () => {
                 <AssessmentModal open={openModal} onClose={() => setOpenModal(false)} roomId={""} />
             </AppBar>
 
-            {/* Snackbar */}
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={4000}
                 onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
             >
                 <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
                     {snackbarMessage}

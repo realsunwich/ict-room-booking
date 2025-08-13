@@ -21,10 +21,16 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "ไม่พบไฟล์" }, { status: 400 });
     }
 
+    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+
+    if (!allowedExtensions.includes(ext)) {
+        return NextResponse.json({ message: "อนุญาตเฉพาะไฟล์ .jpg หรือ .png เท่านั้น" }, { status: 400 });
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const safeEmail = session.user.email.replace(/[^a-zA-Z0-9]/g, "_");
-    const ext = file.name.split(".").pop();
     const fileName = `signature_${safeEmail}.${ext}`;
 
     const filePath = path.join(process.cwd(), "public/uploads/signatures", fileName);
