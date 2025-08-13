@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
 import { registerTHNiramitFont } from '@/utils/registerFonts';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import path from 'path';
+
+const brandImagePath = '/images/brand.png';
+const approvalSignaturePath = path.join(process.cwd(), 'uploads/signatures/signature_64021193_up_ac_th.png');
 
 interface BookingInfo {
     RoomName: string;
@@ -22,9 +25,8 @@ interface BookingInfo {
 
 export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = false, approvalDate
 }: { booking: BookingInfo, signatureUrl?: string; includeApprovalSignature?: boolean; approvalDate?: string; }) => {
-    useEffect(() => {
-        registerTHNiramitFont();
-    }, []);
+
+    registerTHNiramitFont();
 
     const formatPhoneNumber = (phone: string) => {
         const digits = phone.replace(/\D/g, "");
@@ -107,7 +109,7 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
 
                 {/* eslint-disable-next-line jsx-a11y/alt-text */}
                 <Image
-                    src="http://localhost:3000/images/brand.png"
+                    src={brandImagePath}
                     style={{ width: 80, height: 90, alignSelf: 'center', marginBottom: cm(1) }}
                 />
 
@@ -181,7 +183,7 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
                                         ผู้ขอใช้บริการ
                                     </Text>
                                     <Image
-                                        src="/uploads/signatures/signature_64021193_up_ac_th.png"
+                                        src={approvalSignaturePath}
                                         style={{
                                             width: cm(4),
                                             height: cm(2),

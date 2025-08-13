@@ -1,24 +1,18 @@
 import { Font } from '@react-pdf/renderer';
+import path from 'path';
 
-const registerFontClientSide = () => {
-    console.log("Registering font...");
+export const registerTHNiramitFont = () => {
     Font.register({
         family: 'Th Niramit',
         fonts: [
             {
-                src: 'http://localhost:3000/fonts/Niramit-Bold.ttf',
+                src: path.join(process.cwd(), 'fonts', 'Niramit-Bold.ttf'),
                 fontWeight: 'bold',
             },
             {
-                src: 'http://localhost:3000/fonts/Niramit-Regular.ttf',
+                src: path.join(process.cwd(), 'fonts', 'Niramit-Regular.ttf'),
                 fontWeight: 'normal',
             },
         ],
     });
-};
-
-export const registerTHNiramitFont = () => {
-    if (typeof window !== 'undefined') {
-        registerFontClientSide();
-    }
 };
