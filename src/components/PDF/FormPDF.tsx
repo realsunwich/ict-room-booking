@@ -3,7 +3,8 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import path from 'path';
 
 const brandImagePath = '/images/brand.png';
-const approvalSignaturePath = path.join(process.cwd(), 'uploads/signatures/signature_64021193_up_ac_th.png');
+const approvalSignaturePath = path.join(process.cwd(), 'uploads/signatures/signature_panuwat_lo_up_ac_th.png');
+
 
 interface BookingInfo {
     RoomName: string;
@@ -21,10 +22,14 @@ interface BookingInfo {
     cfPhone: string;
     SendStatus: string;
     approvedNumber: string;
+
+    signatureFileName?: string | null;
 }
 
-export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = false, approvalDate
-}: { booking: BookingInfo, signatureUrl?: string; includeApprovalSignature?: boolean; approvalDate?: string; }) => {
+export const FormPDF = ({ booking, includeApprovalSignature = false, approvalDate
+}: { booking: BookingInfo, includeApprovalSignature?: boolean; approvalDate?: string; }) => {
+
+    const signatureUrl = path.join(process.cwd(), `/uploads/signatures/${booking.signatureFileName}`);
 
     registerTHNiramitFont();
 
@@ -211,10 +216,10 @@ export const FormPDF = ({ booking, signatureUrl, includeApprovalSignature = fals
                     </View>
                 </View>
                 <View style={[styles.boxApproval, { alignItems: 'center', }]}>
-                    <Text style={[styles.text]}>
+                    <Text style={[styles.text, { marginBottom: cm(0.5) }]}>
                         เสนอ      [  ] อนุมัติ            [  ] ไม่อนุมัติ
                     </Text>
-                    <Text style={[styles.text]}>
+                    <Text style={[styles.text]} >
                         ลงชื่อ..........................................................
                     </Text>
                     <Text style={[styles.text]}>
