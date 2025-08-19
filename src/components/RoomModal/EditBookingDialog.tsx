@@ -6,26 +6,34 @@ import { DatePicker, TimePicker, LocalizationProvider } from "@mui/x-date-picker
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { th as thLocale } from "date-fns/locale";
 
-interface BookingFormData {
-    sender: string;
-    jobName: string;
-    phoneIn: string;
-    phoneOut: string;
-    officeLocation: string;
-    purpose: string;
-    RoomName: string;
+interface Booking {
+    bookingID: string;
     startDate: string;
     endDate: string;
-    capacity: string;
-    cfSender: string;
-    cfPhone: string;
+    RoomName: string;
+    purpose: string;
+    capacity: number;
+    SendStatus: string;
+    approvedNumber: string;
+
+    sendDate?: string;
+    sender?: string;
+    senderEmail?: string;
+    jobName?: string;
+    phoneIn?: string;
+    phoneOut?: string;
+    officeLocation?: string;
+    cfSender?: string;
+    cfPhone?: string;
+
+    signatureFileName?: string | null;
 }
 
 interface EditBookingDialogProps {
     open: boolean;
     onClose: () => void;
     roomName: string;
-    defaultData: BookingFormData;
+    defaultData: Booking;
 }
 
 function combineDateTime(date: Date, time: Date) {
@@ -69,7 +77,20 @@ export default function EditBookingDialog({
 
     useEffect(() => {
         if (defaultData && open) {
-            setFormData(defaultData);
+            setFormData({
+                sender: defaultData.sender ?? "",
+                jobName: defaultData.jobName ?? "",
+                phoneIn: defaultData.phoneIn ?? "",
+                phoneOut: defaultData.phoneOut ?? "",
+                officeLocation: defaultData.officeLocation ?? "",
+                purpose: defaultData.purpose ?? "",
+                RoomName: defaultData.RoomName,
+                startDate: defaultData.startDate,
+                endDate: defaultData.endDate,
+                capacity: defaultData.capacity.toString(),
+                cfSender: defaultData.cfSender ?? "",
+                cfPhone: defaultData.cfPhone ?? "",
+            });
             setStartDay(new Date(defaultData.startDate));
             setStartTime(new Date(defaultData.startDate));
             setEndDay(new Date(defaultData.endDate));

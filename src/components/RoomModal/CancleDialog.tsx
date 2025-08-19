@@ -4,19 +4,26 @@ import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, } from "@mui/material";
 
 interface Booking {
+    bookingID: string;
     startDate: string;
     endDate: string;
-    bookingID: string;
     RoomName: string;
-    sender: string;
-    phoneIn: string;
-    phoneOut: string;
-    jobName: string;
-    officeLocation: string;
     purpose: string;
     capacity: number;
-    cfSender: string;
-    cfPhone: string;
+    SendStatus: string;
+    approvedNumber: string;
+
+    sendDate?: string;
+    sender?: string;
+    senderEmail?: string;
+    jobName?: string;
+    phoneIn?: string;
+    phoneOut?: string;
+    officeLocation?: string;
+    cfSender?: string;
+    cfPhone?: string;
+
+    signatureFileName?: string | null;
 }
 
 interface CancelDialogProps {

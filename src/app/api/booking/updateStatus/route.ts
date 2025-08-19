@@ -6,7 +6,10 @@ const db1 = new PrismaClientDB1();
 interface UpdateBookingPayload {
     bookingId: number;
     status: string;
+    SendStatus: string;
+    updatedAt: Date;
     RejectReason?: string;
+    RecordStatus?: string;
 }
 
 function toThaiNumber(input: number | string): string {
@@ -33,7 +36,8 @@ export async function POST(req: Request) {
         const updateData = {
             SendStatus: status,
             updatedAt: new Date(),
-            RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : null,
+            RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : undefined,
+            ...(status === "เสร็จสิ้น" ? { RecordStatus: "F" } : {}),
         };
 
         const updated = await db1.bookingInfo.update({
@@ -41,7 +45,7 @@ export async function POST(req: Request) {
             data: updateData,
         });
 
-        // ✅ Only handle approvedNumber for approved or completed
+
         if (["อนุมัติ", "เสร็จสิ้น"].includes(status)) {
             const current = await db1.bookingInfo.findUnique({
                 where: { bookingID: Number(bookingId) },

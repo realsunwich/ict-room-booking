@@ -181,6 +181,7 @@ export default function Dashboard() {
                             textAlign: "left",
                             fontSize: { xs: "0.9rem", sm: "0.95rem" },
                             color: "text.secondary",
+                            mb : 2
                         }}
                     >
                         {room.description}
@@ -188,14 +189,14 @@ export default function Dashboard() {
                     <Box sx={{ gap: 1 }}>
                         {session?.user?.role === "1" && (
                             <>
-                                <Button variant="outlined" fullWidth sx={{ mb: 1 }} onClick={() => handleOpenRoomDetail(room)}>
+                                <Button variant="outlined" fullWidth sx={{ mb: 2 }} onClick={() => handleOpenRoomDetail(room)}>
                                     รายละเอียดห้องประชุม
                                 </Button>
                                 <Button
                                     variant="contained"
                                     fullWidth
                                     color="primary"
-                                    sx={{ mb: 1 }}
+                                    sx={{ mb: 2 }}
                                     onClick={() => handleOpenBooking(room.name)}
                                     disabled={!hasSignature}
                                 >
@@ -206,7 +207,7 @@ export default function Dashboard() {
                                     <Typography
                                         variant="body2"
                                         color="error"
-                                        sx={{ fontSize: 13, textAlign: "center", mt: -1.5, mb: 1 }}
+                                        sx={{ fontSize: 13, textAlign: "center", mt: -1.5, mb: 2 }}
                                     >
                                         กรุณาอัปโหลดลายเซ็นก่อนทำการจอง
                                     </Typography>
@@ -217,7 +218,7 @@ export default function Dashboard() {
                             variant="outlined"
                             fullWidth
                             color="primary"
-                            sx={{ mb: 1 }}
+                            sx={{ mb: 2 }}
                             onClick={() => {
                                 const calendarMap: Record<string, string> = {
                                     "ห้องประชุมคณะ ICT": "c_115762728572ef369a1f034a14e03dfba66e66e3fae391c5f375c36095a64b7d@group.calendar.google.com",
@@ -235,15 +236,30 @@ export default function Dashboard() {
                         </Button>
 
                         {session?.user?.role === "99" && (
-                            <Button
-                                variant="contained"
-                                fullWidth
-                                sx={{ mb: 1 }}
-                                color="primary"
-                                onClick={() => router.push(`/BookingStat?room=${encodeURIComponent(room.name)}`)}
-                            >
-                                ดูสถิติการใช้งานห้อง
-                            </Button>
+                            <>
+                                <Button variant="outlined" fullWidth sx={{ mb: 2 }} onClick={() => handleOpenRoomDetail(room)}>
+                                    รายละเอียดห้องประชุม
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    color="primary"
+                                    sx={{ mb: 2 }}
+                                    onClick={() => handleOpenBooking(room.name)}
+                                    disabled={!hasSignature}
+                                >
+                                    จองห้องประชุม
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    sx={{ mb: 2 }}
+                                    color="primary"
+                                    onClick={() => router.push(`/BookingStat?room=${encodeURIComponent(room.name)}`)}
+                                >
+                                    ดูสถิติการใช้งานห้อง
+                                </Button>
+                            </>
                         )}
                     </Box>
                 </Box>
@@ -295,7 +311,7 @@ export default function Dashboard() {
                         mb: 4,
                     }}
                 >
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 600 }}>
                         {session?.user?.role === "1"
                             ? "ห้องประชุม"
                             : "ปฏิทินห้องประชุม"}
@@ -351,7 +367,7 @@ export default function Dashboard() {
                         }}
                     >
                         <Typography variant="body2" gutterBottom>
-                            ผู้รับผิดชอบ : นายอนุวัฒน์ โลมากุล
+                            ผู้รับผิดชอบ : นายภานุวัฒน์ โลมากุล
                         </Typography>
                         <Typography variant="body2" gutterBottom>
                             ตำแหน่ง : นักวิชาการโสตทัศนศึกษา

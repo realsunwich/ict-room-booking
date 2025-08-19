@@ -3,7 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import path from 'path';
 
 const brandImagePath = '/images/brand.png';
-const approvalSignaturePath = path.join(process.cwd(), 'uploads/signatures/signature_panuwat_lo_up_ac_th.png');
+const approvalSignaturePath = path.join(process.cwd(), 'uploads/signatures/signature_panuwat_lo_up_ac_th.jpg');
 
 
 interface BookingInfo {

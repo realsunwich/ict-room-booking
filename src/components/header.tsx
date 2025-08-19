@@ -123,13 +123,13 @@ const Header = () => {
                         }}
                     >
                         <Typography
-                            variant="h5"
+                            variant="h4"
                             align="center"
                             noWrap
                             sx={{ fontWeight: 900, cursor: "pointer" }}
                             onClick={() => router.push("/dashboard")}
                         >
-                            ระบบขอจองใช้บริการห้องประชุมคณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                            ระบบขอจองใช้บริการห้องประชุม
                         </Typography>
 
                         {role === "1" && (
@@ -170,7 +170,7 @@ const Header = () => {
                                     onClick={() => router.push("/WebProgress")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    การขอใช้บริการ
+                                    ขั้นตอนการขอใช้
                                 </Button>
                                 <input
                                     id="upload-signature"
@@ -236,7 +236,7 @@ const Header = () => {
                                     onClick={() => router.push("/WebProgress")}
                                     sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                                 >
-                                    การขอใช้บริการ
+                                    ขั้นตอนการขอใช้
                                 </Button>
                                 <input
                                     id="upload-signature"
@@ -245,15 +245,6 @@ const Header = () => {
                                     style={{ display: "none" }}
                                     onChange={handleFileChange}
                                 />
-                                <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
-                                    <Button
-                                        startIcon={<BadgeIcon />}
-                                        component="span"
-                                        sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                                    >
-                                        อัปโหลดลายเซ็น
-                                    </Button>
-                                </label>
                             </Box>
                         )}
                     </Box>
@@ -269,22 +260,6 @@ const Header = () => {
                             ml: { xs: 0, sm: 2 },
                         }}
                     >
-                        <Button
-                            color="primary"
-                            onClick={handleLogout}
-                            sx={{
-                                fontSize: { xs: "0.95rem", sm: "1rem" },
-                                fontWeight: 600,
-                                textTransform: "none",
-                                minWidth: { xs: 0, sm: "auto" },
-                                px: { xs: 1, sm: 2 },
-                            }}
-                            startIcon={<LogoutIcon />}
-                        >
-                            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
-                                ออกจากระบบ
-                            </Box>
-                        </Button>
                         {session?.user?.name && (
                             <Typography
                                 variant="subtitle1"
@@ -299,6 +274,22 @@ const Header = () => {
                                 สวัสดี ! {session.user.name}
                             </Typography>
                         )}
+                        <Button
+                            color="error"
+                            onClick={handleLogout}
+                            sx={{
+                                fontSize: { xs: "0.95rem", sm: "1rem" },
+                                fontWeight: 600,
+                                textTransform: "none",
+                                minWidth: { xs: 0, sm: "auto" },
+                                px: { xs: 1, sm: 2 },
+                            }}
+                            startIcon={<LogoutIcon />}
+                        >
+                            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                                ออกจากระบบ
+                            </Box>
+                        </Button>
                     </Box>
                 </Toolbar>
 
@@ -352,7 +343,7 @@ const Header = () => {
                                 onClick={() => router.push("/WebProgress")}
                                 sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                             >
-                                การขอใช้บริการ
+                                ขั้นตอนการขอใช้
                             </Button>
 
                             <input
@@ -429,7 +420,7 @@ const Header = () => {
                                 onClick={() => router.push("/WebProgress")}
                                 sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
                             >
-                                การขอใช้บริการ
+                                ขั้นตอนการขอใช้
                             </Button>
 
                             <input
@@ -439,15 +430,6 @@ const Header = () => {
                                 style={{ display: "none" }}
                                 onChange={handleFileChange}
                             />
-                            <label htmlFor="upload-signature" style={{ cursor: "pointer" }}>
-                                <Button
-                                    startIcon={<BadgeIcon />}
-                                    component="span"
-                                    sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
-                                >
-                                    อัปโหลดลายเซ็น
-                                </Button>
-                            </label>
                         </Box>
                     </Box>
                 )}

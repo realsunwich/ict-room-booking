@@ -11,24 +11,29 @@ import EditBookingDialog from "@/components/RoomModal/EditBookingDialog";
 import CancelDialog from "@/components/RoomModal/CancleDialog";
 import BookingFilter from "@/components/BookingFilter";
 import ExportBookingExcelButton from "@/components/ExportExcel/ExportBookingExcelButton";
+import FormPDFButton from "@/components/PDFbutton";
 
 interface Booking {
     bookingID: string;
-    sender: string;
-    senderEmail: string;
-    phoneIn: string;
-    phoneOut: string;
     startDate: string;
     endDate: string;
     RoomName: string;
     purpose: string;
     capacity: number;
     SendStatus: string;
-    jobName: string;
-    officeLocation: string;
-    cfSender: string;
-    cfPhone: string;
-    updatedAt: string;
+    approvedNumber: string;
+
+    sendDate?: string;
+    sender?: string;
+    senderEmail?: string;
+    jobName?: string;
+    phoneIn?: string;
+    phoneOut?: string;
+    officeLocation?: string;
+    cfSender?: string;
+    cfPhone?: string;
+
+    signatureFileName?: string | null;
 }
 
 export default function BookingHistory() {
@@ -43,6 +48,7 @@ export default function BookingHistory() {
     const [filterStatus, setFilterStatus] = useState("");
     const [filterStartDate, setFilterStartDate] = useState("");
     const [filterEndDate, setFilterEndDate] = useState("");
+    const [userSignatureFileName, setUserSignatureFileName] = useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
@@ -68,6 +74,29 @@ export default function BookingHistory() {
         setFilterStartDate(formatDate(fifteenDaysAgo));
         setFilterEndDate(formatDate(fifteenDaysLater));
     }, []);
+
+    useEffect(() => {
+        if (!session?.user?.email) return;
+
+        const fetchSignature = async () => {
+            try {
+                const emailEncoded = encodeURIComponent(session.user.email);
+                const res = await fetch(`/api/signature?email=${emailEncoded}`);
+                if (!res.ok) {
+                    console.error("Failed to fetch signature:", await res.text());
+                    return;
+                }
+                const data = await res.json();
+                if (data.fileName) {
+                    setUserSignatureFileName(data.fileName);
+                }
+            } catch (err) {
+                console.error("Error fetching signature:", err);
+            }
+        };
+
+        fetchSignature();
+    }, [session]);
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -170,7 +199,7 @@ export default function BookingHistory() {
                         mb: 1,
                     }}
                 >
-                    <Typography variant="h5" fontWeight={600}>
+                    <Typography variant="h4" fontWeight={600}>
                         ประวัติการจองห้องประชุม
                     </Typography>
                     <Typography variant="subtitle1" sx={{ mt: 1 }}>
@@ -254,6 +283,7 @@ export default function BookingHistory() {
                                         <TableCell align="center">สถานะ</TableCell>
                                         <TableCell align="center">แก้ไข</TableCell>
                                         <TableCell align="center">ยกเลิก</TableCell>
+                                        <TableCell align="center">ดู</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -337,6 +367,38 @@ export default function BookingHistory() {
                                                         </span>
                                                     </Tooltip>
                                                 </TableCell>
+                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                    <FormPDFButton
+                                                        booking={{
+                                                            ...booking,
+                                                            startDate: new Date(booking.startDate),
+                                                            endDate: new Date(booking.endDate),
+                                                            sendDate: new Date(booking.sendDate ?? booking.startDate),
+                                                            sender: booking.sender ?? "",
+                                                            jobName: booking.jobName ?? "",
+                                                            phoneIn: booking.phoneIn ?? "",
+                                                            phoneOut: booking.phoneOut ?? "",
+                                                            officeLocation: booking.officeLocation ?? "",
+                                                            cfSender: booking.cfSender ?? "",
+                                                            cfPhone: booking.cfPhone ?? "",
+                                                            capacity: String(booking.capacity),
+                                                            approvedNumber: booking.approvedNumber !== undefined ? String(booking.approvedNumber) : ""
+                                                        }}
+                                                        signatureUrl={
+                                                            booking.signatureFileName
+                                                                ? `/uploads/signatures/${booking.signatureFileName}`
+                                                                : userSignatureFileName
+                                                                    ? `/uploads/signatures/${userSignatureFileName}`
+                                                                    : undefined
+                                                        }
+                                                        includeApprovalSignature={["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())}
+                                                        approvalDate={
+                                                            ["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())
+                                                                ? new Date().toLocaleDateString("th-TH", { day: "2-digit", month: "long", year: "numeric" })
+                                                                : undefined
+                                                        }
+                                                    />
+                                                </TableCell>
                                                 {cancelTarget && (
                                                     <CancelDialog
                                                         open={cancelDialogOpen}
@@ -368,7 +430,7 @@ export default function BookingHistory() {
                                 roomName={selectedBooking.RoomName}
                                 defaultData={{
                                     ...selectedBooking,
-                                    capacity: selectedBooking.capacity.toString(),
+                                    capacity: selectedBooking.capacity,
                                 }}
                             />
                         )}

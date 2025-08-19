@@ -197,10 +197,10 @@ export default function BookingRequest() {
                             mb: 1,
                         }}
                     >
-                        <Typography variant="h5" fontWeight={600}>
+                        <Typography variant="h4" fontWeight={600}>
                             คำขอใช้บริการห้องประชุม
                         </Typography>
-                        <Typography variant="subtitle1" sx={{ mt: 1 }}>
+                        <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
                             คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
                         </Typography>
                     </Box>

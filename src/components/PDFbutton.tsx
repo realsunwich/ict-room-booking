@@ -28,13 +28,12 @@ interface FormPDFButtonProps {
     approvalDate?: string;
 }
 
-function FormPDFButton({ booking, signatureUrl, includeApprovalSignature, approvalDate, }: FormPDFButtonProps) {
+function FormPDFButton({ booking, includeApprovalSignature, approvalDate, }: FormPDFButtonProps) {
     const handleClick = async () => {
         try {
             const blob = await pdf(
                 <FormPDF
                     booking={booking}
-                    signatureUrl={signatureUrl}
                     includeApprovalSignature={includeApprovalSignature}
                     approvalDate={includeApprovalSignature ? approvalDate : undefined}
                 />
