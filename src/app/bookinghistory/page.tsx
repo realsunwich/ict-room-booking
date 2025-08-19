@@ -66,13 +66,15 @@ export default function BookingHistory() {
         const fifteenDaysLater = new Date();
         fifteenDaysLater.setDate(today.getDate() + 30);
 
-        const formatDate = (date: Date) => {
-            const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-            return offsetDate.toISOString().split("T")[0];
+        const formatDateForInput = (date: Date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`; // ✅ yyyy-mm-dd
         };
 
-        setFilterStartDate(formatDate(fifteenDaysAgo));
-        setFilterEndDate(formatDate(fifteenDaysLater));
+        setFilterStartDate(formatDateForInput(fifteenDaysAgo));
+        setFilterEndDate(formatDateForInput(fifteenDaysLater));
     }, []);
 
     useEffect(() => {
@@ -103,6 +105,11 @@ export default function BookingHistory() {
 
     const availableRooms = Array.from(new Set(bookings.map((b) => b.RoomName)));
 
+    const parseDateForFilter = (dateStr: string) => {
+        const [year, month, day] = dateStr.split("-").map(Number);
+        return new Date(year, month - 1, day);
+    };
+
     const filteredBookings = bookings.filter((booking) => {
         const startDate = new Date(booking.startDate);
         const endDate = new Date(booking.endDate);
@@ -115,8 +122,8 @@ export default function BookingHistory() {
 
         const matchRoom = !filterRoom || booking.RoomName === filterRoom;
         const matchStatus = !filterStatus || booking.SendStatus.trim() === filterStatus;
-        const matchStartDate = !filterStartDate || startDate >= new Date(new Date(filterStartDate).setHours(0, 0, 0, 0));
-        const matchEndDate = !filterEndDate || endDate <= new Date(new Date(filterEndDate).setHours(23, 59, 59, 999));
+        const matchStartDate = !filterStartDate || startDate >= parseDateForFilter(filterStartDate);
+        const matchEndDate = !filterEndDate || endDate <= new Date(parseDateForFilter(filterEndDate).setHours(23, 59, 59, 999));
 
         const isUserOwner = session?.user?.role === "99" || session?.user?.email === booking.senderEmail;
 

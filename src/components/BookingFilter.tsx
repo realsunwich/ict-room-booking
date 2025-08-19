@@ -1,15 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-    Box,
-    TextField,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
-    SelectChangeEvent,
-} from "@mui/material";
+import { Box, TextField, MenuItem, FormControl, InputLabel, Select, SelectChangeEvent, } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { th } from "date-fns/locale";
 
 interface BookingFilterProps {
     filterRoom: string;
@@ -98,31 +94,50 @@ export default function BookingFilter({
                 <MenuItem value="ถูกยกเลิก">ถูกยกเลิก</MenuItem>
             </TextField>
 
-            <TextField
-                label="วันที่เริ่ม"
-                type="date"
-                value={filterStartDate}
-                onChange={(e) => setFilterStartDate(e.target.value)}
-                size="small"
-                sx={{
-                    minWidth: { xs: 120, sm: 150, md: 180 },
-                    flex: { xs: "1 1 100%", sm: "0 1 auto" },
-                }}
-                InputLabelProps={{ shrink: true }}
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={th}>
+                <DatePicker
+                    label="วันที่เริ่ม"
+                    value={filterStartDate ? new Date(filterStartDate) : null}
+                    onChange={(newValue) => {
+                        if (newValue) {
+                            setFilterStartDate(newValue.toISOString().split("T")[0]); // เก็บเป็น YYYY-MM-DD
+                        }
+                    }}
+                    format="dd/MM/yyyy"
+                    slotProps={{
+                        textField: {
+                            size: "small",
+                            sx: {
+                                minWidth: { xs: 120, sm: 150, md: 180 },
+                                flex: { xs: "1 1 100%", sm: "0 1 auto" },
+                            },
+                        },
+                    }}
+                />
+            </LocalizationProvider>
 
-            <TextField
-                label="วันที่สิ้นสุด"
-                type="date"
-                value={filterEndDate}
-                onChange={(e) => setFilterEndDate(e.target.value)}
-                size="small"
-                sx={{
-                    minWidth: { xs: 120, sm: 150, md: 180 },
-                    flex: { xs: "1 1 100%", sm: "0 1 auto" },
-                }}
-                InputLabelProps={{ shrink: true }}
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={th}>
+                <DatePicker
+                    label="วันที่สิ้นสุด"
+                    value={filterEndDate ? new Date(filterEndDate) : null}
+                    onChange={(newValue) => {
+                        if (newValue) {
+                            setFilterEndDate(newValue.toISOString().split("T")[0]); // เก็บเป็น YYYY-MM-DD
+                        }
+                    }}
+                    format="dd/MM/yyyy"
+                    slotProps={{
+                        textField: {
+                            size: "small",
+                            sx: {
+                                minWidth: { xs: 120, sm: 150, md: 180 },
+                                flex: { xs: "1 1 100%", sm: "0 1 auto" },
+                            },
+                        },
+                    }}
+                />
+            </LocalizationProvider>
+
         </Box>
     );
 }
