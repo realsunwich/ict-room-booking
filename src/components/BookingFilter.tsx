@@ -99,8 +99,10 @@ export default function BookingFilter({
                     label="วันที่เริ่ม"
                     value={filterStartDate ? new Date(filterStartDate) : null}
                     onChange={(newValue) => {
-                        if (newValue) {
-                            setFilterStartDate(newValue.toISOString().split("T")[0]); // เก็บเป็น YYYY-MM-DD
+                        if (newValue instanceof Date && !isNaN(newValue.getTime())) {
+                            setFilterStartDate(newValue.toISOString().split("T")[0]); // YYYY-MM-DD
+                        } else {
+                            setFilterStartDate(""); // เคลียร์ค่าเมื่อเป็น null/invalid
                         }
                     }}
                     format="dd/MM/yyyy"
@@ -121,8 +123,10 @@ export default function BookingFilter({
                     label="วันที่สิ้นสุด"
                     value={filterEndDate ? new Date(filterEndDate) : null}
                     onChange={(newValue) => {
-                        if (newValue) {
-                            setFilterEndDate(newValue.toISOString().split("T")[0]); // เก็บเป็น YYYY-MM-DD
+                        if (newValue instanceof Date && !isNaN(newValue.getTime())) {
+                            setFilterEndDate(newValue.toISOString().split("T")[0]); // YYYY-MM-DD
+                        } else {
+                            setFilterEndDate("");
                         }
                     }}
                     format="dd/MM/yyyy"
@@ -137,7 +141,6 @@ export default function BookingFilter({
                     }}
                 />
             </LocalizationProvider>
-
         </Box>
     );
 }
