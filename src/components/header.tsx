@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, Box, Button, Snackbar, Alert, } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import BadgeIcon from "@mui/icons-material/Badge";
 import FolderCopyIcon from "@mui/icons-material/FolderCopy";
@@ -19,6 +20,8 @@ const Header = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
     const [openModal, setOpenModal] = useState(false);
+    const pathname = usePathname();
+    const isActive = (path: string) => pathname === path;
 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -147,14 +150,36 @@ const Header = () => {
                                 <Button
                                     startIcon={<MeetingRoomIcon />}
                                     onClick={() => router.push("/dashboard")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/dashboard") ? "primary.main" : "transparent",
+                                        color: isActive("/dashboard") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/dashboard") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ห้องประชุม
                                 </Button>
                                 <Button
                                     startIcon={<FolderCopyIcon />}
                                     onClick={() => router.push("/bookinghistory")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/bookinghistory") ? "primary.main" : "transparent",
+                                        color: isActive("/bookinghistory") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/bookinghistory") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ประวัติการจอง
                                 </Button>
@@ -168,7 +193,18 @@ const Header = () => {
                                 <Button
                                     startIcon={<WebIcon />}
                                     onClick={() => router.push("/WebProgress")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/WebProgress") ? "primary.main" : "transparent",
+                                        color: isActive("/WebProgress") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/WebProgress") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ขั้นตอนการขอใช้
                                 </Button>
@@ -206,35 +242,90 @@ const Header = () => {
                                 <Button
                                     startIcon={<CalendarMonthIcon />}
                                     onClick={() => router.push("/dashboard")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/dashboard") ? "primary.main" : "transparent",
+                                        color: isActive("/dashboard") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/dashboard") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ปฏิทินห้องประชุม
                                 </Button>
                                 <Button
                                     startIcon={<FeedbackIcon />}
                                     onClick={() => router.push("/bookingrequest")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/bookingrequest") ? "primary.main" : "transparent",
+                                        color: isActive("/bookingrequest") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/bookingrequest") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     คำขอใช้บริการ
                                 </Button>
                                 <Button
-                                    startIcon={<FolderCopyIcon />}
+                                    startIcon={<AssessmentIcon />}
                                     onClick={() => router.push("/bookinghistory")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/bookinghistory") ? "primary.main" : "transparent",
+                                        color: isActive("/bookinghistory") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/bookinghistory") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ประวัติการจอง
                                 </Button>
                                 <Button
                                     startIcon={<AssessmentIcon />}
                                     onClick={() => router.push("/assessmentSum")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/assessmentSum") ? "primary.main" : "transparent",
+                                        color: isActive("/assessmentSum") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/assessmentSum") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     สรุปผลการประเมิน
                                 </Button>
                                 <Button
-                                    startIcon={<WebIcon />}
+                                    startIcon={<AssessmentIcon />}
                                     onClick={() => router.push("/WebProgress")}
-                                    sx={{ fontSize: "1.3rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                    sx={{
+                                        fontSize: "1.3rem",
+                                        py: 1,
+                                        px: 2,
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                        bgcolor: isActive("/WebProgress") ? "primary.main" : "transparent",
+                                        color: isActive("/WebProgress") ? "white" : "primary.main",
+                                        "&:hover": {
+                                            bgcolor: isActive("/WebProgress") ? "primary.dark" : "rgba(0,0,0,0.04)",
+                                        },
+                                    }}
                                 >
                                     ขั้นตอนการขอใช้
                                 </Button>
@@ -295,29 +386,21 @@ const Header = () => {
 
                 {/* สำหรับมือถือ */}
                 {role === "1" && (
-                    <Box
-                        sx={{
-                            fontWeight: "bold",
-                            color: "primary.main",
-                            textAlign: "center",
-                            display: { xs: "block", sm: "none" },
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                flexDirection: "row",
-                                width: "100%",
-                                flexWrap: "wrap",
-                                top: 0,
-                            }}
-                        >
+                    <Box sx={{ fontWeight: "bold", color: "primary.main", textAlign: "center", display: { xs: "block", sm: "none" } }}>
+                        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", width: "100%", flexWrap: "wrap", top: 0 }}>
                             <Button
                                 startIcon={<MeetingRoomIcon />}
                                 onClick={() => router.push("/dashboard")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/dashboard") ? "primary.main" : "transparent",
+                                    color: isActive("/dashboard") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/dashboard") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 ห้องประชุม
                             </Button>
@@ -325,7 +408,16 @@ const Header = () => {
                             <Button
                                 startIcon={<FolderCopyIcon />}
                                 onClick={() => router.push("/bookinghistory")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/bookinghistory") ? "primary.main" : "transparent",
+                                    color: isActive("/bookinghistory") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/bookinghistory") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 ประวัติการจอง
                             </Button>
@@ -341,7 +433,16 @@ const Header = () => {
                             <Button
                                 startIcon={<WebIcon />}
                                 onClick={() => router.push("/WebProgress")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/WebProgress") ? "primary.main" : "transparent",
+                                    color: isActive("/WebProgress") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/WebProgress") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 ขั้นตอนการขอใช้
                             </Button>
@@ -367,35 +468,38 @@ const Header = () => {
                 )}
 
                 {role === "99" && (
-                    <Box
-                        sx={{
-                            fontWeight: "bold",
-                            color: "primary.main",
-                            textAlign: "center",
-                            display: { xs: "block", sm: "none" },
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                flexDirection: "row",
-                                width: "100%",
-                                flexWrap: "wrap",
-                                top: 0,
-                            }}
-                        >
+                    <Box sx={{ fontWeight: "bold", color: "primary.main", textAlign: "center", display: { xs: "block", sm: "none" } }}>
+                        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", width: "100%", flexWrap: "wrap", top: 0 }}>
                             <Button
                                 startIcon={<CalendarMonthIcon />}
                                 onClick={() => router.push("/dashboard")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}                            >
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/dashboard") ? "primary.main" : "transparent",
+                                    color: isActive("/dashboard") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/dashboard") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
+                            >
                                 ปฏิทินห้องประชุม
                             </Button>
+
                             <Button
                                 startIcon={<FeedbackIcon />}
                                 onClick={() => router.push("/bookingrequest")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/bookingrequest") ? "primary.main" : "transparent",
+                                    color: isActive("/bookingrequest") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/bookingrequest") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 คำขอใช้บริการ
                             </Button>
@@ -403,7 +507,16 @@ const Header = () => {
                             <Button
                                 startIcon={<AssessmentIcon />}
                                 onClick={() => router.push("/bookinghistory")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/bookinghistory") ? "primary.main" : "transparent",
+                                    color: isActive("/bookinghistory") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/bookinghistory") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 ประวัติการจอง
                             </Button>
@@ -411,14 +524,33 @@ const Header = () => {
                             <Button
                                 startIcon={<AssessmentIcon />}
                                 onClick={() => router.push("/assessmentSum")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/assessmentSum") ? "primary.main" : "transparent",
+                                    color: isActive("/assessmentSum") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/assessmentSum") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 สรุปผลการประเมิน
                             </Button>
+
                             <Button
                                 startIcon={<WebIcon />}
                                 onClick={() => router.push("/WebProgress")}
-                                sx={{ fontSize: "0.737rem", py: 1, px: 2, fontWeight: 600, textTransform: "none" }}
+                                sx={{
+                                    fontSize: "0.737rem",
+                                    py: 1,
+                                    px: 2,
+                                    fontWeight: 600,
+                                    textTransform: "none",
+                                    bgcolor: isActive("/WebProgress") ? "primary.main" : "transparent",
+                                    color: isActive("/WebProgress") ? "white" : "primary.main",
+                                    "&:hover": { bgcolor: isActive("/WebProgress") ? "primary.dark" : "rgba(0,0,0,0.04)" },
+                                }}
                             >
                                 ขั้นตอนการขอใช้
                             </Button>
