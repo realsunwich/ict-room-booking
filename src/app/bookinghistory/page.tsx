@@ -337,7 +337,27 @@ export default function BookingHistory() {
                                                     {booking.purpose}
                                                 </TableCell>
                                                 <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
+                                                <TableCell
+                                                    align="center"
+                                                    sx={(_theme) => {
+                                                        const status = booking.SendStatus.trim();
+                                                        let color = "black";
+
+                                                        if (status === "กำลังรอ") color = "orange";
+                                                        else if (status === "อนุมัติ") color = "green";
+                                                        else if (status === "เสร็จสิ้น") color = "blue";
+                                                        else if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") color = "red";
+
+                                                        return {
+                                                            color,
+                                                            fontWeight: 600,
+                                                            textAlign: "center",
+                                                            width: 20
+                                                        };
+                                                    }}
+                                                >
+                                                    {booking.SendStatus}
+                                                </TableCell>
                                                 <TableCell align="center" sx={{ width: 20 }}>
                                                     <Tooltip title="แก้ไขคำขอ">
                                                         <span>
