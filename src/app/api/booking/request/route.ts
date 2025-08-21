@@ -6,12 +6,9 @@ const db1 = new PrismaClientDB1();
 export async function GET() {
     try {
         const bookings = await db1.bookingInfo.findMany({
-            where: {
-                RecordStatus: { in: ["N", "F", "U"] }
-            },
+            where: { RecordStatus: "N" },
             orderBy: { sendDate: "desc" },
         });
-
 
         const emails = bookings
             .map((b) => b.senderEmail)

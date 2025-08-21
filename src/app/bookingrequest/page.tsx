@@ -54,7 +54,7 @@ export default function BookingRequest() {
     const fetchBookings = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/booking/history");
+            const res = await fetch("/api/booking/request");
             const data = await res.json();
             setBookings(data);
         } catch (error) {

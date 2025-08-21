@@ -38,6 +38,7 @@ export async function POST(req: Request) {
             updatedAt: new Date(),
             RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : undefined,
             ...(status === "เสร็จสิ้น" ? { RecordStatus: "F" } : {}),
+            ...(status === "ไม่อนุมัติ" || status === "ถูกยกเลิก" ? { RecordStatus: "U" } : {}),
         };
 
         const updated = await db1.bookingInfo.update({
