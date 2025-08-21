@@ -284,7 +284,12 @@ export default function BookingRequest() {
                                                 <TableCell sx={{ width: 140 }} align="center">
                                                     {booking.RoomName}
                                                 </TableCell>
-                                                <TableCell sx={{ width: 290 }}>{booking.purpose}</TableCell>
+                                                <TableCell
+                                                    sx={{ width: 280, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", }}
+                                                    title={booking.purpose}
+                                                >
+                                                    {booking.purpose}
+                                                </TableCell>
                                                 <TableCell align="center" sx={{ width: 20 }}>
                                                     {booking.capacity}
                                                 </TableCell>

@@ -308,7 +308,7 @@ export default function BookingHistory() {
                                     ) : (
                                         filteredBookings.map((booking, index) => (
                                             <TableRow key={index}>
-                                                <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
+                                                <TableCell sx={{ width: 20 }} align="center">{index + 1}</TableCell>
                                                 <TableCell sx={{ width: 200 }} align="center">
                                                     {new Date(booking.startDate).toLocaleString("th-TH", {
                                                         weekday: "long",
@@ -330,7 +330,12 @@ export default function BookingHistory() {
                                                     })}
                                                 </TableCell>
                                                 <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
-                                                <TableCell sx={{ width: 280 }}>{booking.purpose}</TableCell>
+                                                <TableCell
+                                                    sx={{ width: 280, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", }}
+                                                    title={booking.purpose}
+                                                >
+                                                    {booking.purpose}
+                                                </TableCell>
                                                 <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                                 <TableCell align="center" sx={{ width: 20 }}>{booking.SendStatus}</TableCell>
                                                 <TableCell align="center" sx={{ width: 20 }}>
