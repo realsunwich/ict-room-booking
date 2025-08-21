@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, RadioGroup, Radio, FormControlLabel, FormLabel, FormControl, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { IconButton } from '@mui/material';
 
 interface AssessmentItem {
     id: string;
@@ -159,7 +161,12 @@ const AssessmentModal: React.FC<AssessmentModalProps> = ({ open, onClose, roomId
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>แบบประเมินโครงการ</DialogTitle>
+            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                แบบประเมินโครงการ
+                <IconButton onClick={onClose} size="small">
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
             <DialogContent dividers>
                 {step === 0 ? (
                     <>
