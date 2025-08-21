@@ -70,7 +70,7 @@ export default function BookingHistory() {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const day = String(date.getDate()).padStart(2, "0");
-            return `${year}-${month}-${day}`; // ✅ yyyy-mm-dd
+            return `${year}-${month}-${day}`;
         };
 
         setFilterStartDate(formatDateForInput(fifteenDaysAgo));
@@ -138,9 +138,12 @@ export default function BookingHistory() {
     });
 
     const fetchBookings = async () => {
+        if (!filterStartDate || !filterEndDate) return;
+
         setLoading(true);
         try {
-            const res = await fetch("/api/booking/history");
+            const res = await fetch(`/api/booking/history?startDate=${filterStartDate}&endDate=${filterEndDate}`);
+            if (!res.ok) throw new Error(await res.text());
             const data = await res.json();
             setBookings(data);
         } catch (err) {
@@ -154,8 +157,10 @@ export default function BookingHistory() {
     };
 
     useEffect(() => {
-        fetchBookings();
-    }, []);
+        if (filterStartDate && filterEndDate) {
+            fetchBookings();
+        }
+    }, [filterStartDate, filterEndDate]);
 
     useEffect(() => {
         if (!editDialogOpen) {
