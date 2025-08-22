@@ -1,4 +1,4 @@
-import { registerTHNiramitFont } from '@/utils/registerFonts';
+import { registerTHSarabunFont } from '@/utils/registerFonts';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import path from 'path';
 
@@ -31,7 +31,7 @@ export const FormPDF = ({ booking, includeApprovalSignature = false, approvalDat
 
     const signatureUrl = path.join(process.cwd(), `/uploads/signatures/${booking.signatureFileName}`);
 
-    registerTHNiramitFont();
+    registerTHSarabunFont();
 
     const formatPhoneNumber = (phone: string) => {
         const digits = phone.replace(/\D/g, "");

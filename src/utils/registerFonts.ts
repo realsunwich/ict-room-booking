@@ -1,16 +1,16 @@
 import { Font } from '@react-pdf/renderer';
 import path from 'path';
 
-export const registerTHNiramitFont = () => {
+export const registerTHSarabunFont = () => {
     Font.register({
-        family: 'Th Niramit',
+        family: 'Sarabun',
         fonts: [
             {
-                src: path.join(process.cwd(), 'fonts', 'Niramit-Bold.ttf'),
+                src: path.join(process.cwd(), 'fonts', 'Sarabun-Bold.ttf'),
                 fontWeight: 'bold',
             },
             {
-                src: path.join(process.cwd(), 'fonts', 'Niramit-Regular.ttf'),
+                src: path.join(process.cwd(), 'fonts', 'Sarabun-Regular.ttf'),
                 fontWeight: 'normal',
             },
         ],
