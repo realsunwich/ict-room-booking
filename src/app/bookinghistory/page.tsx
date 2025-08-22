@@ -285,7 +285,20 @@ export default function BookingHistory() {
                                 }}
                             >
                                 <TableHead>
-                                    <TableRow sx={{ bgcolor: "primary.main", "& .MuiTableCell-head": { color: "white" } }}>
+                                    <TableRow
+                                        sx={{
+                                            bgcolor: "primary.main",
+                                            "& .MuiTableCell-head": {
+                                                color: "white",
+                                                fontWeight: "bold",
+                                                fontSize: {
+                                                    xs: "0.75rem",
+                                                    sm: "0.85rem",
+                                                    md: "1rem",
+                                                },
+                                            },
+                                        }}
+                                    >
                                         <TableCell>#</TableCell>
                                         <TableCell align="center">เริ่ม</TableCell>
                                         <TableCell align="center">สิ้นสุด</TableCell>
