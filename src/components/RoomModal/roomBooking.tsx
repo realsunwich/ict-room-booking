@@ -50,6 +50,15 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
         severity: "error" as "success" | "error",
     });
 
+    const roomCapacityMap: Record<string, number> = {
+        "ห้องประชุมคณะ ICT": 86,
+        "ห้องประชุมแม่กา": 30,
+        "ห้องบัณฑิตศึกษา ICT1318": 30,
+        "ลานกิจกรรมใต้ถุนอาคาร ICT": 300,
+    };
+
+    const roomCapacity = roomCapacityMap[roomName] || 20;
+
     useEffect(() => {
         if (open) {
             const userName = session?.user?.name || "";
@@ -85,7 +94,21 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        let { name, value } = e.target;
+
+        if (name === "capacity") {
+            const num = parseInt(value, 10);
+            if (num > roomCapacity) {
+                setSnackbar({
+                    open: true,
+                    message: `จำนวนผู้เข้าร่วมต้องไม่เกิน ${roomCapacity} คน`,
+                    severity: "error",
+                });
+                value = roomCapacity.toString();
+            }
+        }
+
+        setFormData({ ...formData, [name]: value });
     };
 
     useEffect(() => {
@@ -244,9 +267,9 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
                             />
                         </LocalizationProvider>
 
-                        <TextField type="number" label="จำนวนผู้เข้าร่วม" name="capacity" value={formData.capacity} onChange={handleChange} {...textFieldProps} />
-                        <TextField label="ผู้ขอใช้บริการ" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
-                        <TextField label="เบอร์ติดต่อผู้ขอใช้" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
+                        <TextField type="number" label={`จำนวนผู้เข้าร่วม (ไม่เกิน ${roomCapacity})`} name="capacity" value={formData.capacity} onChange={handleChange} inputProps={{ min: 1, max: roomCapacity }}{...textFieldProps} />
+                        <TextField label="ผู้ประสานงาน" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="เบอร์ติดต่อผู้ประสานงาน" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
                     </Stack>
                 </DialogContent>
 

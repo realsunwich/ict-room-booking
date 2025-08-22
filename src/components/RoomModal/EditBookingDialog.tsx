@@ -74,6 +74,14 @@ export default function EditBookingDialog({
         cfPhone: "",
     });
 
+    const roomCapacityMap: Record<string, number> = {
+        "ห้องประชุมคณะ ICT": 86,
+        "ห้องประชุมแม่กา": 30,
+        "ห้องบัณฑิตศึกษา ICT1318": 30,
+        "ลานกิจกรรมใต้ถุนอาคาร ICT": 300,
+    };
+
+    const roomCapacity = roomCapacityMap[roomName] || 20;
 
     useEffect(() => {
         if (defaultData && open) {
@@ -99,7 +107,22 @@ export default function EditBookingDialog({
     }, [defaultData, open]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        let { name, value } = e.target;
+
+        if (name === "capacity") {
+            const num = parseInt(value, 10);
+
+            if (num > roomCapacity) {
+                setSnackbar({
+                    open: true,
+                    message: `จำนวนผู้เข้าร่วมต้องไม่เกิน ${roomCapacity} คน`,
+                    severity: "error",
+                });
+                value = roomCapacity.toString();
+            }
+        }
+
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSave = async () => {
@@ -113,6 +136,11 @@ export default function EditBookingDialog({
 
         if (updatedEnd <= updatedStart) {
             setSnackbar({ open: true, message: "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม", severity: "error" });
+            return;
+        }
+
+        if (parseInt(formData.capacity, 10) > roomCapacity) {
+            setSnackbar({ open: true, message: `จำนวนผู้เข้าร่วมต้องไม่เกิน ${roomCapacity} คน`, severity: "error" });
             return;
         }
 
@@ -176,14 +204,26 @@ export default function EditBookingDialog({
                         <TextField label="ชื่อห้อง" name="RoomName" value={formData.RoomName} onChange={handleChange} {...textFieldProps} disabled />
                         <TextField label="วัตถุประสงค์" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
-                            <DatePicker label="วันที่เริ่ม" value={startDay} onChange={setStartDay} />
-                            <TimePicker label="เวลาเริ่ม" value={startTime} onChange={setStartTime} minutesStep={30} />
-                            <DatePicker label="วันที่สิ้นสุด" value={endDay} onChange={setEndDay} />
-                            <TimePicker label="เวลาสิ้นสุด" value={endTime} onChange={setEndTime} minutesStep={30} />
+                            <DatePicker
+                                label="วันที่เริ่ม" value={startDay} onChange={setStartDay}
+                                slotProps={{ textField: { size: "small", }, }}
+                            />
+                            <TimePicker
+                                label="เวลาเริ่ม" value={startTime} onChange={setStartTime} minutesStep={30}
+                                slotProps={{ textField: { size: "small", }, }}
+                            />
+                            <DatePicker
+                                label="วันที่สิ้นสุด" value={endDay} onChange={setEndDay}
+                                slotProps={{ textField: { size: "small", }, }}
+                            />
+                            <TimePicker
+                                label="เวลาสิ้นสุด" value={endTime} onChange={setEndTime} minutesStep={30}
+                                slotProps={{ textField: { size: "small", }, }}
+                            />
                         </LocalizationProvider>
-                        <TextField label="จำนวนผู้เข้าร่วม" name="capacity" type="number" value={formData.capacity} onChange={handleChange} {...textFieldProps} />
-                        <TextField label="ผู้ขอใช้บริการ" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
-                        <TextField label="เบอร์ติดต่อผู้ขอใช้" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
+                        <TextField label={`จำนวนผู้เข้าร่วม (ไม่เกิน ${roomCapacity})`} name="capacity" type="number" value={formData.capacity} onChange={handleChange} inputProps={{ min: 1, max: roomCapacity }}                            {...textFieldProps} />
+                        <TextField label="ผู้ประสานงาน" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="เบอร์ติดต่อผู้ประสานงาน" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
