@@ -51,7 +51,7 @@ export const FormPDF = ({ booking, includeApprovalSignature = false, approvalDat
 
     const styles = StyleSheet.create({
         page: {
-            fontFamily: 'Th Niramit',
+            fontFamily: 'Sarabun',
             backgroundColor: '#ffffff',
             paddingTop: cm(0.54),
             paddingBottom: cm(2.54),
@@ -216,7 +216,7 @@ export const FormPDF = ({ booking, includeApprovalSignature = false, approvalDat
                     </View>
                 </View>
                 <View style={[styles.boxApproval, { alignItems: 'center', }]}>
-                    <Text style={[styles.text, { marginBottom: cm(0.5) }]}>
+                    <Text style={[styles.text, { marginBottom: cm(0.7) }]}>
                         เสนอ      [  ] อนุมัติ            [  ] ไม่อนุมัติ
                     </Text>
                     <Text style={[styles.text]} >
@@ -225,7 +225,7 @@ export const FormPDF = ({ booking, includeApprovalSignature = false, approvalDat
                     <Text style={[styles.text]}>
                         {` ดร. เกวรินทร์ จันทร์ดำ `}
                     </Text>
-                    <Text style={[styles.text]}>
+                    <Text style={[styles.text, { marginBottom: cm(0.7) }]}>
                         รองคณบดีฝ่ายยุทธศาสตร์และพัฒนาองค์กร
                     </Text>
                     <Text style={[styles.text]}>วันที่.................../.................../...................</Text>
