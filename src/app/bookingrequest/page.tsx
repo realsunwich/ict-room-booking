@@ -299,10 +299,10 @@ export default function BookingRequest() {
                                                         const status = booking.SendStatus.trim();
                                                         let color = "black";
 
-                                                        if (status === "กำลังรอ") color = "orange";
-                                                        else if (status === "อนุมัติ") color = "green";
-                                                        else if (status === "เสร็จสิ้น") color = "blue";
-                                                        else if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") color = "red";
+                                                        if (status === "กำลังรอ") color = "darkorange";
+                                                        else if (status === "อนุมัติ") color = "navy";
+                                                        else if (status === "เสร็จสิ้น") color = "seagreen";
+                                                        else if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") color = "crimson";
 
                                                         return {
                                                             color,
