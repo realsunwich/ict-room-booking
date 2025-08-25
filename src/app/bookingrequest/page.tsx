@@ -306,21 +306,16 @@ export default function BookingRequest() {
                                                 </TableCell>
                                                 <TableCell
                                                     align="center"
-                                                    sx={(_theme) => {
-                                                        const status = booking.SendStatus.trim();
-                                                        let color = "black";
-
-                                                        if (status === "กำลังรอ") color = "darkorange";
-                                                        else if (status === "อนุมัติ") color = "navy";
-                                                        else if (status === "เสร็จสิ้น") color = "seagreen";
-                                                        else if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") color = "crimson";
-
-                                                        return {
-                                                            color,
-                                                            fontWeight: 600,
-                                                            textAlign: "center",
-                                                            width: 20
-                                                        };
+                                                    sx={{
+                                                        color:
+                                                            booking.SendStatus.trim() === "กำลังรอ" ? "darkorange" :
+                                                                booking.SendStatus.trim() === "อนุมัติ" ? "navy" :
+                                                                    booking.SendStatus.trim() === "เสร็จสิ้น" ? "seagreen" :
+                                                                        ["ถูกยกเลิก", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ? "crimson" :
+                                                                            "black",
+                                                        fontWeight: 600,
+                                                        textAlign: "center",
+                                                        width: 20
                                                     }}
                                                 >
                                                     {booking.SendStatus}

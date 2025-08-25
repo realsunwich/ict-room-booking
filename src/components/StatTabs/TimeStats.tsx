@@ -43,7 +43,6 @@ function ChartSection({
     formatLabel,
     barColor,
     chartLabel,
-    totalWorkHours,
 }: {
     title: string;
     rawData: { label: string; value: number }[];

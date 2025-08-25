@@ -137,36 +137,35 @@ export default function BookingHistory() {
         );
     });
 
-    const fetchBookings = async () => {
+    useEffect(() => {
         if (!filterStartDate || !filterEndDate) return;
 
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/booking/history?startDate=${filterStartDate}&endDate=${filterEndDate}`);
-            if (!res.ok) throw new Error(await res.text());
-            const data = await res.json();
-            setBookings(data);
-        } catch (err) {
-            console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
-            setSnackbarMessage("โหลดข้อมูลล้มเหลว");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
-        } finally {
-            setLoading(false);
-        }
-    };
+        const fetchBookings = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`/api/booking/history?startDate=${filterStartDate}&endDate=${filterEndDate}`);
+                if (!res.ok) throw new Error(await res.text());
+                const data = await res.json();
+                setBookings(data);
+            } catch (err) {
+                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
+                setSnackbarMessage("โหลดข้อมูลล้มเหลว");
+                setSnackbarSeverity("error");
+                setSnackbarOpen(true);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    useEffect(() => {
-        if (filterStartDate && filterEndDate) {
-            fetchBookings();
-        }
+        fetchBookings();
     }, [filterStartDate, filterEndDate]);
 
     useEffect(() => {
         if (!editDialogOpen) {
-            fetchBookings();
+            // จะเรียก fetchBookings อีกทีก็ย้าย logic มาเขียนตรงนี้
         }
     }, [editDialogOpen]);
+
 
     if (status === "loading") {
         return (
@@ -352,21 +351,16 @@ export default function BookingHistory() {
                                                 <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
                                                 <TableCell
                                                     align="center"
-                                                    sx={(_theme) => {
-                                                        const status = booking.SendStatus.trim();
-                                                        let color = "black";
-
-                                                        if (status === "กำลังรอ") color = "darkorange";
-                                                        else if (status === "อนุมัติ") color = "navy";
-                                                        else if (status === "เสร็จสิ้น") color = "seagreen";
-                                                        else if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") color = "crimson";
-
-                                                        return {
-                                                            color,
-                                                            fontWeight: 600,
-                                                            textAlign: "center",
-                                                            width: 20
-                                                        };
+                                                    sx={{
+                                                        color:
+                                                            booking.SendStatus.trim() === "กำลังรอ" ? "darkorange" :
+                                                                booking.SendStatus.trim() === "อนุมัติ" ? "navy" :
+                                                                    booking.SendStatus.trim() === "เสร็จสิ้น" ? "seagreen" :
+                                                                        ["ถูกยกเลิก", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ? "crimson" :
+                                                                            "black",
+                                                        fontWeight: 600,
+                                                        textAlign: "center",
+                                                        width: 20
                                                     }}
                                                 >
                                                     {booking.SendStatus}

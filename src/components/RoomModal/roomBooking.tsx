@@ -94,7 +94,8 @@ export default function BookingDialog({ open, onClose, roomName }: BookingModalP
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let { name, value } = e.target;
+        const { name } = e.target;
+        let value = e.target.value;
 
         if (name === "capacity") {
             const num = parseInt(value, 10);
