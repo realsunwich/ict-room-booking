@@ -225,12 +225,13 @@ export default function BookingRequest() {
                             <Table
                                 size="small"
                                 sx={{
+                                    minWidth: 900, // กำหนดให้ table ขยายเต็มเหมือน desktop
                                     "& .MuiTableCell-root": {
                                         fontSize: { xs: "0.65rem", sm: "0.95rem" },
                                         px: { xs: 0.3, sm: 1 },
                                         py: { xs: 0.5, sm: 1 },
-                                        whiteSpace: "normal", // allow wrapping
-                                        wordBreak: "break-word", // break long words
+                                        whiteSpace: "normal",
+                                        wordBreak: "break-word",
                                     },
                                 }}
                             >
@@ -277,11 +278,11 @@ export default function BookingRequest() {
                                         bookings.map((booking, index) => (
                                             <TableRow key={booking.bookingID}>
                                                 <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
-                                                <TableCell sx={{ maxWidth: 50, width: 50 }}>
+                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
                                                     {new Date(booking.startDate).toLocaleString("th-TH",
                                                         { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
                                                 </TableCell>
-                                                <TableCell sx={{ maxWidth: 50, width: 50 }}>
+                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
                                                     {new Date(booking.endDate).toLocaleString("th-TH",
                                                         { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
                                                 </TableCell>
@@ -300,8 +301,11 @@ export default function BookingRequest() {
                                                     }}
                                                 >
                                                     {(() => {
-                                                        const words = booking.purpose?.split(" ") ?? [];
-                                                        if (words.length <= 1) return booking.purpose;
+                                                        const purpose = booking.purpose;
+                                                        // ถ้าความยาวเกิน 120 ให้แบ่งบรรทัด, ถ้าไม่เกินให้แสดงปกติ
+                                                        if (!purpose || purpose.length <= 120) return purpose;
+                                                        const words = purpose.split(" ");
+                                                        if (words.length <= 1) return purpose;
                                                         const mid = Math.ceil(words.length / 2);
                                                         return (
                                                             <>
@@ -421,8 +425,8 @@ export default function BookingRequest() {
                                                     {booking.SendStatus.trim() === "ถูกยกเลิก"
                                                         ? booking.CancelReason
                                                         : booking.SendStatus.trim() === "ไม่อนุมัติ"
-                                                        ? booking.RejectReason
-                                                        : "-"}
+                                                            ? booking.RejectReason
+                                                            : "-"}
                                                 </TableCell>
                                                 <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <Tooltip
