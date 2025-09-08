@@ -32,6 +32,9 @@ interface Booking {
     cfSender?: string;
     cfPhone?: string;
 
+    CancelReason?: string;
+    RejectReason?: string;
+
     signatureFileName?: string | null;
 }
 
@@ -226,7 +229,8 @@ export default function BookingRequest() {
                                         fontSize: { xs: "0.65rem", sm: "0.95rem" },
                                         px: { xs: 0.3, sm: 1 },
                                         py: { xs: 0.5, sm: 1 },
-                                        whiteSpace: "nowrap",
+                                        whiteSpace: "normal", // allow wrapping
+                                        wordBreak: "break-word", // break long words
                                     },
                                 }}
                             >
@@ -254,6 +258,7 @@ export default function BookingRequest() {
                                         <TableCell align="center">สถานะ</TableCell>
                                         <TableCell align="center">ดู</TableCell>
                                         <TableCell align="center">จัดการ</TableCell>
+                                        <TableCell align="center">เหตุผล</TableCell>
                                         <TableCell align="center">ตรวจเช็ค</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -272,36 +277,42 @@ export default function BookingRequest() {
                                         bookings.map((booking, index) => (
                                             <TableRow key={booking.bookingID}>
                                                 <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
-                                                <TableCell sx={{ width: 190 }} align="center">
-                                                    {new Date(booking.startDate).toLocaleString("th-TH", {
-                                                        weekday: "long",
-                                                        year: "numeric",
-                                                        month: "long",
-                                                        day: "numeric",
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                    })}
+                                                <TableCell sx={{ maxWidth: 50, width: 50 }}>
+                                                    {new Date(booking.startDate).toLocaleString("th-TH",
+                                                        { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
                                                 </TableCell>
-                                                <TableCell sx={{ width: 190 }} align="center">
-                                                    {new Date(booking.endDate).toLocaleString("th-TH", {
-                                                        weekday: "long",
-                                                        year: "numeric",
-                                                        month: "long",
-                                                        day: "numeric",
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                    })}
+                                                <TableCell sx={{ maxWidth: 50, width: 50 }}>
+                                                    {new Date(booking.endDate).toLocaleString("th-TH",
+                                                        { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
                                                 </TableCell>
-                                                <TableCell sx={{ width: 140 }} align="center">
-                                                    {booking.RoomName}
-                                                </TableCell>
+                                                <TableCell sx={{ maxWidth: 50, width: 50 }} align="center"> {booking.RoomName} </TableCell>
                                                 <TableCell
-                                                    sx={{ width: 280, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", }}
-                                                    title={booking.purpose}
+                                                    sx={{
+                                                        width: 120,
+                                                        maxWidth: 120,
+                                                        whiteSpace: "normal",
+                                                        wordBreak: "break-word",
+                                                        overflowWrap: "break-word",
+                                                        fontSize: { xs: "0.65rem", sm: "0.95rem" },
+                                                        lineHeight: 1.4,
+                                                        maxHeight: 60,
+                                                        p: 1,
+                                                    }}
                                                 >
-                                                    {booking.purpose}
+                                                    {(() => {
+                                                        const words = booking.purpose?.split(" ") ?? [];
+                                                        if (words.length <= 1) return booking.purpose;
+                                                        const mid = Math.ceil(words.length / 2);
+                                                        return (
+                                                            <>
+                                                                {words.slice(0, mid).join(" ")}
+                                                                <br />
+                                                                {words.slice(mid).join(" ")}
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     {booking.capacity}
                                                 </TableCell>
                                                 <TableCell
@@ -315,12 +326,12 @@ export default function BookingRequest() {
                                                                             "black",
                                                         fontWeight: 600,
                                                         textAlign: "center",
-                                                        width: 20
+                                                        maxWidth: 20, width: 20
                                                     }}
                                                 >
                                                     {booking.SendStatus}
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <FormPDFButton
                                                         booking={{
                                                             ...booking,
@@ -352,7 +363,7 @@ export default function BookingRequest() {
                                                         }
                                                     />
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     {["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim()) ? (
                                                         <Tooltip
                                                             title={
@@ -406,7 +417,14 @@ export default function BookingRequest() {
                                                         onStatusChange={handleStatusChange}
                                                     />
                                                 )}
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>
+                                                    {booking.SendStatus.trim() === "ถูกยกเลิก"
+                                                        ? booking.CancelReason
+                                                        : booking.SendStatus.trim() === "ไม่อนุมัติ"
+                                                        ? booking.RejectReason
+                                                        : "-"}
+                                                </TableCell>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <Tooltip
                                                         title={
                                                             booking.SendStatus.trim() === "อนุมัติ"
