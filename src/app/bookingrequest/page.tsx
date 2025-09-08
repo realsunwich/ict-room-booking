@@ -277,7 +277,7 @@ export default function BookingRequest() {
                                     ) : (
                                         bookings.map((booking, index) => (
                                             <TableRow key={booking.bookingID}>
-                                                <TableCell sx={{ width: 20 }}>{index + 1}</TableCell>
+                                                <TableCell sx={{ maxWidth: 10, width: 10 }}>{index + 1}</TableCell>
                                                 <TableCell sx={{ maxWidth: 60, width: 50 }}>
                                                     {new Date(booking.startDate).toLocaleString("th-TH",
                                                         { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}

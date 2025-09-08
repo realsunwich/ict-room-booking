@@ -33,6 +33,9 @@ interface Booking {
     cfSender?: string;
     cfPhone?: string;
 
+    CancelReason?: string;
+    RejectReason?: string;
+
     signatureFileName?: string | null;
 }
 
@@ -275,11 +278,13 @@ export default function BookingHistory() {
                             <Table
                                 size="small"
                                 sx={{
+                                    minWidth: 900, // กำหนดให้ table ขยายเต็มเหมือน desktop
                                     "& .MuiTableCell-root": {
                                         fontSize: { xs: "0.65rem", sm: "0.95rem" },
                                         px: { xs: 0.3, sm: 1 },
                                         py: { xs: 0.5, sm: 1 },
-                                        whiteSpace: "nowrap",
+                                        whiteSpace: "normal",
+                                        wordBreak: "break-word",
                                     },
                                 }}
                             >
@@ -307,6 +312,7 @@ export default function BookingHistory() {
                                         <TableCell align="center">สถานะ</TableCell>
                                         <TableCell align="center">แก้ไข</TableCell>
                                         <TableCell align="center">ยกเลิก</TableCell>
+                                        <TableCell align="center">เหตุผล</TableCell>
                                         <TableCell align="center">ดู</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -320,35 +326,58 @@ export default function BookingHistory() {
                                     ) : (
                                         filteredBookings.map((booking, index) => (
                                             <TableRow key={index}>
-                                                <TableCell sx={{ width: 20 }} align="center">{index + 1}</TableCell>
-                                                <TableCell sx={{ width: 200 }} align="center">
+                                                <TableCell sx={{ maxWidth: 10, width: 10 }}>{index + 1}</TableCell>
+                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
                                                     {new Date(booking.startDate).toLocaleString("th-TH", {
-                                                        weekday: "long",
+                                                        weekday: "short",
                                                         year: "numeric",
-                                                        month: "long",
+                                                        month: "short",
                                                         day: "numeric",
                                                         hour: "2-digit",
                                                         minute: "2-digit"
                                                     })}
                                                 </TableCell>
-                                                <TableCell sx={{ width: 200 }} align="center">
+                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
                                                     {new Date(booking.endDate).toLocaleString("th-TH", {
-                                                        weekday: "long",
+                                                        weekday: "short",
                                                         year: "numeric",
-                                                        month: "long",
+                                                        month: "short",
                                                         day: "numeric",
                                                         hour: "2-digit",
                                                         minute: "2-digit"
                                                     })}
                                                 </TableCell>
-                                                <TableCell sx={{ width: 130 }} align="center">{booking.RoomName}</TableCell>
+                                                <TableCell sx={{ maxWidth: 50, width: 50 }} align="center">{booking.RoomName}</TableCell>
                                                 <TableCell
-                                                    sx={{ width: 280, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", }}
-                                                    title={booking.purpose}
+                                                    sx={{
+                                                        width: 120,
+                                                        maxWidth: 120,
+                                                        whiteSpace: "normal",
+                                                        wordBreak: "break-word",
+                                                        overflowWrap: "break-word",
+                                                        fontSize: { xs: "0.65rem", sm: "0.95rem" },
+                                                        lineHeight: 1.4,
+                                                        maxHeight: 60,
+                                                        p: 1,
+                                                    }}
                                                 >
-                                                    {booking.purpose}
+                                                    {(() => {
+                                                        const purpose = booking.purpose;
+                                                        // ถ้าความยาวเกิน 120 ให้แบ่งบรรทัด, ถ้าไม่เกินให้แสดงปกติ
+                                                        if (!purpose || purpose.length <= 120) return purpose;
+                                                        const words = purpose.split(" ");
+                                                        if (words.length <= 1) return purpose;
+                                                        const mid = Math.ceil(words.length / 2);
+                                                        return (
+                                                            <>
+                                                                {words.slice(0, mid).join(" ")}
+                                                                <br />
+                                                                {words.slice(mid).join(" ")}
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 40 }}>{booking.capacity}</TableCell>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>{booking.capacity}</TableCell>
                                                 <TableCell
                                                     align="center"
                                                     sx={{
@@ -360,12 +389,12 @@ export default function BookingHistory() {
                                                                             "black",
                                                         fontWeight: 600,
                                                         textAlign: "center",
-                                                        width: 20
+                                                        maxWidth: 20, width: 20
                                                     }}
                                                 >
                                                     {booking.SendStatus}
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <Tooltip title="แก้ไขคำขอ">
                                                         <span>
                                                             <Button
@@ -388,7 +417,7 @@ export default function BookingHistory() {
                                                     </Tooltip>
                                                 </TableCell>
 
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <Tooltip
                                                         title={
                                                             ["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim())
@@ -411,7 +440,14 @@ export default function BookingHistory() {
                                                         </span>
                                                     </Tooltip>
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ width: 20 }}>
+                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>
+                                                    {booking.SendStatus.trim() === "ถูกยกเลิก"
+                                                        ? booking.CancelReason
+                                                        : booking.SendStatus.trim() === "ไม่อนุมัติ"
+                                                            ? booking.RejectReason
+                                                            : "-"}
+                                                </TableCell>
+                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <FormPDFButton
                                                         booking={{
                                                             ...booking,
