@@ -132,7 +132,7 @@ const Header = () => {
                             sx={{ fontWeight: 900, cursor: "pointer" }}
                             onClick={() => router.push("/dashboard")}
                         >
-                            ระบบขอจองใช้บริการห้องประชุม
+                            ระบบจองห้องประชุมคณะ ICT
                         </Typography>
 
                         {role === "1" && (

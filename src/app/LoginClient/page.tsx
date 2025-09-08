@@ -48,7 +48,7 @@ const LoginClient = () => {
                     }}
                 >
                     <Typography variant="h5" gutterBottom sx={{ textAlign: "center", mb: 2 }}>
-                        เข้าสู่ระบบจองห้องประชุม ICT
+                        เข้าสู่ระบบจองห้องประชุมคณะ ICT
                     </Typography>
 
                     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={2}>
