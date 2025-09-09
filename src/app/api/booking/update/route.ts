@@ -21,7 +21,6 @@ export async function PUT(request: NextRequest) {
             capacity,
             cfSender,
             cfPhone,
-            updatedAt
         } = body;
 
         const updated = await db1.bookingInfo.update({
@@ -41,9 +40,13 @@ export async function PUT(request: NextRequest) {
                 cfSender,
                 cfPhone,
                 SendStatus: 'กำลังรอ',
-                updatedAt: new Date(updatedAt)
+                updatedAt: new Date()
             },
         });
+
+        if (!bookingID) {
+            return NextResponse.json({ error: "bookingID is required" }, { status: 400 });
+        }
 
         return NextResponse.json(updated, { status: 200 });
     } catch (error) {

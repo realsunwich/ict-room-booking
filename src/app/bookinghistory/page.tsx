@@ -140,32 +140,32 @@ export default function BookingHistory() {
         );
     });
 
+
+
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/booking/history?startDate=${filterStartDate}&endDate=${filterEndDate}`);
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            setBookings(data);
+        } catch (err) {
+            console.error("โหลดข้อมูลการจองล้มเหลว", err);
+            setSnackbarMessage("โหลดข้อมูลล้มเหลว");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!filterStartDate || !filterEndDate) return;
-
-        const fetchBookings = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/booking/history?startDate=${filterStartDate}&endDate=${filterEndDate}`);
-                if (!res.ok) throw new Error(await res.text());
-                const data = await res.json();
-                setBookings(data);
-            } catch (err) {
-                console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลการจอง", err);
-                setSnackbarMessage("โหลดข้อมูลล้มเหลว");
-                setSnackbarSeverity("error");
-                setSnackbarOpen(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchBookings();
     }, [filterStartDate, filterEndDate]);
 
     useEffect(() => {
         if (!editDialogOpen) {
-            // จะเรียก fetchBookings อีกทีก็ย้าย logic มาเขียนตรงนี้
         }
     }, [editDialogOpen]);
 
@@ -491,9 +491,7 @@ export default function BookingHistory() {
                                                             setSnackbarMessage("ยกเลิกคำขอสำเร็จ");
                                                             setSnackbarSeverity("success");
                                                             setSnackbarOpen(true);
-                                                            const updated = await fetch("/api/booking/history");
-                                                            const newData = await updated.json();
-                                                            setBookings(newData);
+                                                            fetchBookings(); // refresh หลังยกเลิกสำเร็จ
                                                         }}
                                                     />
                                                 )}
@@ -506,12 +504,12 @@ export default function BookingHistory() {
                         {selectedBooking && (
                             <EditBookingDialog
                                 open={editDialogOpen}
-                                onClose={() => setEditDialogOpen(false)}
-                                roomName={selectedBooking.RoomName}
-                                defaultData={{
-                                    ...selectedBooking,
-                                    capacity: selectedBooking.capacity,
+                                onClose={() => {
+                                    setEditDialogOpen(false);
+                                    fetchBookings(); // refresh หลังปิด dialog
                                 }}
+                                roomName={selectedBooking.RoomName}
+                                defaultData={selectedBooking}
                             />
                         )}
                     </>

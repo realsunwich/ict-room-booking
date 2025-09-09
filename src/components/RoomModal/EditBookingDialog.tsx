@@ -145,6 +145,7 @@ export default function EditBookingDialog({
         }
 
         const updatedData = {
+            bookingID: defaultData.bookingID,
             ...formData,
             RoomName: roomName,
             startDate: updatedStart.toISOString(),
