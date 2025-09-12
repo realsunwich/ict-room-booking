@@ -35,6 +35,8 @@ interface Booking {
     CancelReason?: string;
     RejectReason?: string;
 
+    remark?: string;
+
     signatureFileName?: string | null;
 }
 
@@ -261,6 +263,7 @@ export default function BookingRequest() {
                                         <TableCell align="center">จัดการ</TableCell>
                                         <TableCell align="center">เหตุผล</TableCell>
                                         <TableCell align="center">ตรวจเช็ค</TableCell>
+                                        <TableCell align="center">ความเสียหาย</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -449,6 +452,11 @@ export default function BookingRequest() {
                                                             </IconButton>
                                                         </span>
                                                     </Tooltip>
+                                                </TableCell>
+                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>
+                                                    {booking.SendStatus.trim() === "เสร็จสิ้น"
+                                                        ? booking.remark
+                                                            : "-"}
                                                 </TableCell>
                                                 {selectedBooking && (
                                                     <CheckRoomDialog

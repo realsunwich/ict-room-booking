@@ -140,8 +140,6 @@ export default function BookingHistory() {
         );
     });
 
-
-
     const fetchBookings = async () => {
         setLoading(true);
         try {

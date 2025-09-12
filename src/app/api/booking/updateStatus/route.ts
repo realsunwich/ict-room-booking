@@ -3,15 +3,6 @@ import { PrismaClient as PrismaClientDB1 } from "@/../generated/db1";
 
 const db1 = new PrismaClientDB1();
 
-interface UpdateBookingPayload {
-    bookingId: number;
-    status: string;
-    SendStatus: string;
-    updatedAt: Date;
-    RejectReason?: string;
-    RecordStatus?: string;
-}
-
 function toThaiNumber(input: number | string): string {
     const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
     return input.toString().split('').map(d => thaiDigits[parseInt(d)]).join('');
@@ -27,25 +18,40 @@ function toArabicNumber(input: string): number {
 
 export async function POST(req: Request) {
     try {
-        const { bookingId, status, RejectReason }: UpdateBookingPayload = await req.json();
+        const body = await req.json();
+        const bookingId = Number(body.bookingId);
+        const status = body.status as string;
+        const rejectReason = typeof body.RejectReason === "string" && body.RejectReason.trim() !== ''
+            ? body.RejectReason.trim()
+            : null;
+
+        const cancelReason = typeof body.CancelReason === "string" && body.CancelReason.trim() !== ''
+            ? body.CancelReason.trim()
+            : null;
 
         if (!bookingId || !status) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        const updateData = {
+        const updateData: any = {
             SendStatus: status,
             updatedAt: new Date(),
-            RejectReason: status === "ไม่อนุมัติ" ? RejectReason ?? "" : undefined,
             ...(status === "เสร็จสิ้น" ? { RecordStatus: "F" } : {}),
             ...(status === "ไม่อนุมัติ" || status === "ถูกยกเลิก" ? { RecordStatus: "U" } : {}),
         };
+
+        if (status === "ไม่อนุมัติ") {
+            if (rejectReason) updateData.RejectReason = rejectReason; 
+        }
+
+        if (status === "ถูกยกเลิก") {
+            if (cancelReason) updateData.CancelReason = cancelReason;
+        }
 
         const updated = await db1.bookingInfo.update({
             where: { bookingID: Number(bookingId) },
             data: updateData,
         });
-
 
         if (["อนุมัติ", "เสร็จสิ้น"].includes(status)) {
             const current = await db1.bookingInfo.findUnique({

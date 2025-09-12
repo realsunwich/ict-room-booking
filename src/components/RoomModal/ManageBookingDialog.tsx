@@ -4,12 +4,31 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, T
 import { useState } from "react";
 
 interface Booking {
+    bookingID: string;
     startDate: string;
     endDate: string;
     RoomName: string;
     purpose: string;
     capacity: number;
     SendStatus: string;
+    approvedNumber: string;
+
+    sendDate?: string;
+    sender?: string;
+    senderEmail?: string;
+    jobName?: string;
+    phoneIn?: string;
+    phoneOut?: string;
+    officeLocation?: string;
+    cfSender?: string;
+    cfPhone?: string;
+
+    CancelReason?: string;
+    RejectReason?: string;
+
+    remark?: string;
+
+    signatureFileName?: string | null;
 }
 
 export default function ManageBookingDialog({
@@ -31,12 +50,36 @@ export default function ManageBookingDialog({
 
     if (!booking) return null;
 
-    const handleApprove = () => {
+    async function updateBookingStatus(bookingId: number, status: string, reason?: string) {
+        const payload: any = { bookingId, status };
+
+        if (status === "ไม่อนุมัติ") {
+            payload.RejectReason = reason?.trim() || null;
+        }
+
+        if (status === "ถูกยกเลิก") {
+            payload.CancelReason = reason?.trim() || null;
+        }
+
+        const res = await fetch("/api/booking/updateStatus", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        return await res.json();
+    }
+
+    const handleApprove = async () => {
+        await updateBookingStatus(Number(booking.bookingID), "อนุมัติ");
         onStatusChange("อนุมัติ");
+        handleClose();
     };
 
-    const handleReject = () => {
+    const handleReject = async () => {
+        await updateBookingStatus(Number(booking.bookingID), "ไม่อนุมัติ", reason);
         onStatusChange("ไม่อนุมัติ", reason);
+        handleClose();
     };
 
     return (
