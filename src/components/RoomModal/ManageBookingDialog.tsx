@@ -98,10 +98,10 @@ export default function ManageBookingDialog({
             <DialogTitle>จัดการคำขอใช้ห้องประชุม</DialogTitle>
             <DialogContent>
                 <Typography variant="body1" gutterBottom>
-                    สถานที่ : {booking.RoomName || "-"}
+                    สถานที่ {booking.RoomName || "-"}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                    วัตถุประสงค์ : {booking.purpose || "-"}
+                    วัตถุประสงค์ {booking.purpose || "-"}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                     เริ่มในวันที่ {" "}
