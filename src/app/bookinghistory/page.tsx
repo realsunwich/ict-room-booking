@@ -243,6 +243,8 @@ export default function BookingHistory() {
                                     { header: "วัตถุประสงค์", key: "purpose", width: 50 },
                                     { header: "จำนวน (คน)", key: "capacity", width: 20 },
                                     { header: "สถานะ", key: "SendStatus", width: 15 },
+                                    { header: "เหตุผลที่ยกเลิก", key: "CancelReason", width: 15 },
+                                    { header: "เหตุผลที่ไม่อนุมัติ", key: "RejectReason", width: 15 },
                                     { header: "ผู้ขอ", key: "sender", width: 25 },
                                     { header: "ตำแหน่ง", key: "jobName", width: 25 },
                                     { header: "โทรศัพท์", key: "phoneOut", width: 20 },
