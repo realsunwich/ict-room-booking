@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 
 interface Booking {
@@ -43,6 +43,9 @@ export default function ManageBookingDialog({
     onStatusChange: (status: string, reason?: string) => void;
 }) {
     const [reason, setReason] = useState("");
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
     const handleClose = () => {
         setReason("");
         onClose();
@@ -77,82 +80,101 @@ export default function ManageBookingDialog({
     };
 
     const handleReject = async () => {
+        if (!reason.trim()) {
+            setSnackbarMessage("กรุณากรอกเหตุผลก่อนไม่อนุมัติ");
+            setSnackbarOpen(true);
+            return;
+        }
+
         await updateBookingStatus(Number(booking.bookingID), "ไม่อนุมัติ", reason);
         onStatusChange("ไม่อนุมัติ", reason);
         handleClose();
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            maxWidth="sm"
-            slotProps={{
-                backdrop: {
-                    sx: {
-                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                maxWidth="sm"
+                slotProps={{
+                    backdrop: {
+                        sx: {
+                            backgroundColor: "rgba(0, 0, 0, 0.1)",
+                        },
                     },
-                },
-            }}
-        >
-            <DialogTitle>จัดการคำขอใช้ห้องประชุม</DialogTitle>
-            <DialogContent>
-                <Typography variant="body1" gutterBottom>
-                    สถานที่ {booking.RoomName || "-"}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                    วัตถุประสงค์ {booking.purpose || "-"}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                    เริ่มในวันที่ {" "}
-                    {booking.startDate
-                        ? new Date(booking.startDate).toLocaleString("th-TH", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })
-                        : "-"}<br />
-                    {" "}ถึงวันที่{" "}
-                    {booking.endDate
-                        ? new Date(booking.endDate).toLocaleString("th-TH", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        })
-                        : "-"}
-                </Typography>
+                }}
+            >
+                <DialogTitle>จัดการคำขอใช้ห้องประชุม</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1" gutterBottom>
+                        สถานที่ {booking.RoomName || "-"}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                        วัตถุประสงค์ {booking.purpose || "-"}
+                    </Typography>
+                    <Typography variant="body1" gutterBottom>
+                        เริ่มในวันที่ {" "}
+                        {booking.startDate
+                            ? new Date(booking.startDate).toLocaleString("th-TH", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })
+                            : "-"}<br />
+                        {" "}ถึงวันที่{" "}
+                        {booking.endDate
+                            ? new Date(booking.endDate).toLocaleString("th-TH", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })
+                            : "-"}
+                    </Typography>
 
-                <TextField
-                    label="เหตุผล (ถ้าไม่อนุมัติ)"
-                    size="small"
-                    fullWidth
-                    multiline
-                    rows={1}
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                />
-            </DialogContent>
-            <DialogActions>
-                <div style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
-                    <Button variant="outlined" onClick={handleClose}>
-                        ปิด
+                    <TextField
+                        label="เหตุผล (ถ้าไม่อนุมัติ)"
+                        size="small"
+                        fullWidth
+                        multiline
+                        rows={1}
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <div style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
+                        <Button variant="outlined" onClick={handleClose}>
+                            ปิด
+                        </Button>
+                    </div>
+                    <Button color="error" variant="contained" onClick={handleReject}>
+                        ไม่อนุมัติ
                     </Button>
-                </div>
-                <Button color="error" variant="contained" onClick={handleReject}>
-                    ไม่อนุมัติ
-                </Button>
-                <Button color="success" variant="contained" onClick={handleApprove}
-                    sx={{
-                        color: "white"
-                    }}
-                >
-                    อนุมัติ
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    <Button color="success" variant="contained" onClick={handleApprove}
+                        sx={{
+                            color: "white"
+                        }}
+                    >
+                        อนุมัติ
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity="error" sx={{ width: "100%" }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </>
     );
 }

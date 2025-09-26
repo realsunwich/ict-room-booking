@@ -2,7 +2,22 @@
 
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Snackbar, Alert, IconButton, Tooltip, } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    CircularProgress,
+    Snackbar,
+    Alert,
+    IconButton,
+    Tooltip,
+} from "@mui/material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
@@ -45,16 +60,13 @@ export default function BookingRequest() {
     const [loading, setLoading] = useState(true);
     const [manageDialogOpen, setManageDialogOpen] = useState(false);
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
-    const [revertDialogOpen, setRevertDialogOpen] = useState(false)
+    const [revertDialogOpen, setRevertDialogOpen] = useState(false);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [userSignatureFileName, setUserSignatureFileName] = useState<string | null>(null);
-
-    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-        "success"
-    );
+    const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
     const fetchBookings = useCallback(async () => {
         setLoading(true);
@@ -68,7 +80,7 @@ export default function BookingRequest() {
         } finally {
             setLoading(false);
         }
-    }, [setBookings, setLoading]);
+    }, []);
 
     useEffect(() => {
         fetchBookings();
@@ -103,9 +115,7 @@ export default function BookingRequest() {
                 try {
                     await fetch("/api/calendar/add-event", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ booking: updatedBooking }),
                     });
                 } catch (error) {
@@ -169,332 +179,272 @@ export default function BookingRequest() {
         );
     }
 
-    if (session?.user?.role == "99") {
-
-        return (
+    return (
+        <Box sx={{ marginTop: { xs: 23, sm: 15 } }}>
+            <Header />
             <Box
                 sx={{
-                    marginTop: { xs: 23, sm: 15 }
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: "auto",
+                    bgcolor: "white",
+                    px: { xs: 2, sm: 4 },
+                    pt: { xs: 2, sm: 4 },
+                    pb: 4,
+                    mt: 10,
+                    borderRadius: 7,
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
                 }}
             >
-                <Header />
                 <Box
                     sx={{
                         display: "flex",
                         flexDirection: "column",
-                        minHeight: "auto",
-                        bgcolor: "white",
-                        px: { xs: 2, sm: 4 },
-                        pt: { xs: 2, sm: 4 },
-                        pb: 4,
-                        mt: 10,
-                        borderRadius: 7,
-                        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        textAlign: "center",
+                        mb: 1,
                     }}
                 >
-                    <Box
+                    <Typography variant="h4" fontWeight={600}>
+                        คำขอใช้บริการห้องประชุม
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
+                        คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
+                    </Typography>
+                </Box>
+
+                {loading ? (
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <TableContainer
+                        component={Paper}
                         sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            mb: 1,
+                            width: "100%",
+                            overflowX: "auto",
+                            mx: "auto",
                         }}
                     >
-                        <Typography variant="h4" fontWeight={600}>
-                            คำขอใช้บริการห้องประชุม
-                        </Typography>
-                        <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
-                            คณะเทคโนโลยีสารสนเทศและการสื่อสาร มหาวิทยาลัยพะเยา
-                        </Typography>
-                    </Box>
-
-                    {loading ? (
-                        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-                            <CircularProgress />
-                        </Box>
-                    ) : (
-                        <TableContainer
-                            component={Paper}
+                        <Table
+                            size="small"
                             sx={{
-                                width: { xs: "100%", sm: "100%" },
-                                maxWidth: { xs: 400, sm: "100%" },
-                                overflowX: "auto",
-                                mx: "auto",
+                                minWidth: 900,
+                                "& .MuiTableCell-root": {
+                                    fontSize: { xs: "0.65rem", sm: "0.95rem" },
+                                    px: { xs: 0.3, sm: 1 },
+                                    py: { xs: 0.5, sm: 1 },
+                                    whiteSpace: "normal",
+                                    wordBreak: "break-word",
+                                },
                             }}
                         >
-                            <Table
-                                size="small"
-                                sx={{
-                                    minWidth: 900, // กำหนดให้ table ขยายเต็มเหมือน desktop
-                                    "& .MuiTableCell-root": {
-                                        fontSize: { xs: "0.65rem", sm: "0.95rem" },
-                                        px: { xs: 0.3, sm: 1 },
-                                        py: { xs: 0.5, sm: 1 },
-                                        whiteSpace: "normal",
-                                        wordBreak: "break-word",
-                                    },
-                                }}
-                            >
-                                <TableHead>
-                                    <TableRow
-                                        sx={{
-                                            bgcolor: "primary.main",
-                                            "& .MuiTableCell-head": {
-                                                color: "white",
-                                                fontWeight: "bold",
-                                                fontSize: {
-                                                    xs: "0.75rem",
-                                                    sm: "0.85rem",
-                                                    md: "1rem",
-                                                },
-                                            },
-                                        }}
-                                    >
-                                        <TableCell>#</TableCell>
-                                        <TableCell align="center">เริ่ม</TableCell>
-                                        <TableCell align="center">สิ้นสุด</TableCell>
-                                        <TableCell align="center">สถานที่</TableCell>
-                                        <TableCell align="center">วัตถุประสงค์</TableCell>
-                                        <TableCell align="center">จำนวนคน</TableCell>
-                                        <TableCell align="center">สถานะ</TableCell>
-                                        <TableCell align="center">ดู</TableCell>
-                                        <TableCell align="center">จัดการ</TableCell>
-                                        <TableCell align="center">เหตุผล</TableCell>
-                                        <TableCell align="center">ตรวจเช็ค</TableCell>
-                                        <TableCell align="center">ความเสียหาย</TableCell>
+                            <TableHead>
+                                <TableRow
+                                    sx={{
+                                        bgcolor: "primary.main",
+                                        "& .MuiTableCell-head": {
+                                            color: "white",
+                                            fontWeight: "bold",
+                                        },
+                                    }}
+                                >
+                                    <TableCell>#</TableCell>
+                                    <TableCell align="center">เริ่ม</TableCell>
+                                    <TableCell align="center">สิ้นสุด</TableCell>
+                                    <TableCell align="center">สถานที่</TableCell>
+                                    <TableCell align="center">วัตถุประสงค์</TableCell>
+                                    <TableCell align="center">จำนวนคน</TableCell>
+                                    <TableCell align="center">สถานะ</TableCell>
+                                    <TableCell align="center">ดู</TableCell>
+                                    <TableCell align="center">จัดการ</TableCell>
+                                    <TableCell align="center">เหตุผล</TableCell>
+                                    <TableCell align="center">ตรวจเช็ค</TableCell>
+                                    <TableCell align="center">ความเสียหาย</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {bookings.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={12} align="center" sx={{ py: 2, fontSize: "1.2rem" }}>
+                                            ไม่มีข้อมูลการจองในระบบ
+                                        </TableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {bookings.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={10}
-                                                align="center"
-                                                sx={{ py: 2, fontSize: "1.2rem", fontWeight: 500 }}
-                                            >
-                                                ไม่มีข้อมูลการจองในระบบ
+                                ) : (
+                                    bookings.map((booking, index) => (
+                                        <TableRow key={booking.bookingID}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>
+                                                {new Date(booking.startDate).toLocaleString("th-TH", {
+                                                    weekday: "short",
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
                                             </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        bookings.map((booking, index) => (
-                                            <TableRow key={booking.bookingID}>
-                                                <TableCell sx={{ maxWidth: 10, width: 10 }}>{index + 1}</TableCell>
-                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
-                                                    {new Date(booking.startDate).toLocaleString("th-TH",
-                                                        { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
-                                                </TableCell>
-                                                <TableCell sx={{ maxWidth: 60, width: 50 }}>
-                                                    {new Date(booking.endDate).toLocaleString("th-TH",
-                                                        { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", })}
-                                                </TableCell>
-                                                <TableCell sx={{ maxWidth: 50, width: 50 }} align="center"> {booking.RoomName} </TableCell>
-                                                <TableCell
-                                                    sx={{
-                                                        width: 120,
-                                                        maxWidth: 120,
-                                                        whiteSpace: "normal",
-                                                        wordBreak: "break-word",
-                                                        overflowWrap: "break-word",
-                                                        fontSize: { xs: "0.65rem", sm: "0.95rem" },
-                                                        lineHeight: 1.4,
-                                                        maxHeight: 60,
-                                                        p: 1,
+                                            <TableCell>
+                                                {new Date(booking.endDate).toLocaleString("th-TH", {
+                                                    weekday: "short",
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </TableCell>
+                                            <TableCell align="center">{booking.RoomName}</TableCell>
+                                            <TableCell>
+                                                {booking.purpose.length > 120
+                                                    ? <>
+                                                        {booking.purpose.slice(0, 60)}<br />
+                                                        {booking.purpose.slice(60)}
+                                                    </>
+                                                    : booking.purpose
+                                                }
+                                            </TableCell>
+                                            <TableCell align="center">{booking.capacity}</TableCell>
+                                            <TableCell align="center" sx={{
+                                                color:
+                                                    booking.SendStatus.trim() === "กำลังรอ" ? "darkorange" :
+                                                        booking.SendStatus.trim() === "อนุมัติ" ? "navy" :
+                                                            booking.SendStatus.trim() === "เสร็จสิ้น" ? "seagreen" :
+                                                                ["ถูกยกเลิก", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ? "crimson" :
+                                                                    "black",
+                                                fontWeight: 600,
+                                            }}>{booking.SendStatus}</TableCell>
+                                            <TableCell align="center">
+                                                <FormPDFButton
+                                                    booking={{
+                                                        ...booking,
+                                                        startDate: new Date(booking.startDate),
+                                                        endDate: new Date(booking.endDate),
+                                                        sendDate: new Date(booking.sendDate ?? booking.startDate),
+                                                        sender: booking.sender ?? "",
+                                                        jobName: booking.jobName ?? "",
+                                                        phoneIn: booking.phoneIn ?? "",
+                                                        phoneOut: booking.phoneOut ?? "",
+                                                        officeLocation: booking.officeLocation ?? "",
+                                                        cfSender: booking.cfSender ?? "",
+                                                        cfPhone: booking.cfPhone ?? "",
+                                                        capacity: String(booking.capacity),
+                                                        approvedNumber: booking.approvedNumber ?? "",
                                                     }}
-                                                >
-                                                    {(() => {
-                                                        const purpose = booking.purpose;
-                                                        // ถ้าความยาวเกิน 120 ให้แบ่งบรรทัด, ถ้าไม่เกินให้แสดงปกติ
-                                                        if (!purpose || purpose.length <= 120) return purpose;
-                                                        const words = purpose.split(" ");
-                                                        if (words.length <= 1) return purpose;
-                                                        const mid = Math.ceil(words.length / 2);
-                                                        return (
-                                                            <>
-                                                                {words.slice(0, mid).join(" ")}
-                                                                <br />
-                                                                {words.slice(mid).join(" ")}
-                                                            </>
-                                                        );
-                                                    })()}
-                                                </TableCell>
-                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
-                                                    {booking.capacity}
-                                                </TableCell>
-                                                <TableCell
-                                                    align="center"
-                                                    sx={{
-                                                        color:
-                                                            booking.SendStatus.trim() === "กำลังรอ" ? "darkorange" :
-                                                                booking.SendStatus.trim() === "อนุมัติ" ? "navy" :
-                                                                    booking.SendStatus.trim() === "เสร็จสิ้น" ? "seagreen" :
-                                                                        ["ถูกยกเลิก", "ไม่อนุมัติ"].includes(booking.SendStatus.trim()) ? "crimson" :
-                                                                            "black",
-                                                        fontWeight: 600,
-                                                        textAlign: "center",
-                                                        maxWidth: 20, width: 20
-                                                    }}
-                                                >
-                                                    {booking.SendStatus}
-                                                </TableCell>
-                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
-                                                    <FormPDFButton
-                                                        booking={{
-                                                            ...booking,
-                                                            startDate: new Date(booking.startDate),
-                                                            endDate: new Date(booking.endDate),
-                                                            sendDate: new Date(booking.sendDate ?? booking.startDate),
-                                                            sender: booking.sender ?? "",
-                                                            jobName: booking.jobName ?? "",
-                                                            phoneIn: booking.phoneIn ?? "",
-                                                            phoneOut: booking.phoneOut ?? "",
-                                                            officeLocation: booking.officeLocation ?? "",
-                                                            cfSender: booking.cfSender ?? "",
-                                                            cfPhone: booking.cfPhone ?? "",
-                                                            capacity: String(booking.capacity),
-                                                            approvedNumber: booking.approvedNumber !== undefined ? String(booking.approvedNumber) : ""
-                                                        }}
-                                                        signatureUrl={
-                                                            booking.signatureFileName
-                                                                ? `/uploads/signatures/${booking.signatureFileName}`
-                                                                : userSignatureFileName
-                                                                    ? `/uploads/signatures/${userSignatureFileName}`
-                                                                    : undefined
-                                                        }
-                                                        includeApprovalSignature={["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())}
-                                                        approvalDate={
-                                                            ["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())
-                                                                ? new Date().toLocaleDateString("th-TH", { day: "2-digit", month: "long", year: "numeric" })
+                                                    signatureUrl={
+                                                        booking.signatureFileName
+                                                            ? `/uploads/signatures/${booking.signatureFileName}`
+                                                            : userSignatureFileName
+                                                                ? `/uploads/signatures/${userSignatureFileName}`
                                                                 : undefined
-                                                        }
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
-                                                    {["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim()) ? (
-                                                        <Tooltip
-                                                            title={
-                                                                booking.SendStatus.trim() === "กำลังรอ"
-                                                                    ? "จัดการคำขอ"
-                                                                    : "ยกเลิกการอนุมัติ"
-                                                            }
+                                                    }
+                                                    includeApprovalSignature={["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())}
+                                                    approvalDate={["อนุมัติ", "เสร็จสิ้น"].includes(booking.SendStatus.trim())
+                                                        ? new Date().toLocaleDateString("th-TH", { day: "2-digit", month: "long", year: "numeric" })
+                                                        : undefined
+                                                    }
+                                                />
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {["กำลังรอ", "อนุมัติ"].includes(booking.SendStatus.trim()) ? (
+                                                    <Tooltip title={booking.SendStatus.trim() === "กำลังรอ" ? "จัดการคำขอ" : "ยกเลิกการอนุมัติ"}>
+                                                        <IconButton
+                                                            color="primary"
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                if (booking.SendStatus.trim() === "กำลังรอ") setManageDialogOpen(true);
+                                                                else setRevertDialogOpen(true);
+                                                            }}
                                                         >
-                                                            <span>
-                                                                <IconButton
-                                                                    color="primary"
-                                                                    onClick={() => {
-                                                                        setSelectedBooking(booking);
-                                                                        if (booking.SendStatus.trim() === "กำลังรอ") {
-                                                                            setManageDialogOpen(true);
-                                                                        } else {
-                                                                            setRevertDialogOpen(true);
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <SettingsIcon />
-                                                                </IconButton>
-                                                            </span>
-                                                        </Tooltip>
-                                                    ) : (
-                                                        <Tooltip title="ไม่สามารถจัดการคำขอที่เสร็จสิ้นแล้ว">
-                                                            <span>
-                                                                <IconButton disabled>
-                                                                    <SettingsIcon />
-                                                                </IconButton>
-                                                            </span>
-                                                        </Tooltip>
-                                                    )}
-                                                </TableCell>
-                                                {selectedBooking && (
-                                                    <RevertApprovalDialog
-                                                        open={revertDialogOpen}
-                                                        onClose={() => setRevertDialogOpen(false)}
-                                                        bookingID={selectedBooking.bookingID}
-                                                        onSuccess={() => {
-                                                            fetchBookings();
-                                                            showSnackbar("ยกเลิกการอนุมัติแล้ว", "success");
-                                                        }}
-                                                    />
-                                                )}
-                                                {selectedBooking && (
-                                                    <ManageBookingDialog
-                                                        open={manageDialogOpen}
-                                                        onClose={() => setManageDialogOpen(false)}
-                                                        booking={selectedBooking}
-                                                        onStatusChange={handleStatusChange}
-                                                    />
-                                                )}
-                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>
-                                                    {booking.SendStatus.trim() === "ถูกยกเลิก"
-                                                        ? booking.CancelReason
-                                                        : booking.SendStatus.trim() === "ไม่อนุมัติ"
-                                                            ? booking.RejectReason
-                                                            : "-"}
-                                                </TableCell>
-                                                <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
-                                                    <Tooltip
-                                                        title={
-                                                            booking.SendStatus.trim() === "อนุมัติ"
-                                                                ? "ดำเนินการตรวจเช็ค"
-                                                                : "สามารถตรวจเช็คได้เมื่อคำขอได้รับการอนุมัติแล้ว"
-                                                        }
-                                                    >
+                                                            <SettingsIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                ) : (
+                                                    <Tooltip title="ไม่สามารถจัดการคำขอที่เสร็จสิ้นแล้ว">
                                                         <span>
-                                                            <IconButton
-                                                                color="success"
-                                                                onClick={() => {
-                                                                    setSelectedBooking(booking);
-                                                                    setCheckDialogOpen(true);
-                                                                }}
-                                                                disabled={booking.SendStatus.trim() !== "อนุมัติ"}
-                                                            >
-                                                                <CheckCircleIcon />
+                                                            <IconButton disabled>
+                                                                <SettingsIcon />
                                                             </IconButton>
                                                         </span>
                                                     </Tooltip>
-                                                </TableCell>
-                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>
-                                                    {booking.SendStatus.trim() === "เสร็จสิ้น"
-                                                        ? booking.remark
-                                                            : "-"}
-                                                </TableCell>
-                                                {selectedBooking && (
-                                                    <CheckRoomDialog
-                                                        open={checkDialogOpen}
-                                                        onClose={() => setCheckDialogOpen(false)}
-                                                        bookingID={selectedBooking.bookingID}
-                                                        onCheckComplete={() => {
-                                                            fetchBookings();
-                                                            setSnackbarMessage("บันทึกการตรวจเช็คเรียบร้อย");
-                                                            setSnackbarSeverity("success");
-                                                            setSnackbarOpen(true);
-                                                        }}
-                                                    />
                                                 )}
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    )}
-                </Box>
-
-                <Snackbar
-                    open={snackbarOpen}
-                    autoHideDuration={4000}
-                    onClose={() => setSnackbarOpen(false)}
-                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                    <Alert
-                        onClose={() => setSnackbarOpen(false)}
-                        severity={snackbarSeverity}
-                        sx={{ width: "100%" }}
-                    >
-                        {snackbarMessage}
-                    </Alert>
-                </Snackbar>
+                                            </TableCell>
+                                            <TableCell>
+                                                {booking.SendStatus.trim() === "ถูกยกเลิก" ? booking.CancelReason
+                                                    : booking.SendStatus.trim() === "ไม่อนุมัติ" ? booking.RejectReason
+                                                        : "-"}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <Tooltip title={booking.SendStatus.trim() === "อนุมัติ" ? "ดำเนินการตรวจเช็ค" : "สามารถตรวจเช็คได้เมื่อคำขอได้รับการอนุมัติแล้ว"}>
+                                                    <span>
+                                                        <IconButton
+                                                            color="success"
+                                                            disabled={booking.SendStatus.trim() !== "อนุมัติ"}
+                                                            onClick={() => {
+                                                                setSelectedBooking(booking);
+                                                                setCheckDialogOpen(true);
+                                                            }}
+                                                        >
+                                                            <CheckCircleIcon />
+                                                        </IconButton>
+                                                    </span>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell>{booking.SendStatus.trim() === "เสร็จสิ้น" ? booking.remark : "-"}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
             </Box>
-        );
-    }
+
+            {/* Dialogs */}
+            {selectedBooking && (
+                <>
+                    <ManageBookingDialog
+                        open={manageDialogOpen}
+                        onClose={() => setManageDialogOpen(false)}
+                        booking={selectedBooking}
+                        onStatusChange={handleStatusChange}
+                    />
+                    <RevertApprovalDialog
+                        open={revertDialogOpen}
+                        onClose={() => setRevertDialogOpen(false)}
+                        bookingID={selectedBooking.bookingID}
+                        onSuccess={() => {
+                            fetchBookings();
+                            showSnackbar("ยกเลิกการอนุมัติแล้ว", "success");
+                        }}
+                    />
+                    <CheckRoomDialog
+                        open={checkDialogOpen}
+                        onClose={() => setCheckDialogOpen(false)}
+                        bookingID={selectedBooking.bookingID}
+                        onCheckComplete={() => {
+                            fetchBookings();
+                            showSnackbar("บันทึกการตรวจเช็คเรียบร้อย", "success");
+                        }}
+                    />
+                </>
+            )}
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={() => setSnackbarOpen(false)}
+                    severity={snackbarSeverity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </Box>
+    );
 }
