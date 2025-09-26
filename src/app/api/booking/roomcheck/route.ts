@@ -75,6 +75,7 @@ export async function POST(req: Request) {
                 damageAction: clearStatus === "not_clear" ? damageAction : null,
                 remark: clearStatus === "not_clear" ? remark : null,
                 SendStatus: "เสร็จสิ้น",
+                RecordStatus: "F",
                 calendarEventId: null,
                 updatedAt: new Date(),
             },
