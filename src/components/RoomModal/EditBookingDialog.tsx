@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Stack, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 import { useEffect, useState } from "react";
 import { DatePicker, TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -80,7 +80,6 @@ export default function EditBookingDialog({
         "ห้องบัณฑิตศึกษา ICT1318": 30,
         "ลานกิจกรรมใต้ถุนอาคาร ICT": 300,
     };
-
     const roomCapacity = roomCapacityMap[roomName] || 20;
 
     useEffect(() => {
@@ -111,7 +110,6 @@ export default function EditBookingDialog({
 
         if (name === "capacity") {
             const num = parseInt(value, 10);
-
             if (num > roomCapacity) {
                 setSnackbar({
                     open: true,
@@ -125,24 +123,30 @@ export default function EditBookingDialog({
         setFormData({ ...formData, [name]: value });
     };
 
+    const validateForm = () => {
+        if (!formData.sender.trim()) return "กรุณากรอกชื่อผู้ขอใช้";
+        if (!formData.jobName.trim()) return "กรุณาเลือกตำแหน่ง";
+        if (!formData.phoneOut.trim()) return "กรุณากรอกเบอร์โทรศัพท์ติดต่อ";
+        if (!formData.officeLocation.trim()) return "กรุณากรอกสังกัดหน่วยงาน";
+        if (!formData.purpose.trim()) return "กรุณากรอกวัตถุประสงค์";
+        if (!startDay || !startTime) return "กรุณากรอกวันที่และเวลาเริ่ม";
+        if (!endDay || !endTime) return "กรุณากรอกวันที่และเวลาสิ้นสุด";
+        if (combineDateTime(endDay!, endTime!) <= combineDateTime(startDay!, startTime!))
+            return "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม";
+        if (!formData.capacity.trim() || parseInt(formData.capacity, 10) > roomCapacity)
+            return `จำนวนผู้เข้าร่วมต้องไม่เกิน ${roomCapacity} คน`;
+        return null;
+    };
+
     const handleSave = async () => {
-        if (!startDay || !startTime || !endDay || !endTime) {
-            setSnackbar({ open: true, message: "กรุณากรอกวันและเวลาให้ครบ", severity: "error" });
+        const errorMsg = validateForm();
+        if (errorMsg) {
+            setSnackbar({ open: true, message: errorMsg, severity: "error" });
             return;
         }
 
-        const updatedStart = combineDateTime(startDay, startTime);
-        const updatedEnd = combineDateTime(endDay, endTime);
-
-        if (updatedEnd <= updatedStart) {
-            setSnackbar({ open: true, message: "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม", severity: "error" });
-            return;
-        }
-
-        if (parseInt(formData.capacity, 10) > roomCapacity) {
-            setSnackbar({ open: true, message: `จำนวนผู้เข้าร่วมต้องไม่เกิน ${roomCapacity} คน`, severity: "error" });
-            return;
-        }
+        const updatedStart = combineDateTime(startDay!, startTime!);
+        const updatedEnd = combineDateTime(endDay!, endTime!);
 
         const updatedData = {
             bookingID: defaultData.bookingID,
@@ -173,10 +177,7 @@ export default function EditBookingDialog({
         }
     };
 
-    const textFieldProps = {
-        size: "small" as const,
-        sx: { width: 300 },
-    };
+    const textFieldProps = { size: "small" as const, sx: { width: 300 }, required: true };
 
     return (
         <>
@@ -184,7 +185,7 @@ export default function EditBookingDialog({
                 <DialogTitle textAlign="center">แก้ไขข้อมูลคำขอ</DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} mt={1}>
-                        <TextField label="ชื่อผู้ขอใช้" name="sender" value={formData?.sender ?? ""} onChange={handleChange} {...textFieldProps} />
+                        <TextField label="ชื่อผู้ขอใช้" name="sender" value={formData.sender} onChange={handleChange} {...textFieldProps} />
                         <FormControl size="small" sx={{ width: 300 }} required>
                             <InputLabel id="jobName-label">ตำแหน่ง</InputLabel>
                             <Select
@@ -198,6 +199,7 @@ export default function EditBookingDialog({
                                 <MenuItem value="อาจารย์">อาจารย์</MenuItem>
                                 <MenuItem value="เจ้าหน้าที่">เจ้าหน้าที่</MenuItem>
                             </Select>
+                            {!formData.jobName && <FormHelperText error>กรุณาเลือกตำแหน่ง</FormHelperText>}
                         </FormControl>
                         <TextField label="เบอร์โทรศัพท์ติดต่อ" name="phoneOut" value={formData.phoneOut} onChange={handleChange} {...textFieldProps} />
                         <TextField label="เบอร์โทรศัพท์ภายใน" name="phoneIn" value={formData.phoneIn} onChange={handleChange} {...textFieldProps} />
@@ -205,24 +207,12 @@ export default function EditBookingDialog({
                         <TextField label="ชื่อห้อง" name="RoomName" value={formData.RoomName} onChange={handleChange} {...textFieldProps} disabled />
                         <TextField label="วัตถุประสงค์" name="purpose" value={formData.purpose} onChange={handleChange} {...textFieldProps} />
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={thLocale}>
-                            <DatePicker
-                                label="วันที่เริ่ม" value={startDay} onChange={setStartDay}
-                                slotProps={{ textField: { size: "small", }, }}
-                            />
-                            <TimePicker
-                                label="เวลาเริ่ม" value={startTime} onChange={setStartTime} minutesStep={30}
-                                slotProps={{ textField: { size: "small", }, }}
-                            />
-                            <DatePicker
-                                label="วันที่สิ้นสุด" value={endDay} onChange={setEndDay}
-                                slotProps={{ textField: { size: "small", }, }}
-                            />
-                            <TimePicker
-                                label="เวลาสิ้นสุด" value={endTime} onChange={setEndTime} minutesStep={30}
-                                slotProps={{ textField: { size: "small", }, }}
-                            />
+                            <DatePicker label="วันที่เริ่ม" value={startDay} onChange={setStartDay} slotProps={{ textField: { size: "small", required: true } }} />
+                            <TimePicker label="เวลาเริ่ม" value={startTime} onChange={setStartTime} minutesStep={30} slotProps={{ textField: { size: "small", required: true } }} />
+                            <DatePicker label="วันที่สิ้นสุด" value={endDay} onChange={setEndDay} slotProps={{ textField: { size: "small", required: true } }} />
+                            <TimePicker label="เวลาสิ้นสุด" value={endTime} onChange={setEndTime} minutesStep={30} slotProps={{ textField: { size: "small", required: true } }} />
                         </LocalizationProvider>
-                        <TextField label={`จำนวนผู้เข้าร่วม (ไม่เกิน ${roomCapacity})`} name="capacity" type="number" value={formData.capacity} onChange={handleChange} inputProps={{ min: 1, max: roomCapacity }}                            {...textFieldProps} />
+                        <TextField label={`จำนวนผู้เข้าร่วม (ไม่เกิน ${roomCapacity})`} name="capacity" type="number" value={formData.capacity} onChange={handleChange} inputProps={{ min: 1, max: roomCapacity }} {...textFieldProps} />
                         <TextField label="ผู้ประสานงาน" name="cfSender" value={formData.cfSender} onChange={handleChange} {...textFieldProps} />
                         <TextField label="เบอร์ติดต่อผู้ประสานงาน" name="cfPhone" value={formData.cfPhone} onChange={handleChange} {...textFieldProps} />
                     </Stack>

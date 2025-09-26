@@ -69,6 +69,7 @@ export default function CancelDialog({
                 <TextField
                     fullWidth
                     multiline
+                    required
                     rows={3}
                     label="กรุณาระบุเหตุผล"
                     value={reason}
