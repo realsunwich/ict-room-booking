@@ -17,10 +17,12 @@ interface MonthlyCount {
     month: string;
     count: number;
 }
+
 interface YearlyCount {
     year: string;
     count: number;
 }
+
 interface RoomStat {
     RoomName: string;
     totalUsage: number;
@@ -30,6 +32,13 @@ interface RoomStat {
     usageByYear?: YearlyCount[];
     statusCounts?: Record<string, number>;
 }
+
+interface RemarkItem {
+    [x: string]: string;
+    SendStatus: string;
+    remark: string;
+}
+
 interface CanceledItem {
     RoomName: string;
     SendStatus: string;
@@ -49,6 +58,7 @@ export default function StatsPage() {
 
     const [stats, setStats] = useState<RoomStat[]>([]);
     const [canceledOrRejected, setCanceledOrRejected] = useState<CanceledItem[]>([]);
+    const [remarks, setRemarks] = useState<RemarkItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -66,6 +76,7 @@ export default function StatsPage() {
 
                     setStats(filteredStats);
                     setCanceledOrRejected(data.canceledOrRejected || []);
+                    setRemarks(data.remarks || []);
                 }
             } catch (error) {
                 console.error("Error fetching stats:", error);
@@ -136,9 +147,31 @@ export default function StatsPage() {
                             <CircularProgress />
                         </Box>
                     ) : stats.length === 0 ? (
-                        <Typography variant="body1" textAlign="center" mt={4}>
-                            ไม่มีข้อมูลสถิติการใช้งาน
-                        </Typography>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                minHeight: 200,
+                                gap: 2,
+                                width: "100%",
+                                mb: 2,
+                            }}
+                        >
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => router.push("/dashboard")}
+                                startIcon={<ArrowBackIcon />}
+                                sx={{ whiteSpace: "nowrap", mb: 2 }}
+                            >
+                                กลับไปยังหน้าปฏิทิน
+                            </Button>
+                            <Typography variant="h6" color="text.secondary" textAlign="center">
+                                ไม่พบข้อมูลสถิติการใช้งานสำหรับ{room ? ` ${room}` : "ห้องประชุมนี้"}
+                            </Typography>
+                        </Box>
                     ) : (
                         stats.map((stat, index) => (
                             <Box key={index}>
@@ -198,7 +231,11 @@ export default function StatsPage() {
                                 </TabPanel>
 
                                 <TabPanel value={tabIndex} index={1}>
-                                    <StatusStats statusCounts={stat.statusCounts} canceledOrRejected={canceledOrRejected.filter(item => item.RoomName === stat.RoomName)} />
+                                    <StatusStats
+                                        statusCounts={stat.statusCounts}
+                                        canceledOrRejected={canceledOrRejected.filter(item => item.RoomName === stat.RoomName)}
+                                        remarks={remarks.filter(item => item.RoomName === stat.RoomName)}
+                                    />
                                 </TabPanel>
                             </Box>
                         ))

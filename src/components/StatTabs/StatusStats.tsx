@@ -1,6 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Cell } from "recharts";
 
+interface RemarkItem {
+    SendStatus: string;
+    remark: string;
+}
+
 interface StatusStatsProps {
     statusCounts?: Record<string, number>;
     canceledOrRejected: {
@@ -8,6 +13,7 @@ interface StatusStatsProps {
         RejectReason?: string | null;
         CancelReason?: string | null;
     }[];
+    remarks?: RemarkItem[];
 }
 
 const statusColors: Record<string, string> = {
@@ -18,11 +24,13 @@ const statusColors: Record<string, string> = {
     "ถูกยกเลิก": "#f57c00",
 };
 
-export default function StatusStats({ statusCounts, canceledOrRejected }: StatusStatsProps) {
+export default function StatusStats({ statusCounts, canceledOrRejected, remarks }: StatusStatsProps) {
     const chartData = Object.entries(statusCounts || {}).map(([status, count]) => ({
         name: status,
         count,
     }));
+
+    const completedRemarks = remarks?.filter(item => item.SendStatus === "เสร็จสิ้น");
 
     return (
         <Box>
@@ -59,6 +67,20 @@ export default function StatusStats({ statusCounts, canceledOrRejected }: Status
                         <Typography variant="body2" sx={{ ml: 2 }}>
                             ไม่มีรายการถูกยกเลิกหรือไม่อนุมัติ
                         </Typography>
+                    )}
+
+                    <Typography variant="subtitle1" fontWeight="bold" mt={2}>รายการความเสียหาย</Typography>
+                    {completedRemarks && completedRemarks.length > 0 && (
+                        completedRemarks.map((item, idx) => (
+                            <Box key={idx} sx={{ ml: 2, mb: 1 }}>
+                                <Typography variant="body2">
+                                    สถานะคำขอ <strong>{item.SendStatus}</strong>
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    รายงานความเสียหาย: {item.remark}
+                                </Typography>
+                            </Box>
+                        ))
                     )}
                 </Box>
 

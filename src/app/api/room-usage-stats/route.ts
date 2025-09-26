@@ -21,7 +21,6 @@ function getWorkingHours(start: Date, end: Date): number {
             totalHours += (dayEnd.getTime() - dayStart.getTime()) / (1000 * 60 * 60);
         }
 
-        // ไปวันถัดไป
         current.setDate(current.getDate() + 1);
         current.setHours(0, 0, 0, 0);
     }
@@ -37,6 +36,7 @@ export async function GET() {
                 SendStatus: true,
                 CancelReason: true,
                 RejectReason: true,
+                remark: true,
                 createdAt: true,
                 startDate: true,
                 endDate: true,
@@ -56,6 +56,12 @@ export async function GET() {
             SendStatus: string;
             CancelReason?: string | null;
             RejectReason?: string | null;
+        }[] = [];
+
+        const remarks: {
+            RoomName: string;
+            SendStatus: string;
+            remark: string;
         }[] = [];
 
         bookings.forEach((b) => {
@@ -81,23 +87,25 @@ export async function GET() {
             stats.totalUsage += 1;
 
             if (status === "เสร็จสิ้น") {
-                stats.totalUsage += 1;
-
                 if (b.startDate && b.endDate) {
                     stats.totalWorkHours += getWorkingHours(new Date(b.startDate), new Date(b.endDate));
                 }
+
+                if (b.remark) {
+                    remarks.push({
+                        RoomName: room,
+                        SendStatus: status,
+                        remark: b.remark,
+                    });
+                }
             }
 
-            // สถานะ
             stats.statusCounts[status] = (stats.statusCounts[status] || 0) + 1;
 
-            // รายเดือน
             stats.usageByMonth[monthKey] = (stats.usageByMonth[monthKey] || 0) + 1;
 
-            // รายปี
             stats.usageByYear[yearKey] = (stats.usageByYear[yearKey] || 0) + 1;
 
-            // ถูกยกเลิก / ไม่อนุมัติ
             if (status === "ถูกยกเลิก" || status === "ไม่อนุมัติ") {
                 canceledOrRejected.push({
                     RoomName: room,
@@ -116,7 +124,7 @@ export async function GET() {
                 RoomName,
                 totalUsage: data.totalUsage,
                 totalWorkHoursText: `${totalHours} ชั่วโมง${totalMinutes > 0 ? ` ${totalMinutes} นาที` : ""}`,
-                totalWorkHoursRaw: parseFloat(data.totalWorkHours.toFixed(2)), // เผื่อใช้แบบตัวเลขจริง
+                totalWorkHoursRaw: parseFloat(data.totalWorkHours.toFixed(2)),
                 statusCounts: data.statusCounts,
                 usageByMonth: Object.entries(data.usageByMonth).map(([month, count]) => ({ month, count })),
                 usageByYear: Object.entries(data.usageByYear).map(([year, count]) => ({ year, count })),
@@ -126,6 +134,7 @@ export async function GET() {
         return NextResponse.json({
             stats,
             canceledOrRejected,
+            remarks,
         });
 
     } catch (error) {
