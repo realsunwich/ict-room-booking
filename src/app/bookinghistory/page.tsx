@@ -316,6 +316,7 @@ export default function BookingHistory() {
                                         <TableCell align="center">แก้ไข</TableCell>
                                         <TableCell align="center">ยกเลิก</TableCell>
                                         <TableCell align="center">เหตุผล</TableCell>
+                                        <TableCell align="center">ความเสียหาย</TableCell>
                                         <TableCell align="center">ดู</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -450,6 +451,7 @@ export default function BookingHistory() {
                                                             ? booking.RejectReason
                                                             : "-"}
                                                 </TableCell>
+                                                <TableCell sx={{ maxWidth: 60, width: 60 }}>{booking.SendStatus.trim() === "เสร็จสิ้น" ? booking.remark : "-"}</TableCell>
                                                 <TableCell align="center" sx={{ maxWidth: 20, width: 20 }}>
                                                     <FormPDFButton
                                                         booking={{

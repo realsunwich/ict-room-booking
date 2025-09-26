@@ -259,9 +259,7 @@ export default function BookingRequest() {
                                     <TableCell align="center">สถานะ</TableCell>
                                     <TableCell align="center">ดู</TableCell>
                                     <TableCell align="center">จัดการ</TableCell>
-                                    <TableCell align="center">เหตุผล</TableCell>
                                     <TableCell align="center">ตรวจเช็ค</TableCell>
-                                    <TableCell align="center">ความเสียหาย</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -370,11 +368,6 @@ export default function BookingRequest() {
                                                     </Tooltip>
                                                 )}
                                             </TableCell>
-                                            <TableCell>
-                                                {booking.SendStatus.trim() === "ถูกยกเลิก" ? booking.CancelReason
-                                                    : booking.SendStatus.trim() === "ไม่อนุมัติ" ? booking.RejectReason
-                                                        : "-"}
-                                            </TableCell>
                                             <TableCell align="center">
                                                 <Tooltip title={booking.SendStatus.trim() === "อนุมัติ" ? "ดำเนินการตรวจเช็ค" : "สามารถตรวจเช็คได้เมื่อคำขอได้รับการอนุมัติแล้ว"}>
                                                     <span>
@@ -391,7 +384,6 @@ export default function BookingRequest() {
                                                     </span>
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell>{booking.SendStatus.trim() === "เสร็จสิ้น" ? booking.remark : "-"}</TableCell>
                                         </TableRow>
                                     ))
                                 )}
