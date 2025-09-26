@@ -70,17 +70,21 @@ export default function StatusStats({ statusCounts, canceledOrRejected, remarks 
                     )}
 
                     <Typography variant="subtitle1" fontWeight="bold" mt={2}>รายการความเสียหาย</Typography>
-                    {completedRemarks && completedRemarks.length > 0 && (
+                    {completedRemarks && completedRemarks.length > 0 ? (
                         completedRemarks.map((item, idx) => (
                             <Box key={idx} sx={{ ml: 2, mb: 1 }}>
                                 <Typography variant="body2">
                                     สถานะคำขอ <strong>{item.SendStatus}</strong>
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    รายงานความเสียหาย: {item.remark}
+                                    รายงานความเสียหาย {item.remark}
                                 </Typography>
                             </Box>
                         ))
+                    ) : (
+                        <Typography variant="body2" sx={{ ml: 2 }}>
+                            ไม่มีข้อมูลความเสียหาย
+                        </Typography>
                     )}
                 </Box>
 
