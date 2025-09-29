@@ -40,7 +40,8 @@ export async function PUT(request: NextRequest) {
                 cfSender,
                 cfPhone,
                 SendStatus: 'กำลังรอ',
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                RecordStatus: "N"
             },
         });
 
