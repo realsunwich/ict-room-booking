@@ -97,12 +97,17 @@ export default function ExportBookingExcelButton<T extends { startDate: string; 
             const rowValues: Partial<Record<keyof T, T[keyof T]>> = {};
 
             columns.forEach((col) => {
-                const value = item[col.key];
+                let value = item[col.key];
+                
                 if ((col.key === "startDate" || col.key === "endDate") && typeof value === "string") {
-                    rowValues[col.key] = toThaiDate(new Date(value)) as T[keyof T];
+                    value = toThaiDate(new Date(value)) as T[keyof T];
                 } else {
-                    rowValues[col.key] = value;
+                    if (["CancelReason", "RejectReason", "remark"].includes(String(col.key))) {
+                        value = (value && String(value).trim() !== "") ? value : "-" as any;
+                    }
                 }
+
+                rowValues[col.key] = value;
             });
 
             const row = worksheet.addRow(rowValues);

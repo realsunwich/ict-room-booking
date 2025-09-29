@@ -247,7 +247,7 @@ export default function BookingHistory() {
                                     { header: "สถานะ", key: "SendStatus", width: 15 },
                                     { header: "เหตุผลที่ยกเลิก", key: "CancelReason", width: 25 },
                                     { header: "เหตุผลที่ไม่อนุมัติ", key: "RejectReason", width: 25 },
-                                    { header: "ตรวจเช็คหลังใช้งาน", key: "remark", width: 25 },
+                                    { header: "ความเสียหายหลังใช้งาน", key: "remark", width: 25 },
                                     { header: "ผู้ขอ", key: "sender", width: 25 },
                                     { header: "ตำแหน่ง", key: "jobName", width: 25 },
                                     { header: "โทรศัพท์", key: "phoneOut", width: 20 },
